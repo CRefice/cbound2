@@ -1,0 +1,18 @@
+[submodule "externals/ssm"]
+	path = externals/ssm
+	url = https://github.com/CRefice/ssm.git
+[submodule "externals/Gooey"]
+	path = externals/Gooey
+	url = https://github.com/CRefice/Gooey.git
+[submodule "externals/json"]
+	path = externals/json
+	url = https://github.com/nlohmann/json.git
+[submodule "externals/glm"]
+	path = externals/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "externals/zlib"]
+	path = externals/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "externals/libpng"]
+	path = externals/libpng
+	url = https://github.com/glennrp/libpng.git
