@@ -1,18 +1,26 @@
 set(SRCS
-	rendering/glinterface/gltexture.cpp
-	rendering/glinterface/glprogram.cpp
-	rendering/render-common.cpp
-	rendering/shader.cpp
-	rendering/sprite-renderer.cpp
-	resource/texture.cpp
-	resource/shader.cpp
+	common/paths.cpp
+	render/render-common.cpp
+	render/sprite-batch.cpp
 )
+
+# Choose OpenGL vendor implementation by default
+if(POLICY CMP0072)
+  cmake_policy(SET CMP0072 NEW)
+endif()
+find_package(OpenGL REQUIRED)
 
 set(LIBS
-	gl-core
-	stb-image
-	tinyxml2
-	cbound-common
+	glad
+	glfw
+	ssm
+	fmt
+	#stb-image
+	${OPENGL_gl_LIBRARY}
 )
 
-add_cbound_library(cbound-core "${SRCS}" "${LIBS}")
+set(CMAKE_CXX_STANDARD 17)
+
+add_library(cbound-core ${SRCS})
+target_include_directories(cbound-core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cbound-core PUBLIC ${LIBS})

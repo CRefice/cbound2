@@ -1,14 +1,14 @@
-find_package(OpenGL)
-
 set(SRCS
 	main.cpp
 )
 
 set(LIBS
 	cbound-core
-	Gooey
+	stdc++fs
 	${OPENGL_gl_LIBRARY}
 )
 
-add_gooey_executable(cbound-game "${SRCS}")
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(cbound-game "${SRCS}")
 target_link_libraries(cbound-game "${LIBS}")

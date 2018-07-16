@@ -3,8 +3,8 @@
 #ifdef _WIN32
 #	include <Windows.h>
 #elif defined __linux__
-# include <limits.h>
-# include <stdlib.h>
+# include <climits>
+# include <cstdlib>
 # include <unistd.h>
 #endif
 
@@ -18,9 +18,9 @@ fs::path executable_path() {
 	::GetModuleFileName(nullptr, exe_name, MAX_PATH);
 	exe_dir = exe_name;
 #elif defined __linux__
-	char* exe_name = realpath("/proc/self/exe", NULL);
+	char* exe_name = realpath("/proc/self/exe", nullptr);
 	exe_dir = exe_name;
-	free(exe_name);
+	std::free(exe_name);
 #else
 #error "executable_path() is not implemented for this platform"
 #endif
