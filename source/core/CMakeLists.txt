@@ -2,6 +2,8 @@ set(SRCS
 	common/paths.cpp
 	render/render-common.cpp
 	render/sprite-batch.cpp
+	render/texture.cpp
+	resource/load-texture.cpp
 )
 
 # Choose OpenGL vendor implementation by default
@@ -11,11 +13,11 @@ endif()
 find_package(OpenGL REQUIRED)
 
 set(LIBS
+	fmt
 	glad
 	glfw
 	ssm
-	fmt
-	#stb-image
+	stb-image
 	${OPENGL_gl_LIBRARY}
 )
 
