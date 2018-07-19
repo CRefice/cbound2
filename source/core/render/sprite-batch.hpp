@@ -3,9 +3,10 @@
 #include <glad/glad.h>
 #include <ssm/vector.hpp>
 
+#include "glinterface/common.hpp"
 #include "glinterface/stream-buffer.hpp"
+
 #include "sprite.hpp"
-//#include "texture.hpp"
 
 // A batch of drawing commands, uploaded to the GPU
 // all at once.
@@ -20,12 +21,6 @@ public:
 	// std::numeric_limits<size_type>::max() / 6,
 	// since 6 indices are required to draw one sprite.
 	SpriteBatch(size_type batch_size);
-	SpriteBatch(const SpriteBatch&) = delete;
-	SpriteBatch(SpriteBatch&&) = default;
-	~SpriteBatch();
-
-	SpriteBatch& operator=(const SpriteBatch&) = delete;
-	SpriteBatch& operator=(SpriteBatch&&) = default;
 
 	// Add the sprite to the batch.
 	// If the sprite's texture is different than the one
@@ -44,10 +39,10 @@ public:
 	void issue_draw_call();
 
 private:
-	GLuint vao, vert_buffer, index_buffer;
-	//Texture batch_texture;
-	size_type count = 0;
+	gl::VertexArray vao;
+	gl::Buffer vert_buffer, index_buffer;
+	Resource<Texture> batch_texture;
 
-	GlStreamBuffer<SpriteVertex> vertices;
-	GlStreamBuffer<size_type> indices;
+	gl::BufferStream<SpriteVertex> vertices;
+	gl::BufferStream<size_type> indices;
 };

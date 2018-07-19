@@ -1,29 +1,26 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <ssm/vector.hpp>
+
+#include "common/rectangle.hpp"
+#include "resource/resource.hpp"
+#include "texture.hpp"
 
 // How the four corners of a sprite's rectangle
 // are represented in memory.
 struct SpriteVertex
 {
-	using uvtype = ssm::vector<GLushort, 2>;
-
-	//SpriteVertex(ssm::vec2 pos, uvtype uv) : pos(pos), uvtype(uv) {}
 	ssm::vec2 pos;
-	uvtype uv;
+	ssm::vector<GLushort, 2> uv;
 };
 
-// A "view" into a texture.
-// Points to a texture resource (don't know how yet)
-// and has two texture coordinates, that define a
-// rectangle over the texture.
+// A "view" into a texture,
+// with its own size and a rectangle
+// of texture coordinates defining a "window" into it.
+// Doesn't own the texture, but holds a resource to it.
 struct Sprite
 {
-	//Texture texture;
-
-	struct TexCoords {
-		typename SpriteVertex::uvtype top_left, bottom_right;
-	} texcoords;
+	Resource<Texture> texture;
+	ssm::vec2 size;
+	Rectangle<GLushort> tex_coords;
 };
-

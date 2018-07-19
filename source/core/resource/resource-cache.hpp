@@ -1,38 +1,53 @@
 #pragma once
 
 #include <function>
-#include <string>
-#include <unordered_map>
+#include <map>
 #include <utility>
 
 #include "resource.hpp"
 
-template<typename ResType, typename KeyType = std::string>
+// A Cache of Resources of type ResT.
+// Holds a function used to load that type of resource,
+// and a map of resources keyed by their identifier type.
+template<typename ResT>
 class ResourceCache
 {
 public:
-	using FuncType = std::function<ResType(const KeyType&)>;
+	using KeyT = typename Resource::Identifier;
+	using FuncT = std::function<ResT(const KeyT&)>;
 
-	ResourceCache(FuncType load_func) : load_func(std::move(load_func)) {}
+	ResourceCache(FuncT load_func) : load_func(std::move(load_func)) {}
 
-	Resource<ResType> load(KeyType key) {
-		if(res_map.find(key) == res_map.end()) {
-			res_map.insert({ key, load_func(key) });
-		}
-		return &res_map[key];
+	// Add the resource to the cache if it doesn't exist,
+	// and return it.
+	Resource<ResT> load(KeyT key) {
+		[iter, success] = map.try_emplace(key, load_func(key));
+		return Resource(key, iter);
 	}
 
+	// Reload the value if the key doesn't exist in the map,
+	// or load it otherwise.
+	Resource<ResT> reload(KeyT key) {
+		auto [iter, success] = map.insert_or_assign(key, load_func(key));
+		return Resource(key, iter);
+	}
+
+	// Reload all values in the map.
 	void reload_all() {
-		for (auto& [key, val] : res_map) {
+		for (auto& [key, val] : map) {
 			val = load_func(key);
 		}
 	}
 
-	void reset() {
-		res_map.clear();
+	// Unload all resources.
+	void clear() {
+		map.clear();
 	}
 
 private:
-	const FuncType load_func;
-	std::unordered_map<KeyType, ResType> res_map;
+	// Note for future me:
+	// map is better in this case, as iterators
+	// are kept valid on insertion/deletion.
+	FuncT load_func;
+	std::map<KeyT, ResT> map;
 };
