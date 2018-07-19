@@ -39,8 +39,8 @@ public:
 	void issue_draw_call();
 
 private:
-	gl::VertexArray vao;
-	gl::Buffer vert_buffer, index_buffer;
+	gl::VertexArrayObject vao;
+	gl::BufferObject vert_buffer, index_buffer;
 	Resource<Texture> batch_texture;
 
 	gl::BufferStream<SpriteVertex> vertices;

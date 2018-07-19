@@ -13,7 +13,7 @@ public:
 	Object() {
 		ObjTrait::create(&handle);
 	}
-	Object(const Object<ObjTrait>& obj) = delete;
+	Object(const Object<ObjTrait>&) = delete;
 	Object(Object<ObjTrait>&& obj) {
 		*this = std::move(obj);
 	}
@@ -21,12 +21,12 @@ public:
 		ObjTrait::destroy(&handle);
 	}
 
-	auto& operator=(Object<ObjTrait>&& obj) {
+	Object& operator=(Object<ObjTrait>&& obj) {
 		handle = obj.handle;
 		obj.handle = 0;
 		return *this;
 	}
-	auto& operator=(const Object<ObjTrait>& obj) = delete;
+	auto& operator=(const Object<ObjTrait>&) = delete;
 
 	operator GLuint() const { return handle; }
 

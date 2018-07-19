@@ -80,6 +80,7 @@ static void setup_fbo(GLuint& fbo, GLuint& tex, vec2<uint> size) {
 */
 
 Context create_context() {
+	DEBUG_LOG("Creating an OpenGL context...");
 	glfwInit();
 	glfwSetErrorCallback([](int error, const char* description) {
 			ERROR_LOG("GLFW error #{}: {}", error, description);
@@ -96,23 +97,24 @@ Context create_context() {
 		glfwTerminate();
 		std::abort();
 	}
+	DEBUG_LOG("Finished creating OpenGL context");
 	return window;
 }
 
 void init(Context context) {
+	DEBUG_LOG("Initializing main rendering pipeline");
 	glfwMakeContextCurrent(context);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		FATAL_LOG("Failed to load OpenGL function pointers");
 		std::abort();
 	}
 	glViewport(0, 0, 800, 600);
+	DEBUG_LOG("Finished initializing rendering pipeline");
 }
 
 void shutdown() {
+	DEBUG_LOG("Shutting down rendering pipeline");
 	glfwTerminate();
-}
-
-void clear_screen() {
-	glClear(GL_COLOR_BUFFER_BIT);
+	DEBUG_LOG("Finished shutting down rendering pipeline");
 }
 } // namespace render

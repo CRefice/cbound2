@@ -20,8 +20,8 @@ struct VertexArrayTrait {
   static inline void destroy(const GLuint* handle) { glDeleteVertexArrays(1, handle); }
 };
 
-using Buffer = Object<BufferTrait>;
-using FrameBuffer = Object<FrameBufferTrait>;
-using Texture = Object<TextureTrait>;
-using VertexArray = Object<VertexArrayTrait>;
+using BufferObject = Object<BufferTrait>;
+using FrameBufferObject = Object<FrameBufferTrait>;
+using TextureObject = Object<TextureTrait>;
+using VertexArrayObject = Object<VertexArrayTrait>;
 } // namespace gl

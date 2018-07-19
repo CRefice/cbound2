@@ -17,13 +17,17 @@ public:
 	// this isn't a struct. Textures can't change size,
 	// and the data is provided to them through an array
 	// of RGBA values (in bytes) that is then pushed to the GPU.
-	Texture(ssm::ivec2 size, const uint8_t* data);
+	Texture(ssm::ivec2 size, const uint8_t* data) : sz(size) {
+		upload_data(data, GL_RGBA);
+	}
 
 	auto size() const { return sz; }
 	auto& handle() { return handl; }
 	const auto& handle() const { return handl; }
 
 private:
-	gl::Texture handl;
+	void upload_data(const uint8_t* data, GLenum format);
+
+	gl::TextureObject handl;
 	ssm::ivec2 sz;
 };

@@ -2,7 +2,9 @@ set(SRCS
 	common/paths.cpp
 	render/render-common.cpp
 	render/sprite-batch.cpp
+	render/shader.cpp
 	render/texture.cpp
+	resource/load-shader.cpp
 	resource/load-texture.cpp
 )
 
@@ -24,5 +26,5 @@ set(LIBS
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(cbound-core ${SRCS})
-target_include_directories(cbound-core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cbound-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cbound-core PUBLIC ${LIBS})
