@@ -4,9 +4,10 @@
 
 #include "common/logging.hpp"
 
-// A non-const range over a mapped buffer.
+// A std::vector-like interface over a mapped buffer.
+namespace gl {
 template <typename T>
-class GlStreamBuffer
+class BufferStream
 {
 public:
 	using iterator = T*;
@@ -15,8 +16,8 @@ public:
 	// Initializes the buffer range with a reference to the target
 	// and a length. Note that this is not enough to actually use it!
 	// You need to map it first.
-	GlStreamBuffer(GLenum target, GLsizeiptr capacity) : target(target), sz(0), reserved(capacity) { }
-	~GlStreamBuffer() {
+	BufferStream(GLenum target, GLsizeiptr capacity) : target(target), reserved(capacity) {}
+	~BufferStream() {
 		unmap();
 	}
 
@@ -30,7 +31,7 @@ public:
 
 	// Maps the buffer to memory.
 	void map(GLbitfield access_flags) {
-		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, sz, access_flags));
+		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, sz * sizeof(T), access_flags));
 		if (buf == nullptr) {
 			ERROR_LOG("Failed to map buffer {}", target);
 		}
@@ -57,6 +58,7 @@ public:
 private:
 	GLenum target;
 	T* buf = nullptr;
-	GLsizeiptr sz;
+	GLsizeiptr sz = 0;
 	GLsizeiptr reserved;
 };
+}
