@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <iostream>
 
-#include "core/common/paths.hpp"
-#include "core/common/logging.hpp"
-#include "core/render/render-common.hpp"
+#include "common/paths.hpp"
+#include "common/logging.hpp"
+#include "render/render-common.hpp"
 
 #include <GLFW/glfw3.h>
 #include <fmt/core.h>
