@@ -19,6 +19,7 @@ set(LIBS
 	glad
 	glfw
 	ssm
+	sol2
 	stb-image
 	${OPENGL_gl_LIBRARY}
 )

@@ -6,9 +6,10 @@
 #include "load-shader.hpp"
 
 shader::Stage load_shader(const std::string& path) {
+	DEBUG_LOG("Loading shader: {}", path);
 	shader::Type type;
-	if (path.rfind(".f")) type = shader::Type::Fragment;
-	else if (path.rfind(".v")) type = shader::Type::Vertex;
+	if (path.rfind(".f") != std::string::npos) type = shader::Type::Fragment;
+	else type = shader::Type::Vertex;
 	
 	std::ifstream file(path, std::ios::ate);
 	if (!file.good()) {
@@ -17,10 +18,11 @@ shader::Stage load_shader(const std::string& path) {
 	}
 	auto length = file.tellg();
 	file.seekg(0, std::ios::beg);
-	char* source = new char[length];
+	auto source = new char[length];
 	file.read(source, length);
 
 	shader::Stage stage(type, std::string_view(source, length));
 	delete[] source;
+	DEBUG_LOG("Loaded shader: {}", path);
 	return stage;
 }

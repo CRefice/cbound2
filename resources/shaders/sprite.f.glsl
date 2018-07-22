@@ -2,7 +2,7 @@
 
 // FRAGMENT SHADER
 
-uniform sampler2DArray image;
+uniform sampler2D image;
 
 in vec2 tex_coord;
 out vec4 out_color;

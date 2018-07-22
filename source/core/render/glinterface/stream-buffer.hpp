@@ -31,20 +31,30 @@ public:
 
 	// Maps the buffer to memory.
 	void map(GLbitfield access_flags) {
-		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, sz * sizeof(T), access_flags));
+		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, reserved * sizeof(T), access_flags));
 		if (buf == nullptr) {
 			ERROR_LOG("Failed to map buffer {}", target);
+			GLenum err;
+			while ((err = glGetError()) != GL_NO_ERROR) {
+				ERROR_LOG("OpenGL error 0x{:x}", err);
+			}
 		}
 	}
 
 	// Unmaps the buffer from memory.
 	void unmap() {
-		glUnmapBuffer(target);
+		if (glUnmapBuffer(target) == GL_FALSE) {
+			ERROR_LOG("Failed to unmap buffer {}", target);
+			GLenum err;
+			while ((err = glGetError()) != GL_NO_ERROR) {
+				ERROR_LOG("OpenGL error 0x{:x}", err);
+			}
+		}
 		buf = nullptr;
 	}
 
-	void push_back(const T& val) {
-		buf[sz++] = val;
+	void push_back(T val) {
+		buf[sz++] = std::move(val);
 	}
 	template <typename... Args>
 	void emplace_back(Args&&... args) {

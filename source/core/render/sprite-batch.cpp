@@ -17,7 +17,7 @@ SpriteBatch::SpriteBatch(size_type batch_size) :
 	// Initialize the vertex and element buffer data
 	// For every sprite there are 4 verts and 6 indices.
 	glBufferData(GL_ARRAY_BUFFER, batch_size * 4 * sizeof(SpriteVertex), nullptr, GL_STREAM_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6 * sizeof(GLushort), nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6 * sizeof(size_type), nullptr, GL_STREAM_DRAW);
 	vertices.map(mapflags);
 	indices.map(mapflags);
 
@@ -67,10 +67,10 @@ void SpriteBatch::issue_draw_call() {
 	if (indices.size() == 0)
 		return;
 
+	glBindVertexArray(vao);
 	vertices.unmap();
 	indices.unmap();
 
-	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 
 	vertices.map(mapflags);
