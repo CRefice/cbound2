@@ -5,15 +5,17 @@
 
 #include "load-shader.hpp"
 
-shader::Stage load_shader(const std::string& path) {
-	DEBUG_LOG("Loading shader: {}", path);
+namespace fs = std::filesystem;
+
+shader::Stage load_shader(const fs::path& path) {
+	DEBUG_LOG("Loading shader: {}", path.string());
 	shader::Type type;
-	if (path.rfind(".f") != std::string::npos) type = shader::Type::Fragment;
+	if (path.string().rfind(".f") != std::string::npos) type = shader::Type::Fragment;
 	else type = shader::Type::Vertex;
 	
 	std::ifstream file(path, std::ios::ate);
 	if (!file.good()) {
-		FATAL_LOG("Unable to open file {}", path);
+		ERROR_LOG("Unable to open file {}", path.string());
 		std::abort();
 	}
 	auto length = file.tellg();
@@ -23,6 +25,6 @@ shader::Stage load_shader(const std::string& path) {
 
 	shader::Stage stage(type, std::string_view(source, length));
 	delete[] source;
-	DEBUG_LOG("Loaded shader: {}", path);
+	DEBUG_LOG("Loaded shader: {}", path.string());
 	return stage;
 }

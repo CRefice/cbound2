@@ -1,62 +1,75 @@
-#include <algorithm>
-#include <iostream>
+#include <cmath>
 
-#include <fmt/core.h>
 #include <ssm/transform.hpp>
 
-#include "common/logging.hpp"
-#include "common/paths.hpp"
-
+#include "render/post-process.hpp"
 #include "render/render-common.hpp"
 #include "render/sprite-batch.hpp"
 
 #include "resource/load-shader.hpp"
 #include "resource/load-texture.hpp"
+#include "resource/resource-cache.hpp"
 
 #include <GLFW/glfw3.h>
 
-int loc;
+constexpr int HEIGHT = 180;
+constexpr int WIDTH = 320;
 
 int main() {
 	auto window = render::create_context();
 	render::init(window);
-	glClearColor(0.2f, 0.3f, 0.7f, 1.0f);
+	glClearColor(0.3f, 0.2f, 0.4f, 1.0f);
 
-	shader::Program program(load_shader((path::install_dir() / "resources/shaders/sprite.f.glsl").string()),
-			load_shader((path::install_dir() / "resources/shaders/sprite.v.glsl").string()));
-	glUseProgram(program.handle());
-	loc = glGetUniformLocation(program.handle(), "view_projection");
-
-	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* wnd, int width, int height) {
-			glViewport(0,0,width,height);
-			ssm::mat4 proj = ssm::ortho<float>(width, height, 0, 100);
-			glUniformMatrix4fv(loc, 1, GL_FALSE, ssm::data_ptr(proj.data[0]));
-			});
-
+	ResourceCache<shader::Stage> shaders([](const auto& id) { return load_shader(to_path(id)); });
+	auto frag = shaders.load("shaders/sprite.f.glsl");
+	auto vert = shaders.load("shaders/sprite.v.glsl");
+	shader::Program program(*frag, *vert);
+	auto loc = glGetUniformLocation(program.handle(), "view_projection");
 
 	glActiveTexture(GL_TEXTURE0);
-	Texture tex = load_texture((path::install_dir() / "resources/textures/sprite.png").string());
+	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
 	Sprite sprt = {
-		Resource<Texture>("bla", &tex),
-		ssm::vec2(100, 100),
-		{ {0, 0xFFFF}, {0xFFFF, 0} }
+		textures.load("textures/sprite.png"),
+		ssm::vec2(40, 40),
+		{ {0, 0}, {0xFFFF, 0xFFFF} }
 	};
 
 	SpriteBatch batch(6);
 
+	auto ppvert = shaders.load("shaders/post.v.glsl");
+	auto ppfrag = shaders.load("shaders/post.f.glsl");
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	PostProcessStack post_process(ssm::ivec2(width, height));
+	post_process.emplace_pass(
+			Texture(ssm::ivec2(WIDTH, HEIGHT), nullptr),
+			shader::Program(*ppvert, *ppfrag));
+
+	double offset = 0;
 	while (!glfwWindowShouldClose(window)) {
-		glClear(GL_COLOR_BUFFER_BIT);
+		post_process.new_frame();
 
-		batch.draw(sprt, ssm::vec2(100, 100));
-		batch.draw(sprt, ssm::vec2(0, 100));
-		batch.draw(sprt, ssm::vec2(50, 50));
-		batch.draw(sprt, ssm::vec2(200, 100));
-		batch.draw(sprt, ssm::vec2(0, 50));
-		batch.draw(sprt, ssm::vec2(100, 0));
+		glUseProgram(program.handle());
+		auto proj = ssm::ortho<float>(WIDTH, HEIGHT, 0, 100);
+		glUniformMatrix4fv(loc, 1, GL_FALSE, ssm::data_ptr(proj));
+
+		batch.draw(sprt, ssm::vec2(10, 10));
+		batch.draw(sprt, ssm::vec2(0, 10));
+		batch.draw(sprt, ssm::vec2(5, 5));
+		batch.draw(sprt, ssm::vec2(20, 10));
+		batch.draw(sprt, ssm::vec2(0, 5));
+		batch.draw(sprt, ssm::vec2(10, 0));
 		batch.flush();
+		offset += 0.2;
 
+		post_process.draw_all();
 		glfwSwapBuffers(window);
+
 		glfwPollEvents();
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		post_process.set_screen_size({width, height});
 	}
 	render::shutdown();
 	return 0;

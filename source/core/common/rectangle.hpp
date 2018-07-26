@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdlib> // std::abs()
-#include <utility>
-
 #include <ssm/vector.hpp>
 
 // An immutable rectangle whose dimensions are stored as vectors of type T.
@@ -10,51 +7,56 @@ template <typename T>
 class Rectangle
 {
 public:
-	// TODO: swap axes, check for actual top left bottom right invariants
-	Rectangle(ssm::vector<T, 2> top_left, ssm::vector<T, 2> bottom_right)
-		: tl(std::move(top_left)), br(std::move(bottom_right)) {}
+	Rectangle(ssm::vector<T, 2> p1, ssm::vector<T, 2> p2) {
+		T left = p1.x < p2.x ? p1.x : p2.x;
+		T right = p1.x < p2.x ? p2.x : p1.x;
+		T bottom = p1.y < p2.y ? p1.y : p2.y;
+		T top = p1.y < p2.y ? p2.y : p1.y;
+		bl = ssm::vector<T, 2>(left, bottom);
+		tr = ssm::vector<T, 2>(right, top);
+	}
 
-	Rectangle(T left, T top, T right, T bottom)
-		: tl(left, top), br(right, bottom) {}
+	Rectangle(T left, T right, T top, T bottom)
+		: bl(left, bottom), tr(right, top) {}
 
 	auto pos() const {
-		return tl;
+		return bl;
 	}
 	auto size() const {
-		return br - tl;
-	}
-	auto top_left() const {
-		return tl;
-	}
-	auto top_right() const {
-		return ssm::vector<T, 2>(br.x, tl.y);
+		return tr - bl;
 	}
 	auto bottom_left() const {
-		return ssm::vector<T, 2>(tl.x, br.y);
+		return bl;
 	}
 	auto bottom_right() const {
-		return br;
+		return ssm::vector<T, 2>(tr.x, bl.y);
+	}
+	auto top_left() const {
+		return ssm::vector<T, 2>(bl.x, tr.y);
+	}
+	auto top_right() const {
+		return tr;
 	}
 
 	T width() const {
-		return std::abs(br.x - tl.x);
+		return tr.x - bl.x;
 	}
 	T height() const {
-		return std::abs(br.y - tl.y);
+		return tr.y - bl.y;
 	}
 	T left() const {
-		return tl.x;
+		return bl.x;
 	}
 	T right() const {
-		return br.x;
-	}
-	T top() const {
-		return tl.y;
+		return tr.x;
 	}
 	T bottom() const {
-		return br.y;
+		return bl.y;
+	}
+	T top() const {
+		return tr.y;
 	}
 
 private:
-	ssm::vector<T, 2> tl, br;
+	ssm::vector<T, 2> bl, tr;
 };

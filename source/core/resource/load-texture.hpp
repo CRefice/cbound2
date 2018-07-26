@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
+#include <filesystem>
 
 #include "render/texture.hpp"
 
-Texture load_texture(const std::string& id);
+Texture load_texture(const std::filesystem::path& path);

@@ -1,15 +1,15 @@
 #pragma once
 
-#include <utility>
-#include <string>
+#include "common/paths.hpp"
 
-template <typename ResT>
+#include <string>
+#include <utility>
+
+template <typename ResT, typename IdT = std::string>
 class Resource
 {
 public:
-	using Identifier = std::string;
-
-	Resource(Identifier id, ResT* resource) : id(std::move(id)), resource(resource) {}
+	Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
 
 	friend bool operator==(const Resource& lhs, const Resource& rhs) {
 		return lhs.id == rhs.id;
@@ -22,10 +22,17 @@ public:
 		return *resource;
 	}
 	ResT* operator->() {
-		return *resource;
+		return resource;
 	}
 
+	auto identifier() const { return id; }
+
 private:
-	Identifier id;
+	IdT id;
 	ResT* resource;
 };
+
+template <typename KeyT>
+std::filesystem::path to_path(const KeyT& id) {
+	return path::install_dir() / "resources" / id;
+}

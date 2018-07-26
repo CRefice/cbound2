@@ -8,10 +8,18 @@ set(LIBS
 	${OPENGL_gl_LIBRARY}
 )
 
-set(CMAKE_CXX_STANDARD 17)
+if(MSVC)
+  # Force to always compile with W4
+	string(APPEND OPTS "/W4")
+else()
+  # Update if necessary
+	string(APPEND OPTS "-Wall;-pedantic")
+endif()
 
 add_executable(cbound-game "${SRCS}")
 target_link_libraries(cbound-game "${LIBS}")
+target_compile_options(cbound-game PRIVATE "${OPTS}")
+target_compile_features(cbound-game PRIVATE cxx_std_17)
 
 # Add a custom copy-resources command
 set(RESOURCE_INPUT_DIR "${PROJECT_SOURCE_DIR}/resources")

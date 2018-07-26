@@ -1,8 +1,10 @@
 set(SRCS
 	common/paths.cpp
+	render/framebuffer.cpp
+	render/post-process.cpp
 	render/render-common.cpp
-	render/sprite-batch.cpp
 	render/shader.cpp
+	render/sprite-batch.cpp
 	render/texture.cpp
 	resource/load-shader.cpp
 	resource/load-texture.cpp

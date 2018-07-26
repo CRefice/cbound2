@@ -7,7 +7,7 @@ static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 	| GL_MAP_INVALIDATE_RANGE_BIT;
 
 SpriteBatch::SpriteBatch(size_type batch_size) :
-	batch_texture("", nullptr),
+	batch_texture(nullptr, ""),
 	vertices(GL_ARRAY_BUFFER, batch_size * 4),
 	indices(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6) {
 	glBindVertexArray(vao);
@@ -68,9 +68,11 @@ void SpriteBatch::issue_draw_call() {
 		return;
 
 	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vert_buffer);
 	vertices.unmap();
 	indices.unmap();
 
+	glBindTexture(GL_TEXTURE_2D, batch_texture->handle());
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 
 	vertices.map(mapflags);

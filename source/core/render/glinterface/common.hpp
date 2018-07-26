@@ -7,10 +7,6 @@ struct BufferTrait {
   static inline void create(GLuint* handle) { glGenBuffers(1, handle); }
   static inline void destroy(const GLuint* handle) { glDeleteBuffers(1, handle); }
 };
-struct FrameBufferTrait {
-  static inline void create(GLuint* handle) { glGenFramebuffers(1, handle); }
-  static inline void destroy(const GLuint* handle) { glDeleteFramebuffers(1, handle); }
-};
 struct TextureTrait {
   static inline void create(GLuint* handle) { glGenTextures(1, handle); }
   static inline void destroy(const GLuint* handle) { glDeleteTextures(1, handle); }
@@ -21,7 +17,6 @@ struct VertexArrayTrait {
 };
 
 using BufferObject = Object<BufferTrait>;
-using FrameBufferObject = Object<FrameBufferTrait>;
 using TextureObject = Object<TextureTrait>;
 using VertexArrayObject = Object<VertexArrayTrait>;
 } // namespace gl

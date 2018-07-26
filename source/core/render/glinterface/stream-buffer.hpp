@@ -2,8 +2,6 @@
 
 #include <glad/glad.h>
 
-#include "common/logging.hpp"
-
 // A std::vector-like interface over a mapped buffer.
 namespace gl {
 template <typename T>
@@ -32,24 +30,11 @@ public:
 	// Maps the buffer to memory.
 	void map(GLbitfield access_flags) {
 		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, reserved * sizeof(T), access_flags));
-		if (buf == nullptr) {
-			ERROR_LOG("Failed to map buffer {}", target);
-			GLenum err;
-			while ((err = glGetError()) != GL_NO_ERROR) {
-				ERROR_LOG("OpenGL error 0x{:x}", err);
-			}
-		}
 	}
 
 	// Unmaps the buffer from memory.
 	void unmap() {
-		if (glUnmapBuffer(target) == GL_FALSE) {
-			ERROR_LOG("Failed to unmap buffer {}", target);
-			GLenum err;
-			while ((err = glGetError()) != GL_NO_ERROR) {
-				ERROR_LOG("OpenGL error 0x{:x}", err);
-			}
-		}
+		glUnmapBuffer(target);
 		buf = nullptr;
 	}
 
