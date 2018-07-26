@@ -5,7 +5,7 @@
 
 #include "common/logging.hpp"
 
-#include "load-texture.hpp"
+#include "resource/load-texture.hpp"
 
 namespace fs = std::filesystem;
 

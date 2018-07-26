@@ -1,6 +1,6 @@
 #include "common/rectangle.hpp"
 
-#include "post-process.hpp"
+#include "render/post-process.hpp"
 
 // Initialize the screen vao and vbo.
 PostProcessStack::PostProcessStack(ssm::ivec2 scrsz) : screen_size(scrsz) {

@@ -2,6 +2,6 @@
 
 #include <filesystem>
 
-#include "render/shader.hpp"
+#include "../render/shader.hpp"
 
 shader::Stage load_shader(const std::filesystem::path& file);

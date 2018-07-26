@@ -3,7 +3,7 @@
 
 #include "common/logging.hpp"
 
-#include "load-shader.hpp"
+#include "resource/load-shader.hpp"
 
 namespace fs = std::filesystem;
 

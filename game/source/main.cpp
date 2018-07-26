@@ -2,13 +2,13 @@
 
 #include <ssm/transform.hpp>
 
-#include "render/post-process.hpp"
-#include "render/render-common.hpp"
-#include "render/sprite-batch.hpp"
+#include "core/render/post-process.hpp"
+#include "core/render/render-common.hpp"
+#include "core/render/sprite-batch.hpp"
 
-#include "resource/load-shader.hpp"
-#include "resource/load-texture.hpp"
-#include "resource/resource-cache.hpp"
+#include "core/resource/load-shader.hpp"
+#include "core/resource/load-texture.hpp"
+#include "core/resource/resource-cache.hpp"
 
 #include <GLFW/glfw3.h>
 

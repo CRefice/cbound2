@@ -1,0 +1,34 @@
+set(SRCS
+	source/common/paths.cpp
+	source/render/framebuffer.cpp
+	source/render/post-process.cpp
+	source/render/render-common.cpp
+	source/render/shader.cpp
+	source/render/sprite-batch.cpp
+	source/render/texture.cpp
+	source/resource/load-shader.cpp
+	source/resource/load-texture.cpp
+)
+
+# Choose OpenGL vendor implementation by default
+if(POLICY CMP0072)
+  cmake_policy(SET CMP0072 NEW)
+endif()
+find_package(OpenGL REQUIRED)
+
+set(LIBS
+	fmt
+	glad
+	glfw
+	ssm
+	sol2
+	stb-image
+	${OPENGL_gl_LIBRARY}
+)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_library(cbound-core ${SRCS})
+target_include_directories(cbound-core PUBLIC include)
+target_include_directories(cbound-core PRIVATE include/core)
+target_link_libraries(cbound-core PUBLIC ${LIBS})

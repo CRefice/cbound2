@@ -1,6 +1,6 @@
 #include "common/rectangle.hpp"
 
-#include "sprite-batch.hpp"
+#include "render/sprite-batch.hpp"
 
 static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 	| GL_MAP_INVALIDATE_BUFFER_BIT

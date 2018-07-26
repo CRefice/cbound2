@@ -1,4 +1,4 @@
-#include "texture.hpp"
+#include "render/texture.hpp"
 
 void Texture::upload_data(const uint8_t* data, GLenum format) {
 	glBindTexture(GL_TEXTURE_2D, handl);

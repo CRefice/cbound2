@@ -2,7 +2,7 @@
 
 #include "common/logging.hpp"
 
-#include "shader.hpp"
+#include "render/shader.hpp"
 
 namespace shader {
 void Stage::compile(std::string_view source) {

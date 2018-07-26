@@ -1,5 +1,5 @@
 set(SRCS
-	main.cpp
+	source/main.cpp
 )
 
 set(LIBS
@@ -22,7 +22,7 @@ target_compile_options(cbound-game PRIVATE "${OPTS}")
 target_compile_features(cbound-game PRIVATE cxx_std_17)
 
 # Add a custom copy-resources command
-set(RESOURCE_INPUT_DIR "${PROJECT_SOURCE_DIR}/resources")
+set(RESOURCE_INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(RESOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
 add_custom_command(

@@ -1,4 +1,4 @@
-#include "paths.hpp"
+#include "common/paths.hpp"
 
 #ifdef _WIN32
 #	include <Windows.h>

@@ -6,7 +6,7 @@
 
 #include "common/logging.hpp"
 
-#include "render-common.hpp"
+#include "render/render-common.hpp"
 
 namespace render
 {

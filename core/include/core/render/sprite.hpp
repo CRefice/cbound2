@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 #include "common/rectangle.hpp"
-#include "resource/resource.hpp"
+#include "../resource/resource.hpp"
 #include "texture.hpp"
 
 // How the four corners of a sprite's rectangle
