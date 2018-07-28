@@ -1,4 +1,5 @@
 set(SRCS
+	source/framework/sprite.cpp
 	source/main.cpp
 )
 
@@ -17,7 +18,8 @@ else()
 endif()
 
 add_executable(cbound-game "${SRCS}")
-target_link_libraries(cbound-game "${LIBS}")
+target_include_directories(cbound-game PRIVATE source/)
+target_link_libraries(cbound-game PRIVATE "${LIBS}")
 target_compile_options(cbound-game PRIVATE "${OPTS}")
 target_compile_features(cbound-game PRIVATE cxx_std_17)
 

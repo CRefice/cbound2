@@ -9,8 +9,13 @@
 #include "core/resource/load-shader.hpp"
 #include "core/resource/load-texture.hpp"
 #include "core/resource/resource-cache.hpp"
+#include "core/script/common.hpp"
 
 #include <GLFW/glfw3.h>
+
+#include "common/logging.hpp"
+
+#include "framework/sprite.hpp"
 
 constexpr int HEIGHT = 180;
 constexpr int WIDTH = 320;
@@ -18,23 +23,23 @@ constexpr int WIDTH = 320;
 int main() {
 	auto window = render::create_context();
 	render::init(window);
-	glClearColor(0.3f, 0.2f, 0.4f, 1.0f);
 
 	ResourceCache<shader::Stage> shaders([](const auto& id) { return load_shader(to_path(id)); });
+	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
+
+	auto lua = script::new_environment();
+	lua.script_file(path::install_dir() / "resources/scripts/sprite.lua");
+	auto maybe_sprite = framework::parse_sprite(lua["Sprite"]);
+	if (!maybe_sprite) {
+		ERROR_LOG("Unable to parse sprite");
+		std::abort();
+	}
+	auto sprt = framework::to_sprite(*maybe_sprite, [&](const auto& id) { return textures.load(id); });
+
 	auto frag = shaders.load("shaders/sprite.f.glsl");
 	auto vert = shaders.load("shaders/sprite.v.glsl");
 	shader::Program program(*frag, *vert);
 	auto loc = glGetUniformLocation(program.handle(), "view_projection");
-
-	glActiveTexture(GL_TEXTURE0);
-	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
-	Sprite sprt = {
-		textures.load("textures/sprite.png"),
-		ssm::vec2(40, 40),
-		{ {0, 0}, {0xFFFF, 0xFFFF} }
-	};
-
-	SpriteBatch batch(6);
 
 	auto ppvert = shaders.load("shaders/post.v.glsl");
 	auto ppfrag = shaders.load("shaders/post.f.glsl");
@@ -46,6 +51,7 @@ int main() {
 			Texture(ssm::ivec2(WIDTH, HEIGHT), nullptr),
 			shader::Program(*ppvert, *ppfrag));
 
+	SpriteBatch batch(6);
 	double offset = 0;
 	while (!glfwWindowShouldClose(window)) {
 		post_process.new_frame();

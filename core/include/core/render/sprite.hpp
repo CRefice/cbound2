@@ -6,21 +6,16 @@
 #include "../resource/resource.hpp"
 #include "texture.hpp"
 
-// How the four corners of a sprite's rectangle
-// are represented in memory.
-struct SpriteVertex
-{
-	ssm::vec2 pos;
-	ssm::vector<GLushort, 2> uv;
-};
-
 // A "view" into a texture,
 // with its own size and a rectangle
 // of texture coordinates defining a "window" into it.
 // Doesn't own the texture, but holds a resource to it.
+// Originally, frame was in normalized texture coordinates.
+// However, it was a pain in the ass to manually convert every time.
+// Therefore, the conversion will be made by the sprite batch.
 struct Sprite
 {
 	Resource<Texture> texture;
 	ssm::vec2 size;
-	Rectangle<GLushort> tex_coords;
+	Rectangle<int> frame;
 };

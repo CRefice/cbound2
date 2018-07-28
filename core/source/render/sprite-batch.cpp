@@ -1,6 +1,21 @@
+#include <limits>
+
 #include "common/rectangle.hpp"
 
 #include "render/sprite-batch.hpp"
+
+// Convert frame bounds from pixel coordinates to normalized uv coordinates.
+// Since this depends on the texture resource held by the sprite,
+// we take the entire sprite as a parameter.
+static Rectangle<GLushort> texture_space_texcoords(const Sprite& sprite) {
+	const auto& frame = sprite.frame;
+	const auto size = sprite.texture->size();
+	const auto left = frame.left() * std::numeric_limits<GLushort>::max() / size.x;
+	const auto right = frame.right() * std::numeric_limits<GLushort>::max() / size.x;
+	const auto top = frame.top() * std::numeric_limits<GLushort>::max() / size.y;
+	const auto bottom = frame.bottom() * std::numeric_limits<GLushort>::max() / size.y;
+	return Rectangle<GLushort>(left, right, top, bottom);
+}
 
 static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 	| GL_MAP_INVALIDATE_BUFFER_BIT
@@ -43,11 +58,12 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos) {
 
 	// Winding order: counterclockwise faces front-wards
 	const Rectangle<float> bounds(pos, pos + sprite.size);
+	const auto tex_coords = texture_space_texcoords(sprite);
 	const size_type base_index = vertices.size();
-	vertices.emplace_back(bounds.top_left(), sprite.tex_coords.top_left());
-	vertices.emplace_back(bounds.bottom_left(), sprite.tex_coords.bottom_left());
-	vertices.emplace_back(bounds.bottom_right(), sprite.tex_coords.bottom_right());
-	vertices.emplace_back(bounds.top_right(), sprite.tex_coords.top_right());
+	vertices.emplace_back(bounds.top_left(), tex_coords.top_left());
+	vertices.emplace_back(bounds.bottom_left(), tex_coords.bottom_left());
+	vertices.emplace_back(bounds.bottom_right(),tex_coords.bottom_right());
+	vertices.emplace_back(bounds.top_right(), tex_coords.top_right());
 
 	indices.emplace_back(base_index);
 	indices.emplace_back(base_index + 1);

@@ -8,6 +8,7 @@ set(SRCS
 	source/render/texture.cpp
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp
+	source/script/common.cpp
 )
 
 # Choose OpenGL vendor implementation by default

@@ -2,4 +2,6 @@
 
 #include <sol.hpp>
 
-sol::state
+namespace framework {
+
+} // namespace framework

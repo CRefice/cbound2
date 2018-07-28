@@ -25,6 +25,13 @@ public:
 		return resource;
 	}
 
+	const ResT& operator*() const {
+		return *resource;
+	}
+	const ResT* operator->() const {
+		return resource;
+	}
+
 	auto identifier() const { return id; }
 
 private:

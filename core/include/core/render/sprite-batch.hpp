@@ -8,6 +8,15 @@
 
 #include "sprite.hpp"
 
+// How the four corners of a sprite's rectangle
+// are represented in memory.
+// Note that the uvs are in normalized tex coords.
+struct SpriteVertex
+{
+	ssm::vec2 pos;
+	ssm::vector<GLushort, 2> uv;
+};
+
 // A batch of drawing commands, uploaded to the GPU
 // all at once.
 class SpriteBatch
