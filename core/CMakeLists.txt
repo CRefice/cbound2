@@ -1,4 +1,5 @@
 set(SRCS
+	source/anim/sequencer.cpp
 	source/common/paths.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp

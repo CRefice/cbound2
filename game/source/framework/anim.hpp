@@ -1,19 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include <optional>
 
-#include "common/rectangle.hpp"
+#include <sol.hpp>
 
-struct Anim
-{
-	double frame_time_ms;
-	std::vector<Rectangle<int>> frames;
-};
+#include "core/anim/sequence.hpp"
 
-struct AnimComponent
-{
-
-	std::unordered_map<std::string, Anim>
-};
+namespace framework {
+std::optional<anim::Sequence> parse_sequence(const sol::table& table);
+}
