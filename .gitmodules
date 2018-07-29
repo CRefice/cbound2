@@ -4,12 +4,12 @@
 [submodule "externals/glfw"]
 	path = externals/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "externals/sol2"]
-	path = externals/sol2
-	url = https://github.com/ThePhD/sol2.git
 [submodule "externals/glad"]
 	path = externals/glad
 	url = https://github.com/Dav1dde/glad
 [submodule "externals/ssm"]
 	path = externals/ssm
 	url = https://github.com/CRefice/ssm
+[submodule "externals/sol2"]
+	path = externals/sol2
+	url = https://github.com/ThePhD/sol2.git

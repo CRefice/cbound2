@@ -1,6 +1,9 @@
 #pragma once
-#include <fmt/format.h>
+#include <fmt/core.h>
 #include <fmt/time.h>
+// Since fmt defines the "fmt" macro, which fucks up other stuff,
+// we undefine it. YAGNI, anyways.
+#undef fmt
 
 #include <fstream>
 #include <memory>
