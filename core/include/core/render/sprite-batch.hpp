@@ -6,16 +6,10 @@
 #include "glinterface/common.hpp"
 #include "glinterface/stream-buffer.hpp"
 
-#include "sprite.hpp"
+#include "core/resource/resource-cache.hpp"
 
-// How the four corners of a sprite's rectangle
-// are represented in memory.
-// Note that the uvs are in normalized tex coords.
-struct SpriteVertex
-{
-	ssm::vec2 pos;
-	ssm::vector<GLushort, 2> uv;
-};
+#include "texture.hpp"
+#include "sprite.hpp"
 
 // A batch of drawing commands, uploaded to the GPU
 // all at once.
@@ -29,7 +23,8 @@ public:
 	// The size should be less than or equal to 
 	// std::numeric_limits<size_type>::max() / 6,
 	// since 6 indices are required to draw one sprite.
-	SpriteBatch(size_type batch_size);
+	// @param resources: the resource cache to load textures from.
+	SpriteBatch(size_type batch_size, ResourceCache<Texture>& resources);
 
 	// Add the sprite to the batch.
 	// If the sprite's texture is different than the one
@@ -48,10 +43,20 @@ public:
 	void issue_draw_call();
 
 private:
+	// How the four corners of a sprite's rectangle
+	// are represented in memory.
+	// Note that the uvs are in normalized tex coords.
+	struct SpriteVertex
+	{
+		ssm::vec2 pos;
+		ssm::vector<GLushort, 2> uv;
+	};
+
 	gl::VertexArrayObject vao;
 	gl::BufferObject vert_buffer, index_buffer;
-	Resource<Texture> batch_texture;
-
 	gl::BufferStream<SpriteVertex> vertices;
 	gl::BufferStream<size_type> indices;
+
+	ResourceCache<Texture>& resources;
+	Resource<Texture> batch_texture;
 };

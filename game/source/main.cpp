@@ -25,17 +25,6 @@ int main() {
 	render::init(window);
 
 	ResourceCache<shader::Stage> shaders([](const auto& id) { return load_shader(to_path(id)); });
-	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
-
-	auto lua = script::new_environment();
-	lua.script_file(path::install_dir() / "resources/scripts/sprite.lua");
-	auto maybe_sprite = framework::parse_sprite(lua["Sprite"]);
-	if (!maybe_sprite) {
-		ERROR_LOG("Unable to parse sprite");
-		std::abort();
-	}
-	auto sprt = framework::to_sprite(*maybe_sprite, [&](const auto& id) { return textures.load(id); });
-
 	auto frag = shaders.load("shaders/sprite.f.glsl");
 	auto vert = shaders.load("shaders/sprite.v.glsl");
 	shader::Program program(*frag, *vert);
@@ -51,7 +40,17 @@ int main() {
 			Texture(ssm::ivec2(WIDTH, HEIGHT), nullptr),
 			shader::Program(*ppvert, *ppfrag));
 
-	SpriteBatch batch(6);
+	auto lua = script::new_environment();
+	lua.script_file(path::install_dir() / "resources/scripts/sprite.lua");
+	auto maybe_sprite = framework::parse_sprite(lua["Sprite"]);
+	if (!maybe_sprite) {
+		ERROR_LOG("Unable to parse sprite");
+		std::abort();
+	}
+	auto sprt = *maybe_sprite;
+
+	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
+	SpriteBatch batch(6, textures);
 	double offset = 0;
 	while (!glfwWindowShouldClose(window)) {
 		post_process.new_frame();

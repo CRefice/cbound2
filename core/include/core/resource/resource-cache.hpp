@@ -20,7 +20,7 @@ public:
 
 	// Add the resource to the cache if it doesn't exist,
 	// and return it.
-	Resource<ResT, KeyT> load(KeyT key) {
+	Resource<ResT, KeyT> load(const KeyT& key) {
 		auto [iter, success] = map.try_emplace(key, load_func(key));
 		return Resource(&(iter->second), key);
 	}

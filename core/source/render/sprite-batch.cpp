@@ -5,15 +5,13 @@
 #include "render/sprite-batch.hpp"
 
 // Convert frame bounds from pixel coordinates to normalized uv coordinates.
-// Since this depends on the texture resource held by the sprite,
-// we take the entire sprite as a parameter.
-static Rectangle<GLushort> texture_space_texcoords(const Sprite& sprite) {
-	const auto& frame = sprite.frame;
-	const auto size = sprite.texture->size();
-	const auto left = frame.left() * std::numeric_limits<GLushort>::max() / size.x;
-	const auto right = frame.right() * std::numeric_limits<GLushort>::max() / size.x;
-	const auto top = frame.top() * std::numeric_limits<GLushort>::max() / size.y;
-	const auto bottom = frame.bottom() * std::numeric_limits<GLushort>::max() / size.y;
+// @param frame: The frame bound to convert, in pixel coordinates.
+// @param size: The size of the texture this frame is laid on.
+static inline Rectangle<GLushort> texture_space_texcoords(const Rectangle<int> frame, const ssm::ivec2 size) {
+	const GLushort left = frame.left() * std::numeric_limits<GLushort>::max() / size.x;
+	const GLushort right = frame.right() * std::numeric_limits<GLushort>::max() / size.x;
+	const GLushort top = frame.top() * std::numeric_limits<GLushort>::max() / size.y;
+	const GLushort bottom = frame.bottom() * std::numeric_limits<GLushort>::max() / size.y;
 	return Rectangle<GLushort>(left, right, top, bottom);
 }
 
@@ -21,10 +19,12 @@ static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 	| GL_MAP_INVALIDATE_BUFFER_BIT
 	| GL_MAP_INVALIDATE_RANGE_BIT;
 
-SpriteBatch::SpriteBatch(size_type batch_size) :
+SpriteBatch::SpriteBatch(size_type batch_size, ResourceCache<Texture>& resources) :
+	resources(resources),
 	batch_texture(nullptr, ""),
 	vertices(GL_ARRAY_BUFFER, batch_size * 4),
-	indices(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6) {
+	indices(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6)
+{
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vert_buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
@@ -51,14 +51,14 @@ SpriteBatch::SpriteBatch(size_type batch_size) :
 }
 
 void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos) {
-	if (sprite.texture != batch_texture) {
+	if (batch_texture.identifier() != sprite.texture_id) {
 		flush();
-		batch_texture = sprite.texture;
+		batch_texture = resources.load(sprite.texture_id);
 	}
 
 	// Winding order: counterclockwise faces front-wards
 	const Rectangle<float> bounds(pos, pos + sprite.size);
-	const auto tex_coords = texture_space_texcoords(sprite);
+	const auto tex_coords = texture_space_texcoords(sprite.frame, batch_texture->size());
 	const size_type base_index = vertices.size();
 	vertices.emplace_back(bounds.top_left(), tex_coords.top_left());
 	vertices.emplace_back(bounds.bottom_left(), tex_coords.bottom_left());

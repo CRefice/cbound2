@@ -5,7 +5,7 @@
 #include "sprite.hpp"
 
 namespace framework {
-std::optional<SpriteComponent> parse_sprite(const sol::table& table) {
+std::optional<Sprite> parse_sprite(const sol::table& table) {
 	if (table == sol::nil)
 		return {};
 	auto image_id = table.get<sol::optional<std::string>>("image");
@@ -15,6 +15,6 @@ std::optional<SpriteComponent> parse_sprite(const sol::table& table) {
 		WARN_LOG("Invalid sprite data format");
 		return {};
 	}
-	return SpriteComponent{ *image_id, *size, *frame };
+	return Sprite{ *image_id, *size, *frame };
 }
 } // namespace framework

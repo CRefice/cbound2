@@ -11,13 +11,6 @@ class Resource
 public:
 	Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
 
-	friend bool operator==(const Resource& lhs, const Resource& rhs) {
-		return lhs.id == rhs.id;
-	}
-	friend bool operator!=(const Resource& lhs, const Resource& rhs) {
-		return !(lhs == rhs);
-	}
-
 	ResT& operator*() {
 		return *resource;
 	}
