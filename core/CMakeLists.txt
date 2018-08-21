@@ -6,7 +6,9 @@ set(SRCS
 	source/render/render-common.cpp
 	source/render/shader.cpp
 	source/render/sprite-batch.cpp
+	source/render/text-batch.cpp
 	source/render/texture.cpp
+	source/resource/load-font.cpp
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp
 	source/script/common.cpp

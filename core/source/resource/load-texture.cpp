@@ -5,19 +5,20 @@
 
 #include "common/logging.hpp"
 
-#include "resource/load-texture.hpp"
+#include "resource/load-file.hpp"
 
 namespace fs = std::filesystem;
 
 Texture load_texture(const fs::path& path) {
-	DEBUG_LOG("Loading texture: {}", path.string());
-	int width, height, bpp;
-	uint8_t* data = stbi_load(path.c_str(), &width, &height, &bpp, 0);
+	SCOPE_LOG("Loading texture: {}", path.string());
+	int width, height, channels;
+	uint8_t* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 	if (data == nullptr) {
 		ERROR_LOG("Unable to load texture {}", path.string());
 	}
-	Texture tex(ssm::ivec2(width, height), data);
+	static const GLenum formats[] = { 0, GL_RED, GL_RG, GL_RGB, GL_RGBA };
+	TextureData tex_data = { data, formats[channels] };
+	Texture tex(ssm::ivec2(width, height), tex_data);
 	free(data);
-	DEBUG_LOG("Loaded texture: {}", path.string());
 	return tex;
 }

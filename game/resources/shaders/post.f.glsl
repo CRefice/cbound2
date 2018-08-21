@@ -25,5 +25,5 @@ void main() {
 		color += texture(screen_tex, texcoord + dx * offsets[i].x + dy * offsets[i].y);
 	}
 	color /= 8;
-	out_color = color;
+	out_color = texture(screen_tex, texcoord);//color;
 }

@@ -36,6 +36,8 @@ public:
 	void draw(const Sprite& sprite, const ssm::vec2& pos);
 
 	// Issue a draw call, and clear all vertex and index buffers.
+	// Note that this will bind no shaders, so make sure to bind them
+	// ad-hoc every time you call this function.
 	void flush();
 
 	// Issue a draw call, but keep vertices in memory.

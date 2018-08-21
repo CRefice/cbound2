@@ -60,6 +60,26 @@ private:
   Sink &out;
 };
 
+// Writes debug messages to a log on construction and destruction.
+// Extremely useful for function debugging.
+template <typename Sink, typename... Args>
+class ScopedLogger
+{
+public:
+	ScopedLogger(Logger<Sink>& log, Args... args) : log(log),
+	title(fmt::format(args...)) {
+		log.log(LogLevel::Debug, "Entering: {}", title);
+	}
+
+	~ScopedLogger() {
+		log.log(LogLevel::Debug, "Exited: {}", title);
+	}
+
+private:
+	Logger<Sink>& log;
+	std::string title;
+};
+
 // Writes logs down to a file.
 class FileSink {
 public:
@@ -74,11 +94,12 @@ private:
 
 // The common log used by macros.
 // Wrapped in a function to avoid being created in release builds.
-inline auto shared_log() {
+inline auto& shared_log() {
   static FileSink sink(std::ofstream(LOG_FILE_PATH, std::ios::trunc));
   static Logger log(sink);
   return log;
 }
+
 } // namespace logging
 
 #ifndef NDEBUG
@@ -102,10 +123,16 @@ inline auto shared_log() {
   do {                                                                         \
     logging::shared_log().log(logging::Fatal, __VA_ARGS__);                    \
   } while (0)
+
+#define SCOPE_LOG(...) logging::ScopedLogger _scope_log_{logging::shared_log(), __VA_ARGS__}
+#define FN_LOG logging::ScopedLogger _fn_log_(logging::shared_log(), "function {}", __func__)
 #else
 #define DEBUG_LOG(...)
 #define INFO_LOG(...)
 #define WARN_LOG(...)
 #define ERROR_LOG(...)
 #define FATAL_LOG(...)
+
+#define SCOPE_LOG(...)
+#define FN_LOG
 #endif

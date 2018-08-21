@@ -6,14 +6,23 @@
 
 #include "anim.hpp"
 
-using namespace anim;
+namespace fw::anim {
+using namespace ::anim;
 
-namespace framework {
+void load_libraries(sol::state& state) {
+	// Sequence types
+	state.new_enum("play_mode",
+			"once", PlayMode::Once,
+			"loop", PlayMode::Loop,
+			"ping_pong", PlayMode::PingPong
+			);
+}
+
 std::vector<Frame> parse_frames(const sol::table& table) {
 	std::vector<Frame> frames;
 	frames.reserve(table.size());
-	for (std::size_t i = 0; i < table.size(); ++i) {
-		if (auto rect = script::parse_rect<int>(table[i])) {
+	for (const auto& [key, val] : table) {
+		if (auto rect = script::parse_rect<int>(val)) {
 			frames.emplace_back(*rect);
 		} else {
 			WARN_LOG("Animation frame data contains non-frame data");
@@ -22,17 +31,14 @@ std::vector<Frame> parse_frames(const sol::table& table) {
 	return frames;
 }
 
-// Animation format:
-// [ frame_time_ms = 1/60sec ]
-// [ mode = PlayOnce ]
+// Sequence format:
+// [ frame_time = 1/60sec ]
+// [ mode = Loop ]
 // { frames: Rectangle<int> }...
-std::optional<Sequence> parse_animation(const sol::table& table) {
-	// TODO: get mode, add it as an enum probably.
+std::optional<Sequence> parse_sequence(const sol::table& table) {
 	auto frames = parse_frames(table["frames"]);
-	if (frames.empty())
-		return {};
-
-	auto frame_time = table.get_or("frame_time", 1000.0 / 60);
-	return Sequence{std::move(frames), PlayMode::PlayOnce, frame_time };
+	auto mode = table.get_or("mode", PlayMode::Loop);
+	auto frame_time = table.get_or("frame_time", 1.0 / 60);
+	return Sequence{std::move(frames), mode, frame_time };
 }
-} // namespace framework
+} // namespace fw::anim

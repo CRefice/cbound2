@@ -8,8 +8,8 @@ namespace anim {
 // Changes behavior when reaching the end of the animation
 enum class PlayMode
 {
-	PlayOnce, // Remain on the last frame
-	Repeat, // Loop back to the beginning
+	Once, // Remain on the last frame
+	Loop, // Loop back to the beginning
 	PingPong // Play the animation back in reverse
 };
 
@@ -17,12 +17,15 @@ using Frame = Rectangle<int>;
 
 struct Sequence
 {
+	// The actual array of frames
 	std::vector<Frame> frames;
+	// What to do on animation end
 	PlayMode mode;
-	double frame_time_ms;
+	// The time between two frames, in seconds
+	double frame_time;
 };
 
 inline double duration(const Sequence& seq) {
-	return seq.frames.size() * seq.frame_time_ms;
+	return seq.frames.size() * seq.frame_time;
 }
 }

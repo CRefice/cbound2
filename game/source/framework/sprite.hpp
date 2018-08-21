@@ -6,6 +6,6 @@
 
 #include "core/render/sprite.hpp"
 
-namespace framework {
+namespace fw::render {
 std::optional<Sprite> parse_sprite(const sol::table& table);
-} // namespace framework
+} // namespace fw::render

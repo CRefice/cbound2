@@ -13,8 +13,7 @@ void Stage::compile(std::string_view source) {
 }
 
 void Program::link() {
-	DEBUG_LOG("Linking shader program");
+	SCOPE_LOG("Linking shader program");
 	glLinkProgram(handl);
-	DEBUG_LOG("Finished linking shader program");
 }
 }

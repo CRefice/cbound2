@@ -6,6 +6,15 @@
 
 #include "glinterface/common.hpp"
 
+// Additional options to load format data
+struct TextureData
+{
+	// Actual pointer to data
+	const uint8_t* data;
+	// The format the data has (number of channels)
+	GLenum format;
+};
+
 // A 2D Texture, whose data is stored in an
 // OpenGL texture object.
 // It's a pretty thin layer over it,
@@ -19,6 +28,10 @@ public:
 	// of RGBA values (in bytes) that is then pushed to the GPU.
 	Texture(ssm::ivec2 size, const uint8_t* data) : sz(size) {
 		upload_data(data, GL_RGBA);
+	}
+
+	Texture(ssm::ivec2 size, TextureData data) : sz(size) {
+		upload_data(data.data, data.format);
 	}
 
 	auto size() const { return sz; }

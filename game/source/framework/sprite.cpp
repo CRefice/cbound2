@@ -4,7 +4,7 @@
 
 #include "sprite.hpp"
 
-namespace framework {
+namespace fw::render {
 std::optional<Sprite> parse_sprite(const sol::table& table) {
 	if (table == sol::nil)
 		return {};
@@ -17,4 +17,4 @@ std::optional<Sprite> parse_sprite(const sol::table& table) {
 	}
 	return Sprite{ *image_id, *size, *frame };
 }
-} // namespace framework
+} // namespace fw::render
