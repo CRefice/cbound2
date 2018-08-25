@@ -1,6 +1,8 @@
 set(SRCS
 	source/anim/sequencer.cpp
+	source/anim/text-drawl.cpp
 	source/common/paths.cpp
+	source/common/color.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
 	source/render/render-common.cpp
@@ -12,6 +14,7 @@ set(SRCS
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp
 	source/script/common.cpp
+	source/text/control-codes.cpp
 )
 
 # Choose OpenGL vendor implementation by default

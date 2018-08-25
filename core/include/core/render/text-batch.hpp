@@ -3,13 +3,18 @@
 #include <string_view>
 #include <optional>
 
+#include "core/text/control-codes.hpp"
+
 #include "font.hpp"
+#include "shader.hpp"
 #include "sprite-batch.hpp"
 
 struct TextDrawParams
 {
-	// Where to start drawing the text.
-	ssm::vec2 baseline;
+	// The font to draw this text with.
+	Resource<Font> font;
+	// The base color to draw text with.
+	ssm::vec3 color = ssm::vec3(1, 1, 1);
 	// If not empty, the renderer will go to the next line
 	// if the text width exceeds this value,
 	// instead of overflowing off-screen.
@@ -27,24 +32,21 @@ public:
 	// @param font: the font to draw the text with.
 	// @param batch: a reference to the spritebatch to draw text to.
 	// @param params: drawing parameters.
-	TextBatch(Resource<Font> font,
-			SpriteBatch& batch, TextDrawParams params) :
-		font(font), batch(batch), params(std::move(params)),
-	cursor(params.baseline) {}
+	TextBatch(SpriteBatch& batch, TextDrawParams params) :
+		batch(batch), params(std::move(params)), color(params.color) {}
 
-	// Draws the given string into the provided SpriteBatch,
-	// using the provided TextParams.
-	void draw(std::string_view str);
+	// Draws the given string at position pos.
+	void draw(std::string_view str, const ssm::vec2& pos);
 
-	// Resets the cursor to baseline position,
-	// and flushes the underlying SpriteBatch.
-	void clear();
+	void set_color(ssm::vec3 clr) {
+		color = std::move(clr);
+	}
 
 private:
-	void newline();
+	void newline(ssm::vec2& cursor, const ssm::vec2& pos);
+	void control_code(const text::ControlCode& code);
 
-	Resource<Font> font;
 	SpriteBatch& batch;
 	TextDrawParams params;
-	ssm::vec2 cursor;
+	ssm::vec3 color;
 };

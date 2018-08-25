@@ -3,6 +3,7 @@
 #include <ssm/transform.hpp>
 
 #include "core/anim/sequencer.hpp"
+#include "core/anim/text-drawl.hpp"
 
 #include "core/render/post-process.hpp"
 #include "core/render/render-common.hpp"
@@ -67,9 +68,19 @@ int main() {
 	ResourceCache<Font> fonts([](const auto& id) { return load_font(to_path(id)); });
 	SpriteBatch text_spr(1000, textures);
 	auto font = fonts.load("fonts/font.fnt");
-	TextDrawParams params;
-	params.baseline = ssm::vec2(0, 50);
-	TextBatch text(font, text_spr, params);
+	TextDrawParams params{ font };
+	TextBatch text(text_spr, params);
+
+	auto str = R"(the quick brown fox
+jumps over the lazy dog
+hi. yeah, but;
+{wait}.{wait}.{wait}.{wait}
+like this: what! really?
+'char' "str" oh_man
+$(bash)[index] 1+1-1*2/2
+echo hi | val = 2 <kek> 2^3%4
+101&010)";
+	anim::TextDrawl text_anim(str);
 
 	double old_time = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
@@ -89,15 +100,9 @@ int main() {
 		batch.draw(sprt, ssm::vec2(-30, 0));
 		batch.flush();
 
-		text.draw(R"(the quick brown fox
-		jumps over the lazy dog
-		hi. yeah, but;
-		like this: what! really?
-		'char' "str" oh_man
-		$(bash)[index] 1+1-1*2/2
-		echo hi | val = 2 <kek> 2^3%4
-		101&010)");
-		text.clear();
+		text_anim.progress(dt);
+		text.draw(text_anim.current_slice(), ssm::vec2(0, 50));
+		text_spr.flush();
 
 		post_process.draw_all();
 		glfwSwapBuffers(window);
