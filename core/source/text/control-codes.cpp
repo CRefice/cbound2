@@ -1,4 +1,4 @@
-#include "text/control-codes.hpp"
+#include "text/control-code.hpp"
 
 namespace text {
 std::optional<ControlCode> parse_ctrl_code(std::string_view text, std::string_view::size_type* index) {
