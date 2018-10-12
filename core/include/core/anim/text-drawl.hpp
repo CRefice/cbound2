@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "core/render/text-batch.hpp"
+#include "core/text/control-code.hpp"
 
 namespace anim {
 class TextDrawl
@@ -16,18 +17,20 @@ public:
 	auto current_slice() const {
 		return std::string_view(txt.c_str(), len);
 	}
+
 	bool done() const {
 		return len == txt.length();
 	}
 
 	void progress(double dt);
+
 	void skip() {
 		len = txt.length();
 	}
 
 private:
 	void next_char();
-	std::optional<double> parse_wait();
+	void handle_ctrl_code(const text::ControlCode& code);
 
 	std::string txt;
 	std::string::size_type len;

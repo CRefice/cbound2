@@ -1,7 +1,6 @@
 #include <cstdlib>
 
 #include "anim/text-drawl.hpp"
-#include "text/control-codes.hpp"
 
 static std::optional<double> parse_double(std::string_view str) {
 	char* end;
@@ -19,24 +18,25 @@ void TextDrawl::progress(double dt) {
 }
 
 void TextDrawl::next_char() {
-	if (auto wait = parse_wait(); wait) {
-		countdown += *wait;
+	std::string_view slice(txt);
+	slice.remove_prefix(len);
+	auto index = txt.length();
+	if (auto maybe_code = text::parse_ctrl_code(slice, &index)) {
+		len += index;
+		handle_ctrl_code(*maybe_code);
 	}
 	if (len < txt.length()) {
 		len++;
 	}
 }
 
-std::optional<double> TextDrawl::parse_wait() {
-	std::string_view slice(txt);
-	slice.remove_prefix(len);
-	auto index = txt.length();
-	auto maybe_ctrl = text::parse_ctrl_code(slice, &index);
-	if (!maybe_ctrl || maybe_ctrl->name != "wait")
-		return {};
-
-	txt.erase(len, index);
-	const auto& arg = maybe_ctrl->argument.value_or("0.5");
-	return parse_double(arg);
+void TextDrawl::handle_ctrl_code(const text::ControlCode& code) {
+	if (code.name == "wait") {
+		const auto& arg = code.argument.value_or("0.5");
+		auto time = parse_double(arg);
+		if (time) {
+			countdown += *time;
+		}
+	}
 }
 } // namespace anim

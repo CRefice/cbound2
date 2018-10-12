@@ -4,7 +4,8 @@
 #include "common/color.hpp"
 
 static bool result_valid(std::from_chars_result result) {
-	return result.ec != std::errc{};
+	return result.ec != std::errc::invalid_argument
+		&& result.ec != std::errc::result_out_of_range;
 }
 
 namespace color {
