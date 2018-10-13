@@ -3,40 +3,52 @@
 
 #include "render/text-batch.hpp"
 
+namespace render {
 void TextBatch::draw(std::string_view text, const ssm::vec2& pos) {
+	set_color(params.color);
+
 	auto cursor = pos;
+	auto newline = [&]() {
+		cursor = ssm::vec2(pos.x, cursor.y - params.line_spacing);
+	};
+
 	for (auto str = text; !str.empty(); str.remove_prefix(1)) {
 		char c = str[0];
 		if (c == '\n') {
-			newline(cursor, pos);
+			newline();
 			continue;
 		}
-		if (std::string_view::size_type index;
+		if (auto index = str.length();
 				auto ctrl = text::parse_ctrl_code(str, &index)) {
 			control_code(*ctrl);
-			str.remove_prefix(index);
-		}
-		const auto& font = params.font;
-		const auto it = font->char_map.find(std::string(1, c));
-		if (it == font->char_map.end()) {
-			WARN_LOG("Couldn't find a glyph for character {} in font {}",
-					c, font->texture_id);
+			str.remove_prefix(index - 1);
 			continue;
 		}
-		const auto& metrics = it->second;
-		const auto& frame = metrics.frame;
-		ssm::vec2 size(frame.width(), frame.height());
-		Sprite sprite = { font->texture_id, size, frame };
-		batch.draw(sprite, cursor + ssm::vec2(0, metrics.vert_offset));
-		cursor += ssm::vec2(size.x + params.char_spacing, 0);
-		if (params.max_width && cursor.x >= *params.max_width) {
-			newline(cursor, pos);
+		if (auto metrics = metrics_of(std::string_view(&c, 1))) {
+			draw_glyph(*metrics, cursor);
+			cursor += ssm::vec2(metrics->frame.width() + params.char_spacing, 0);
+			if (params.max_width && cursor.x >= *params.max_width) {
+				newline();
+			}
 		}
 	}
 }
 
-void TextBatch::newline(ssm::vec2& crs, const ssm::vec2& pos) {
-	crs = ssm::vec2(pos.x, crs.y - params.line_spacing);
+std::optional<CharMetrics> TextBatch::metrics_of(std::string_view str) {
+	const auto& font = params.font;
+	const auto it = font->char_map.find(std::string(str));
+	if (it == font->char_map.end()) {
+		WARN_LOG("Couldn't find a glyph for character {} in font {}",
+				str, font->texture_id);
+		return std::nullopt;
+	}
+	return std::optional(it->second);
+}
+
+void TextBatch::draw_glyph(const CharMetrics& cm, const ssm::vec2& pos) {
+	ssm::vec2 size(cm.frame.width(), cm.frame.height());
+	Sprite sprite = { params.font->texture_id, size, cm.frame };
+	batch.draw(sprite, pos + ssm::vec2(0, cm.vert_offset), color);
 }
 
 void TextBatch::control_code(const text::ControlCode& code) {
@@ -45,4 +57,5 @@ void TextBatch::control_code(const text::ControlCode& code) {
 			color::parse_color(code.argument.value()) : std::nullopt;
 		set_color(maybe_color.value_or(params.color));
 	}
+}
 }

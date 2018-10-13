@@ -6,6 +6,7 @@
 
 #include "glinterface/common.hpp"
 
+namespace render {
 // Additional options to load format data
 struct TextureData
 {
@@ -44,3 +45,4 @@ private:
 	gl::TextureObject handl;
 	ssm::ivec2 sz;
 };
+}

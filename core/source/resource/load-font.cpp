@@ -7,6 +7,7 @@
 #include "resource/load-file.hpp"
 
 namespace fs = std::filesystem;
+using namespace render;
 
 static auto parse_frames(std::istream& s) {
 	std::unordered_map<std::string, CharMetrics> ret;

@@ -1,5 +1,6 @@
 #include "render/texture.hpp"
 
+namespace render {
 void Texture::upload_data(const uint8_t* data, GLenum format) {
 	glBindTexture(GL_TEXTURE_2D, handl);
 
@@ -10,4 +11,5 @@ void Texture::upload_data(const uint8_t* data, GLenum format) {
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, sz.x, sz.y, 0, format, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+}
 }

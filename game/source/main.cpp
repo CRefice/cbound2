@@ -34,18 +34,14 @@ int main() {
 	auto vert = shaders.load("shaders/sprite.v.glsl");
 	shader::Program program(*frag, *vert);
 
-	auto tfrag = shaders.load("shaders/text.f.glsl");
-	auto tvert = shaders.load("shaders/text.v.glsl");
-	shader::Program text_program(*tfrag, *tvert);
-
 	auto ppvert = shaders.load("shaders/post.v.glsl");
 	auto ppfrag = shaders.load("shaders/post.f.glsl");
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 
-	PostProcessStack post_process(ssm::ivec2(width, height));
+	render::PostProcessStack post_process(ssm::ivec2(width, height));
 	post_process.emplace_pass(
-			Texture(ssm::ivec2(WIDTH, HEIGHT), nullptr),
+			render::Texture(ssm::ivec2(WIDTH, HEIGHT), nullptr),
 			shader::Program(*ppvert, *ppfrag));
 
 	auto lua = script::new_environment();
@@ -65,13 +61,14 @@ int main() {
 	}
 	auto sequencer = anim::Sequencer(*maybe_sequence);
 
-	ResourceCache<Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
-	render::SpriteBatch batch(textures);
+	ResourceCache<render::Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
+	render::SpriteBatch batch(200, textures);
+	render::SpriteBatch text_batch(200, textures);
 
-	ResourceCache<Font> fonts([](const auto& id) { return load_font(to_path(id)); });
+	ResourceCache<render::Font> fonts([](const auto& id) { return load_font(to_path(id)); });
 	auto font = fonts.load("fonts/font.fnt");
 	render::TextDrawParams params{ font };
-	render::TextBatch text(textures, params);
+	render::TextBatch text(text_batch, params);
 
 	auto str = R"(the quick brown fox
 jumps over the lazy dog
@@ -102,12 +99,9 @@ echo hi | val = 2 <kek> 2^3%4
 		batch.draw(sprt, ssm::vec2(-30, 0));
 		batch.flush();
 
-		glUseProgram(text_program.handle());
-		text_program.uniform("view_projection") = proj;
-		
 		text_anim.progress(dt);
 		text.draw(text_anim.current_slice(), ssm::vec2(0, 50));
-		text.flush();
+		text_batch.flush();
 
 		post_process.draw_all();
 		glfwSwapBuffers(window);

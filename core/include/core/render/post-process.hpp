@@ -8,6 +8,7 @@
 #include "shader.hpp"
 #include "texture.hpp"
 
+namespace render {
 // A post-process effect, with a texture
 // that will contain its framebuffer data,
 // and a shader to actually draw the postprocess with.
@@ -64,3 +65,4 @@ private:
 	gl::BufferObject screen_vbo;
 	std::vector<PostProcess> stack;
 };
+}

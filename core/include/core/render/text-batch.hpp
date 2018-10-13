@@ -3,18 +3,19 @@
 #include <string_view>
 #include <optional>
 
-#include "core/text/control-codes.hpp"
+#include "core/text/control-code.hpp"
 
 #include "font.hpp"
 #include "shader.hpp"
 #include "sprite-batch.hpp"
 
+namespace render {
 struct TextDrawParams
 {
 	// The font to draw this text with.
 	Resource<Font> font;
 	// The base color to draw text with.
-	ssm::vec3 color = ssm::vec3(1, 1, 1);
+	ssm::vec4 color = ssm::vec4(1.0f);
 	// If not empty, the renderer will go to the next line
 	// if the text width exceeds this value,
 	// instead of overflowing off-screen.
@@ -33,20 +34,21 @@ public:
 	// @param batch: a reference to the spritebatch to draw text to.
 	// @param params: drawing parameters.
 	TextBatch(SpriteBatch& batch, TextDrawParams params) :
-		batch(batch), params(std::move(params)), color(params.color) {}
+		batch(batch), params(std::move(params)) {}
 
-	// Draws the given string at position pos.
+	// Draws the given string at the given world position.
 	void draw(std::string_view str, const ssm::vec2& pos);
 
-	void set_color(ssm::vec3 clr) {
+private:
+	void control_code(const text::ControlCode& code);
+	void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos);
+	std::optional<CharMetrics> metrics_of(std::string_view ch);
+	void set_color(ssm::vec4 clr) {
 		color = std::move(clr);
 	}
 
-private:
-	void newline(ssm::vec2& cursor, const ssm::vec2& pos);
-	void control_code(const text::ControlCode& code);
-
 	SpriteBatch& batch;
 	TextDrawParams params;
-	ssm::vec3 color;
+	ssm::vec4 color;
 };
+}

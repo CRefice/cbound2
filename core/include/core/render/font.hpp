@@ -5,6 +5,7 @@
 
 #include "common/rectangle.hpp"
 
+namespace render {
 // Various metrics for a single character of a font.
 struct CharMetrics
 {
@@ -24,3 +25,4 @@ struct Font
 	std::string texture_id;
 	std::unordered_map<std::string, CharMetrics> char_map;
 };
+}

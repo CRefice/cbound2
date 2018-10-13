@@ -6,18 +6,19 @@
 #include "glinterface/common.hpp"
 #include "glinterface/stream-buffer.hpp"
 
+#include "core/render/tex-coords.hpp"
 #include "core/resource/resource-cache.hpp"
 
 #include "texture.hpp"
 #include "sprite.hpp"
 
+namespace render {
 // A batch of drawing commands, uploaded to the GPU
 // all at once.
 class SpriteBatch
 {
 public:
 	using size_type = GLushort;
-
 	// @param batch_size: the maximum number of sprites
 	// that will be drawn in this batch.
 	// The size should be less than or equal to 
@@ -33,7 +34,8 @@ public:
 	// the same texture as much as possible.
 	// @param sprite: the sprite to be drawn.
 	// @param pos: the top-left position of the resulting drawn rectangle.
-	void draw(const Sprite& sprite, const ssm::vec2& pos);
+	// @param color: color to multiply the sprite by. Defaults to white.
+	void draw(const Sprite& sprite, const ssm::vec2& pos, const ssm::vec4& color = ssm::vec4(1.0f));
 
 	// Issue a draw call, and clear all vertex and index buffers.
 	// Note that this will bind no shaders, so make sure to bind them
@@ -51,7 +53,8 @@ private:
 	struct SpriteVertex
 	{
 		ssm::vec2 pos;
-		ssm::vector<GLushort, 2> uv;
+		texture_coord uv;
+		ssm::vec4 color;
 	};
 
 	gl::VertexArrayObject vao;
@@ -62,3 +65,4 @@ private:
 	ResourceCache<Texture>& resources;
 	Resource<Texture> batch_texture;
 };
+}

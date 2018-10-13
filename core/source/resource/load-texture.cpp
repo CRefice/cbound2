@@ -8,6 +8,7 @@
 #include "resource/load-file.hpp"
 
 namespace fs = std::filesystem;
+using namespace render;
 
 Texture load_texture(const fs::path& path) {
 	SCOPE_LOG("Loading texture: {}", path.string());

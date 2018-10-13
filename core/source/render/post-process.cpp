@@ -2,6 +2,7 @@
 
 #include "render/post-process.hpp"
 
+namespace render {
 // Initialize the screen vao and vbo.
 PostProcessStack::PostProcessStack(ssm::ivec2 scrsz) : screen_size(scrsz) {
 	glBindVertexArray(screen_vao);
@@ -81,4 +82,5 @@ void PostProcessStack::draw_all() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+}
 }
