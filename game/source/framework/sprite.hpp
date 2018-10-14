@@ -7,5 +7,5 @@
 #include "core/render/sprite.hpp"
 
 namespace fw::render {
-std::optional<Sprite> parse_sprite(const sol::table& table);
+std::optional<::render::Sprite> parse_sprite(const sol::table& table);
 } // namespace fw::render

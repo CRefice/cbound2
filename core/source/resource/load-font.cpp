@@ -21,7 +21,7 @@ static auto parse_frames(std::istream& s) {
 		}
 		int x1, y1, x2, y2, dip = 0;
 		ss >> x1 >> y1 >> x2 >> y2 >> dip;
-		Rectangle<int> rect({ x1, y1 }, { x2, y2 });
+		TexFrame rect({ x1, y1 }, { x2, y2 });
 		ret.insert_or_assign(key, CharMetrics{ rect, dip });
 	}
 	return ret;

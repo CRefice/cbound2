@@ -9,6 +9,8 @@ set(SRCS
 	source/render/sprite-batch.cpp
 	source/render/text-batch.cpp
 	source/render/texture.cpp
+	source/render/tiles.cpp
+	source/render/tile-batch.cpp
 	source/resource/load-font.cpp
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp

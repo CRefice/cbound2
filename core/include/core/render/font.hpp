@@ -3,14 +3,14 @@
 #include <string>
 #include <unordered_map>
 
-#include "common/rectangle.hpp"
+#include "tex-coords.hpp"
 
 namespace render {
 // Various metrics for a single character of a font.
 struct CharMetrics
 {
 	// The rectangle, in pixel coordinates, that encloses the glyph.
-	Rectangle<int> frame;
+	TexFrame frame;
 	// How many pixels the glyph "dips" below the baseline.
 	int vert_offset;
 };

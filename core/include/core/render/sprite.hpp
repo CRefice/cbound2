@@ -2,8 +2,9 @@
 
 #include <string>
 
-#include "common/rectangle.hpp"
+#include "tex-coords.hpp"
 
+namespace render {
 // Like most types in the engine, this type doesn't actually
 // hold all the data used to render it. It's merely a set of
 // "instructions" for how to render it.
@@ -20,5 +21,6 @@ struct Sprite
 	ssm::vec2 size;
 	// The portion of the texture that will be used for rendering,
 	// defined in pixel coordinates.
-	Rectangle<int> frame;
+	TexFrame frame;
 };
+}

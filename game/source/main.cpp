@@ -70,15 +70,7 @@ int main() {
 	render::TextDrawParams params{ font };
 	render::TextBatch text(text_batch, params);
 
-	auto str = R"(the quick brown fox
-jumps over the lazy dog
-hi. yeah, but;
-{wait}.{wait}.{wait}.{wait}
-like{color:#ff2020} this: what! really?{color}
-'char' "str" oh_man
-$(bash)[index] 1+1-1*2/2
-echo hi | val = 2 <kek> 2^3%4
-101&010)";
+	auto str = R"(Elena is a {color:#ffb6c1}wonderful person)";
 	anim::TextDrawl text_anim(str);
 
 	double old_time = glfwGetTime();

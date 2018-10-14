@@ -8,6 +8,7 @@
 
 namespace fw::anim {
 using namespace ::anim;
+using ::render::TexFrame;
 
 void load_libraries(sol::state& state) {
 	// Sequence types
@@ -18,8 +19,8 @@ void load_libraries(sol::state& state) {
 			);
 }
 
-std::vector<Frame<Rectangle<int>>> parse_frames(const sol::table& table) {
-	std::vector<Frame<Rectangle<int>>> frames;
+std::vector<Frame<TexFrame>> parse_frames(const sol::table& table) {
+	std::vector<Frame<TexFrame>> frames;
 	frames.reserve(table.size());
 	for (const auto& [key, val] : table) {
 		const sol::table& tbl = val;
@@ -35,10 +36,10 @@ std::vector<Frame<Rectangle<int>>> parse_frames(const sol::table& table) {
 
 // Sequence format:
 // [ mode = Loop ]
-// { frames: Rectangle<int> }...
-std::optional<Sequence<Rectangle<int>>> parse_sequence(const sol::table& table) {
+// { frames: TexFrame }...
+std::optional<Sequence<TexFrame>> parse_sequence(const sol::table& table) {
 	auto frames = parse_frames(table["frames"]);
 	auto mode = table.get_or("mode", PlayMode::Loop);
-	return Sequence<Rectangle<int>>{std::move(frames), mode };
+	return Sequence<TexFrame>{std::move(frames), mode };
 }
 } // namespace fw::anim

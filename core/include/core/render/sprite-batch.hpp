@@ -53,7 +53,7 @@ private:
 	struct SpriteVertex
 	{
 		ssm::vec2 pos;
-		texture_coord uv;
+		TexCoord uv;
 		ssm::vec4 color;
 	};
 
