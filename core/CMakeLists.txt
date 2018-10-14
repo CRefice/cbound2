@@ -1,5 +1,4 @@
 set(SRCS
-	source/anim/sequencer.cpp
 	source/anim/text-drawl.cpp
 	source/common/paths.cpp
 	source/common/color.cpp

@@ -11,5 +11,5 @@ namespace fw::anim {
 void load_libraries(sol::state& state);
 
 // Parse an animation sequence from the given table
-std::optional<::anim::Sequence> parse_sequence(const sol::table& table);
+std::optional<::anim::Sequence<Rectangle<int>>> parse_sequence(const sol::table& table);
 } // namespace fw::anim

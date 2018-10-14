@@ -94,7 +94,7 @@ echo hi | val = 2 <kek> 2^3%4
 		program.uniform("view_projection") = proj;
 
 		sequencer.progress(dt);
-		sprt.frame = sequencer.current_frame().coords;
+		sprt.frame = sequencer.current_value();
 
 		batch.draw(sprt, ssm::vec2(-30, 0));
 		batch.flush();

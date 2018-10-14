@@ -13,17 +13,21 @@ enum class PlayMode
 	PingPong // Play the animation back in reverse
 };
 
+// An animation keyframe, that can contain any kind of value.
+template <typename T>
 struct Frame
 {
-	Rectangle<int> coords;
+	T value;
 	// The time this frame takes, in seconds
 	double duration;
 };
 
+// An sequence of keyframes.
+template <typename T>
 struct Sequence
 {
 	// The actual array of frames
-	std::vector<Frame> frames;
+	std::vector<Frame<T>> frames;
 	// What to do on animation end
 	PlayMode mode;
 };

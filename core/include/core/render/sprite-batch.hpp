@@ -6,9 +6,9 @@
 #include "glinterface/common.hpp"
 #include "glinterface/stream-buffer.hpp"
 
-#include "core/render/tex-coords.hpp"
 #include "core/resource/resource-cache.hpp"
 
+#include "tex-coords.hpp"
 #include "texture.hpp"
 #include "sprite.hpp"
 
