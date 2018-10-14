@@ -7,7 +7,9 @@ namespace anim {
 class Sequencer
 {
 public:
-	Sequencer(const Sequence& seq) : seq(&seq) {}
+	Sequencer(const Sequence& seq) : seq(&seq) {
+		restart();
+	}
 
 	// Switch to a new sequence.
 	// Also resets the play counter.
@@ -22,17 +24,23 @@ public:
 
 	// Reset the play counter.
 	void restart() {
-		time = 0.0;
-		multiplier = 1;
+		cur_frame = seq->frames.begin();
+		time = cur_frame->duration;
+		direction = 1;
 	}
 
 	// The current animation frame
 	// of the sequence.
-	Frame current_frame() const;
+	Frame current_frame() const {
+		return *cur_frame;
+	}
 
 private:
+	bool is_last_frame() const;
+
 	const Sequence* seq;
+	std::vector<Frame>::const_iterator cur_frame;
 	double time = 0.0;
-	short multiplier = 1;
+	short direction = 1;
 };
 }

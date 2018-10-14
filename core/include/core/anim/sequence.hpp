@@ -13,7 +13,12 @@ enum class PlayMode
 	PingPong // Play the animation back in reverse
 };
 
-using Frame = Rectangle<int>;
+struct Frame
+{
+	Rectangle<int> coords;
+	// The time this frame takes, in seconds
+	double duration;
+};
 
 struct Sequence
 {
@@ -21,11 +26,5 @@ struct Sequence
 	std::vector<Frame> frames;
 	// What to do on animation end
 	PlayMode mode;
-	// The time between two frames, in seconds
-	double frame_time;
 };
-
-inline double duration(const Sequence& seq) {
-	return seq.frames.size() * seq.frame_time;
-}
 }

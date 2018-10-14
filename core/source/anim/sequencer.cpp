@@ -5,29 +5,28 @@
 
 namespace anim {
 void Sequencer::progress(double dt) {
-	time += multiplier * dt;
-	if (time <= 0.0 || time >= duration(*seq)) {
-		switch (seq->mode) {
-			case PlayMode::Once:
-				multiplier = 0;
-				break;
-			case PlayMode::Loop:
-				time = 0.0;
-				break;
-			case PlayMode::PingPong:
-				multiplier = -multiplier;
-				break;
+	time -= dt;
+	if (time <= 0.0) {
+		if (is_last_frame()) {
+			switch (seq->mode) {
+				case PlayMode::Once:
+					direction = 0;
+					break;
+				case PlayMode::Loop:
+					restart();
+					return;
+				case PlayMode::PingPong:
+					direction = -direction;
+					break;
+			}
 		}
+		cur_frame += direction;
+		time = cur_frame->duration;
 	}
 }
 
-Frame Sequencer::current_frame() const {
-	if (seq->frame_time == 0.0)
-		return seq->frames.front();
-	if (time >= duration(*seq))
-		return seq->frames.back();
-
-	std::size_t index = time / seq->frame_time;
-	return seq->frames[index];
+bool Sequencer::is_last_frame() const {
+	return cur_frame == (seq->frames.end() - 1)
+		 || (cur_frame == seq->frames.begin() && direction < 0);
 }
 } // namespace anim

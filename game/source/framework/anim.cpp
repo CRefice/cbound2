@@ -22,8 +22,10 @@ std::vector<Frame> parse_frames(const sol::table& table) {
 	std::vector<Frame> frames;
 	frames.reserve(table.size());
 	for (const auto& [key, val] : table) {
-		if (auto rect = script::parse_rect<int>(val)) {
-			frames.emplace_back(*rect);
+		const sol::table& tbl = val;
+		double dur = tbl.get_or("duration", 0.016); //Default duration of one frame
+		if (auto rect = script::parse_rect<int>(tbl["coords"])) {
+			frames.push_back(Frame{*rect, dur});
 		} else {
 			WARN_LOG("Animation frame data contains non-frame data");
 		}
@@ -38,7 +40,6 @@ std::vector<Frame> parse_frames(const sol::table& table) {
 std::optional<Sequence> parse_sequence(const sol::table& table) {
 	auto frames = parse_frames(table["frames"]);
 	auto mode = table.get_or("mode", PlayMode::Loop);
-	auto frame_time = table.get_or("frame_time", 1.0 / 60);
-	return Sequence{std::move(frames), mode, frame_time };
+	return Sequence{std::move(frames), mode };
 }
 } // namespace fw::anim

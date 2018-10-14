@@ -74,7 +74,7 @@ int main() {
 jumps over the lazy dog
 hi. yeah, but;
 {wait}.{wait}.{wait}.{wait}
-like {color:#ff2020} this: what! really?
+like{color:#ff2020} this: what! really?{color}
 'char' "str" oh_man
 $(bash)[index] 1+1-1*2/2
 echo hi | val = 2 <kek> 2^3%4
@@ -94,7 +94,7 @@ echo hi | val = 2 <kek> 2^3%4
 		program.uniform("view_projection") = proj;
 
 		sequencer.progress(dt);
-		sprt.frame = sequencer.current_frame();
+		sprt.frame = sequencer.current_frame().coords;
 
 		batch.draw(sprt, ssm::vec2(-30, 0));
 		batch.flush();

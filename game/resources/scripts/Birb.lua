@@ -6,11 +6,16 @@ bird = {
 	},
 	Animation = {
 		fly = {
-			frame_time = 0.1,
 			mode = play_mode.loop,
 			frames = {
-				{ 0, 0, 32, 32 },
-				{ 32, 0, 64, 32 }
+				{
+					duration = 0.1,
+					coords = { 0, 0, 32, 32 }
+				},
+				{
+					duration = 0.1,
+					coords = { 32, 0, 64, 32 }
+				},
 			}
 		}
 	}
