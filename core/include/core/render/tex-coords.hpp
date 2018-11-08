@@ -11,6 +11,7 @@ using TexCoord = ssm::vector<unsigned short, 2>;
 
 // A "window" over a texture used for rendering, in pixel coordinates.
 using TexFrame = Rectangle<int>;
+using UvFrame = Rectangle<unsigned short>;
 
 // Convert from pixel texture coordinates to normalized integer UV coordinates.
 inline TexCoord normalize(const PixelCoord& coord, const PixelCoord& size) {

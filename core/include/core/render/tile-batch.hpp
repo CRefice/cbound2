@@ -1,36 +1,58 @@
 #pragma once
 
+#include <cstdint>
+
 #include <glad/glad.h>
 #include <ssm/vector.hpp>
 
 #include "glinterface/common.hpp"
 #include "glinterface/stream-buffer.hpp"
 
+#include "core/anim/sequencer.hpp"
 #include "core/resource/resource-cache.hpp"
 
+#include "tex-coords.hpp"
 #include "texture.hpp"
 #include "tiles.hpp"
 
 namespace render {
-class TileBatch
+// A static collection of tiles, to be drawn multiple times.
+class StaticTileBatch
 {
 public:
-	TileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set);
+	StaticTileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set);
 	
+	// Draw the tile set, keeping all information in memory.
 	void issue_draw_call();
 
 private:
-	void setup_vertex_format();
-	void rebuild_positions();
-	void rebuild_uvs();
-
-	const TileMap& map;
-	const TileSet& set;
 	Resource<Texture> texture;
 	gl::VertexArrayObject vao;
-	// Store vertex positions and uvs separately, as only uvs
-	// need to be updated frequently
-	gl::BufferObject pos_buffer, uv_buffer, index_buffer;
+	std::size_t index_count;
+};
+
+// Draws animated tiles
+class AnimTileBatch
+{
+public:
+	AnimTileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set);
+	
+	// Advance the animation counter for all tiles by dt seconds.
+	void progress(double dt);
+
+	// Draw the tiles at the current animation frame.
+	void issue_draw_call();
+
+private:
+	Resource<Texture> texture;
+	std::unordered_map<int, anim::Sequencer<int>> sequencers;
+	// The tile id of each animated tile on the map
+	std::vector<int> ids;
+	gl::VertexArrayObject vao;
+	gl::BufferObject pos_buf, uv_buf, ind_buf;
+	// Uvs are the only thing going to be updated
 	gl::BufferStream<TexCoord> uvs;
+	const TileMap& map;
+	const TileSet& set;
 };
 }

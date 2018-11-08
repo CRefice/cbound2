@@ -8,6 +8,7 @@
 #include "core/render/post-process.hpp"
 #include "core/render/render-common.hpp"
 #include "core/render/sprite-batch.hpp"
+#include "core/render/tile-batch.hpp"
 #include "core/render/text-batch.hpp"
 
 #include "core/resource/load-file.hpp"
@@ -18,8 +19,9 @@
 
 #include "common/logging.hpp"
 
-#include "framework/sprite.hpp"
 #include "framework/anim.hpp"
+#include "framework/sprite.hpp"
+#include "framework/tiles.hpp"
 
 inline int HEIGHT = 180;
 inline int WIDTH = 320;
@@ -33,6 +35,10 @@ int main() {
 	auto frag = shaders.load("shaders/sprite.f.glsl");
 	auto vert = shaders.load("shaders/sprite.v.glsl");
 	shader::Program program(*frag, *vert);
+	auto tile_frag = shaders.load("shaders/tile.f.glsl");
+	auto tile_vert = shaders.load("shaders/tile.v.glsl");
+	shader::Program tile_program(*tile_frag, *tile_vert);
+
 
 	auto ppvert = shaders.load("shaders/post.v.glsl");
 	auto ppfrag = shaders.load("shaders/post.f.glsl");
@@ -61,9 +67,16 @@ int main() {
 	}
 	auto sequencer = anim::Sequencer(*maybe_sequence);
 
+	lua.script_file(path::install_dir() / "resources/tilesets/overworld-set.lua");
+	auto tile_set = fw::tiles::parse_tileset(lua["tileset"]);
+	lua.script_file(path::install_dir() / "resources/tilemaps/overworld-map.lua");
+	auto tile_map = fw::tiles::parse_tilemap(lua["tilemap"]);
+
 	ResourceCache<render::Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
 	render::SpriteBatch batch(200, textures);
 	render::SpriteBatch text_batch(200, textures);
+	render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
+	render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
 
 	ResourceCache<render::Font> fonts([](const auto& id) { return load_font(to_path(id)); });
 	auto font = fonts.load("fonts/font.fnt");
@@ -73,6 +86,8 @@ int main() {
 	auto str = R"(Elena is a {color:#ffb6c1}wonderful person)";
 	anim::TextDrawl text_anim(str);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	double old_time = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
 		double new_time = glfwGetTime();
@@ -81,8 +96,15 @@ int main() {
 
 		post_process.new_frame();
 
+		auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, 100);
+		glUseProgram(tile_program.handle());
+		tile_program.uniform("view_projection") = proj;
+		tile_batch.issue_draw_call();
+		anim_tile_batch.progress(dt);
+		anim_tile_batch.issue_draw_call();
+
+		proj = ssm::ortho<float>(WIDTH, HEIGHT, 0, 100);
 		glUseProgram(program.handle());
-		auto proj = ssm::ortho<float>(WIDTH, HEIGHT, 0, 100);
 		program.uniform("view_projection") = proj;
 
 		sequencer.progress(dt);

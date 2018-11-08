@@ -1,6 +1,7 @@
 set(SRCS
 	source/framework/anim.cpp
 	source/framework/sprite.cpp
+	source/framework/tiles.cpp
 	source/main.cpp
 )
 

@@ -1,5 +1,3 @@
-#pragma once
-
 #include <utility>
 
 #include <glad/glad.h>
@@ -7,19 +5,11 @@
 // A std::vector-like interface over a mapped buffer.
 namespace gl {
 template <typename T>
-class BufferStream
+class MappedBuffer
 {
 public:
 	using iterator = T*;
 	using const_iterator = const T*;
-
-	// Initializes the buffer range with a reference to the target
-	// and a length. Note that this is not enough to actually use it!
-	// You need to map it first.
-	BufferStream(GLenum target, GLsizeiptr capacity) : target(target), reserved(capacity) {}
-	~BufferStream() {
-		unmap();
-	}
 
 	auto begin() { return iterator(*this, 0); }
 	auto end() { return iterator(*this, size); }
@@ -31,12 +21,11 @@ public:
 
 	// Maps the buffer to memory.
 	void map(GLbitfield access_flags) {
-		buf = reinterpret_cast<T*>(glMapBufferRange(target, 0, reserved * sizeof(T), access_flags));
+		buf = 
 	}
 
 	// Unmaps the buffer from memory.
 	void unmap() {
-		glUnmapBuffer(target);
 		buf = nullptr;
 	}
 
@@ -53,9 +42,22 @@ public:
 	}
 
 private:
+	MappedBuffer(GLenum target) : target(target) {}
+	~BufferStream() {
+		unmap();
+	}
+
 	GLenum target;
 	T* buf = nullptr;
 	GLsizeiptr sz = 0;
 	GLsizeiptr reserved;
+
+	friend MappedBuffer<T> map(GLenum target, GLsizeiptr size, GLsizeiptr begin = 0);
 };
+
+template <typename T>
+MappedBuffer<T> map(GLenum target, GLenum flags, GLsizeiptr size, GLsizeiptr begin = 0) {
+	T* ptr = reinterpret_cast<T*>(glMapBufferRange(target, 0, size * sizeof(T), access_flags));
+	MappedBuffer<T> buf(target
+}
 }

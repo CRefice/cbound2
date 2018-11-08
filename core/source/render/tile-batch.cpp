@@ -1,60 +1,66 @@
 #include <vector>
 
+#include "common/logging.hpp"
+
+#include "render/tex-coords.hpp"
 #include "render/tile-batch.hpp"
 
-static const GLbitfield mapflags = GL_MAP_WRITE_BIT;
-
 namespace render {
-TileBatch::TileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set) : map(map), set(set),
-	texture(resources.load(set.texture_id)),
-	uvs(GL_ARRAY_BUFFER, map.size.x * map.size.y * 4) {
-	setup_vertex_format();
-	rebuild_positions();
-	rebuild_uvs();
+static const GLbitfield mapflags = GL_MAP_WRITE_BIT
+	| GL_MAP_INVALIDATE_BUFFER_BIT
+	| GL_MAP_INVALIDATE_RANGE_BIT;
+
+// Representation of tile vertices in memory
+struct TileVertex {
+	ssm::vec2 pos;
+	TexCoord uv;
+};
+
+// Fill vertex and index buffers
+static void fill_buffers(
+		std::vector<TileVertex>& vertices, std::vector<GLushort>& indices,
+		const TileMap& map, const TileSet& set, const ssm::ivec2 tex_size) {
+	for (const auto& layer : map.layers) {
+		for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
+			int tile = layer.tiles[i];
+			if (tile == 0) continue;
+			// since 0 is null, everything is shifted by 1
+			tile--;
+			// Tiles go top-right, so we invert the position (as in our coord system it starts from bottom)
+			const ssm::vec2 tile_pos(i % map.size.x, map.size.y - i / map.size.x);
+			const ssm::vec2 pos = tile_pos * map.tile_size;
+			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
+			const auto frame = frame_from_id(set, tile);
+			const GLushort base_index = vertices.size();
+			vertices.push_back({ bounds.top_left(), normalize(frame.top_left(), tex_size) });
+			vertices.push_back({ bounds.bottom_left(), normalize(frame.bottom_left(), tex_size) });
+			vertices.push_back({ bounds.bottom_right(), normalize(frame.bottom_right(), tex_size) });
+			vertices.push_back({ bounds.top_right(), normalize(frame.top_right(), tex_size) });
+
+			indices.emplace_back(base_index);
+			indices.emplace_back(base_index + 1);
+			indices.emplace_back(base_index + 2);
+			indices.emplace_back(base_index);
+			indices.emplace_back(base_index + 2);
+			indices.emplace_back(base_index + 3);
+		}
+	}
 }
 
-void TileBatch::issue_draw_call() {
-	if (uvs.size() == 0)
-		return;
-
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-	uvs.unmap();
-
-	glBindTexture(GL_TEXTURE_2D, texture->handle());
-	glDrawElements(GL_TRIANGLES, uvs.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
-
-	uvs.map(mapflags);
-}
-
-void TileBatch::setup_vertex_format() {
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-			sizeof(ssm::vec2), (void*)(0));
-
-	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_UNSIGNED_SHORT, GL_TRUE,
-			sizeof(TexCoord), (void*)(0));
-	glBindVertexArray(0);
-}
-
-void TileBatch::rebuild_positions() {
-	// Initialize vertex data
-	std::vector<ssm::vec2> positions;
-	std::vector<GLushort> indices;
-	for (TileMap::Layer l : map.layers) {
-		for (int i = 0; i < l.tiles.size(); ++i) {
-			int id = l.tiles[i];
-			if (id < 0) continue;
-			int x = i % map.size.x;
-			int y = i / map.size.x;
-			ssm::vec2 pos = ssm::vec2(x, y) * map.tile_size;
-			Rectangle<float> bounds(pos, pos + map.tile_size);
-			GLushort base_index = indices.size();
+// Fill position, uv, and index buffers.
+static void fill_anim_buffers(
+		std::vector<ssm::vec2>& positions, std::vector<int>& ids,
+		std::vector<GLushort>& indices,
+		const TileMap& map, const TileSet& set) {
+	for (const auto& layer : map.layers) {
+		for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
+			int tile = layer.tiles[i] - 1;
+			if (set.anim_tiles.find(tile) == set.anim_tiles.end()) continue;
+			ids.push_back(tile);
+			const ssm::vec2 tile_pos(i % map.size.x, map.size.y - i / map.size.x);
+			const ssm::vec2 pos = tile_pos * map.tile_size;
+			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
+			const GLushort base_index = positions.size();
 			positions.push_back(bounds.top_left());
 			positions.push_back(bounds.bottom_left());
 			positions.push_back(bounds.bottom_right());
@@ -67,27 +73,91 @@ void TileBatch::rebuild_positions() {
 			indices.emplace_back(base_index + 3);
 		}
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(ssm::vec2), positions.data(), GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
 }
 
-void TileBatch::rebuild_uvs() {
-	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-	glBufferData(GL_ARRAY_BUFFER, map.size.x * map.size.y * 4 * sizeof(TexCoord), nullptr, GL_DYNAMIC_DRAW);
-	uvs.map(mapflags | GL_MAP_INVALIDATE_BUFFER_BIT);
-	for (TileMap::Layer l : map.layers) {
-		for (int i = 0; i < l.tiles.size(); ++i) {
-			int id = l.tiles[i];
-			if (id < 0) continue;
-			TexFrame frame = frame_from_id(set, id);
-			auto size = texture->size();
-			uvs.push_back(normalize(frame.top_left(), size));
-			uvs.push_back(normalize(frame.bottom_left(), size));
-			uvs.push_back(normalize(frame.bottom_right(), size));
-			uvs.push_back(normalize(frame.top_right(), size));
-		}
+StaticTileBatch::StaticTileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set)
+	:  texture(resources.load(set.texture_id)) {
+	std::vector<TileVertex> vertices;
+	std::vector<GLushort> indices;
+	fill_buffers(vertices, indices, map, set, texture->size());
+
+	index_count = indices.size();
+
+	glBindVertexArray(vao);
+	gl::BufferObject vbo, ebo;
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(TileVertex), vertices.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+			sizeof(TileVertex), reinterpret_cast<void*>(offsetof(TileVertex, pos)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_UNSIGNED_SHORT, GL_TRUE,
+			sizeof(TileVertex), reinterpret_cast<void*>(offsetof(TileVertex, uv)));
+	glBindVertexArray(0);
+}
+
+void StaticTileBatch::issue_draw_call() {
+	glBindVertexArray(vao);
+	glBindTexture(GL_TEXTURE_2D, texture->handle());
+	glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+}
+
+AnimTileBatch::AnimTileBatch(ResourceCache<Texture>& resources, const TileMap& map, const TileSet& set)
+	: texture(resources.load(set.texture_id)), uvs(GL_ARRAY_BUFFER, map.size.x * map.size.y * 6),
+	map(map), set(set) {
+	for (const auto& [id, sequence] : set.anim_tiles) {
+		sequencers.emplace(id, sequence);
 	}
+	std::vector<ssm::vec2> positions;
+	std::vector<GLushort> indices;
+	fill_anim_buffers(positions, ids, indices, map, set);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ind_buf);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(ssm::vec2), positions.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+			sizeof(ssm::vec2), reinterpret_cast<void*>(0));
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+	glBufferData(GL_ARRAY_BUFFER, uvs.capacity() * sizeof(TexCoord), nullptr, GL_STREAM_DRAW);
+	glVertexAttribPointer(1, 2, GL_UNSIGNED_SHORT, GL_TRUE,
+			sizeof(TexCoord), reinterpret_cast<void*>(0));
+	uvs.map(mapflags);
+	glBindVertexArray(0);
+}
+
+void AnimTileBatch::progress(double dt) {
+	for (auto& [id, sequencer] : sequencers) {
+		sequencer.progress(dt);
+	}
+}
+
+void AnimTileBatch::issue_draw_call() {
+	uvs.clear();
+	for (int id : ids) {
+		auto seq = sequencers.find(id);
+		if (seq == sequencers.end()) {
+			WARN_LOG("No data found for id {}", id);
+		}
+		TexFrame frame = frame_from_id(set, seq->second.current_value());
+		uvs.push_back(normalize(frame.top_left(), texture->size()));
+		uvs.push_back(normalize(frame.bottom_left(), texture->size()));
+		uvs.push_back(normalize(frame.bottom_right(), texture->size()));
+		uvs.push_back(normalize(frame.top_right(), texture->size()));
+	}
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+	uvs.unmap();
+
+	glBindTexture(GL_TEXTURE_2D, texture->handle());
+	glDrawElements(GL_TRIANGLES, ids.size() * 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+
+	uvs.map(mapflags);
 }
 }
