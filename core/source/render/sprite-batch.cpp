@@ -1,3 +1,4 @@
+#include <cmath>
 #include <limits>
 
 #include "common/rectangle.hpp"
@@ -7,6 +8,26 @@
 static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 	| GL_MAP_INVALIDATE_BUFFER_BIT
 	| GL_MAP_INVALIDATE_RANGE_BIT;
+
+
+// Logistic-like function that maps the range [-inf, inf] to [-1, 1]
+// The higher growth is, the slower it will reach the asymptote
+static inline float constrain(float x) {
+	constexpr float growth = 100;
+	return x / std::sqrt(x * x + growth);
+}
+
+// Add depth to a 2-d coordinate, given a layer.
+// Sprites are ordered by y coordinate (by a factor of 0.01)
+// Layer is also taken into account
+static inline float depth(const ssm::vec2& pos, unsigned layer) {
+	// Constrain y's to [-1, 1], so that layers take precedence.
+	return layer + constrain(pos.y);
+}
+
+static inline ssm::vec3 vec3(const ssm::vec2& pos, float z) {
+	return ssm::vec3(pos.x, pos.y, z);
+}
 
 namespace render {
 SpriteBatch::SpriteBatch(size_type batch_size, ResourceCache<Texture>& resources) :
@@ -27,11 +48,11 @@ SpriteBatch::SpriteBatch(size_type batch_size, ResourceCache<Texture>& resources
 	indices.map(mapflags);
 
 	// Vertex format:
-	// 0: pos.x pos.y (floats)
+	// 0: pos.x pos.y pos.z (floats)
 	// 1: uv.x uv.y (in shorts, normalized)
 	// 2: col.x col.y col.z col.w (floats)
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 			sizeof(SpriteVertex), reinterpret_cast<void*>(offsetof(SpriteVertex, pos)));
 
 	glEnableVertexAttribArray(1);
@@ -44,7 +65,7 @@ SpriteBatch::SpriteBatch(size_type batch_size, ResourceCache<Texture>& resources
 	glBindVertexArray(0);
 }
 
-void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos, const ssm::vec4& color) {
+void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos, unsigned layer, const ssm::vec4& color) {
 	if (batch_texture.identifier() != sprite.texture_id) {
 		flush();
 		batch_texture = resources.load(sprite.texture_id);
@@ -55,10 +76,11 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos, const ssm::ve
 	const auto size = batch_texture->size();
 	const auto frame = sprite.frame;
 	const size_type base_index = vertices.size();
-	vertices.emplace_back(bounds.top_left(), normalize(frame.top_left(), size), color);
-	vertices.emplace_back(bounds.bottom_left(), normalize(frame.bottom_left(), size), color);
-	vertices.emplace_back(bounds.bottom_right(), normalize(frame.bottom_right(), size), color);
-	vertices.emplace_back(bounds.top_right(), normalize(frame.top_right(), size), color);
+	const float z = depth(pos, layer);
+	vertices.emplace_back(vec3(bounds.top_left(), z), normalize(frame.top_left(), size), color);
+	vertices.emplace_back(vec3(bounds.bottom_left(), z), normalize(frame.bottom_left(), size), color);
+	vertices.emplace_back(vec3(bounds.bottom_right(), z), normalize(frame.bottom_right(), size), color);
+	vertices.emplace_back(vec3(bounds.top_right(), z), normalize(frame.top_right(), size), color);
 
 	indices.emplace_back(base_index);
 	indices.emplace_back(base_index + 1);

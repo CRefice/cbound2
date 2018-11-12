@@ -24,6 +24,8 @@ struct TileMap
 {
 	struct Layer
 	{
+		// Drawing depth, in the range [1,inf]
+		int depth;
 		// Vector of tile IDs
 		std::vector<int> tiles;
 	};

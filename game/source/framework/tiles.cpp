@@ -55,24 +55,27 @@ std::optional<TileSet> parse_tileset(const sol::table& table) {
 	return std::nullopt;
 }
 
-TileMap::Layer parse_layer(const sol::table& table) {
+TileMap::Layer parse_layer(const sol::table& table, int default_depth) {
+	int depth = table.get_or("depth", default_depth);
+	const sol::table& tile_tbl = table["tiles"];
 	std::vector<int> tiles;
-	tiles.reserve(table.size());
-	for (std::size_t i = 1; i <= table.size(); ++i) {
-		if (sol::optional<int> maybe_tile = table[i]) {
+	tiles.reserve(tile_tbl.size());
+	for (std::size_t i = 1; i <= tile_tbl.size(); ++i) {
+		if (sol::optional<int> maybe_tile = tile_tbl[i]) {
 			tiles.emplace_back(*maybe_tile);
 		} else {
 			WARN_LOG("Tilemap data contains non-tile data");
 		}
 	}
-	return TileMap::Layer{tiles};
+	return TileMap::Layer{depth, tiles};
 }
 
 std::vector<TileMap::Layer> parse_layers(const sol::table& table) {
 	std::vector<TileMap::Layer> layers;
 	layers.reserve(table.size());
+	int depth = table.size() + 1;
 	for (const auto& [key, val] : table) {
-		layers.emplace_back(parse_layer(val));
+		layers.emplace_back(parse_layer(val, depth--));
 	}
 	return layers;
 }

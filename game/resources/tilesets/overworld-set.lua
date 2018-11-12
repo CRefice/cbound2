@@ -1,5 +1,4 @@
-tileset = {
-
+return {
 	size = {40,36},
 	tile_size = {16,16},
 	image = "textures/gfx/Overworld.png",

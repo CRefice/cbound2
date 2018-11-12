@@ -12,15 +12,20 @@ static const GLbitfield mapflags = GL_MAP_WRITE_BIT
 
 // Representation of tile vertices in memory
 struct TileVertex {
-	ssm::vec2 pos;
+	ssm::vec3 pos;
 	TexCoord uv;
 };
+
+static inline ssm::vec3 vec3(const ssm::vec2& pos, float z) {
+	return ssm::vec3(pos.x, pos.y, z);
+}
 
 // Fill vertex and index buffers
 static void fill_buffers(
 		std::vector<TileVertex>& vertices, std::vector<GLushort>& indices,
 		const TileMap& map, const TileSet& set, const ssm::ivec2 tex_size) {
 	for (const auto& layer : map.layers) {
+		const auto z = layer.depth;
 		for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
 			int tile = layer.tiles[i];
 			if (tile == 0) continue;
@@ -32,10 +37,10 @@ static void fill_buffers(
 			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
 			const auto frame = frame_from_id(set, tile);
 			const GLushort base_index = vertices.size();
-			vertices.push_back({ bounds.top_left(), normalize(frame.top_left(), tex_size) });
-			vertices.push_back({ bounds.bottom_left(), normalize(frame.bottom_left(), tex_size) });
-			vertices.push_back({ bounds.bottom_right(), normalize(frame.bottom_right(), tex_size) });
-			vertices.push_back({ bounds.top_right(), normalize(frame.top_right(), tex_size) });
+			vertices.push_back({ vec3(bounds.top_left(), z),  normalize(frame.top_left(), tex_size) });
+			vertices.push_back({ vec3(bounds.bottom_left(), z), normalize(frame.bottom_left(), tex_size) });
+			vertices.push_back({ vec3(bounds.bottom_right(), z), normalize(frame.bottom_right(), tex_size) });
+			vertices.push_back({ vec3(bounds.top_right(), z), normalize(frame.top_right(), tex_size) });
 
 			indices.emplace_back(base_index);
 			indices.emplace_back(base_index + 1);
@@ -49,10 +54,11 @@ static void fill_buffers(
 
 // Fill position, uv, and index buffers.
 static void fill_anim_buffers(
-		std::vector<ssm::vec2>& positions, std::vector<int>& ids,
+		std::vector<ssm::vec3>& positions, std::vector<int>& ids,
 		std::vector<GLushort>& indices,
 		const TileMap& map, const TileSet& set) {
 	for (const auto& layer : map.layers) {
+		const auto z = layer.depth;
 		for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
 			int tile = layer.tiles[i] - 1;
 			if (set.anim_tiles.find(tile) == set.anim_tiles.end()) continue;
@@ -61,10 +67,10 @@ static void fill_anim_buffers(
 			const ssm::vec2 pos = tile_pos * map.tile_size;
 			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
 			const GLushort base_index = positions.size();
-			positions.push_back(bounds.top_left());
-			positions.push_back(bounds.bottom_left());
-			positions.push_back(bounds.bottom_right());
-			positions.push_back(bounds.top_right());
+			positions.push_back(vec3(bounds.top_left(), z));
+			positions.push_back(vec3(bounds.bottom_left(), z));
+			positions.push_back(vec3(bounds.bottom_right(), z));
+			positions.push_back(vec3(bounds.top_right(), z));
 			indices.emplace_back(base_index);
 			indices.emplace_back(base_index + 1);
 			indices.emplace_back(base_index + 2);
@@ -90,7 +96,7 @@ StaticTileBatch::StaticTileBatch(ResourceCache<Texture>& resources, const TileMa
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(TileVertex), vertices.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 			sizeof(TileVertex), reinterpret_cast<void*>(offsetof(TileVertex, pos)));
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_UNSIGNED_SHORT, GL_TRUE,
@@ -110,7 +116,7 @@ AnimTileBatch::AnimTileBatch(ResourceCache<Texture>& resources, const TileMap& m
 	for (const auto& [id, sequence] : set.anim_tiles) {
 		sequencers.emplace(id, sequence);
 	}
-	std::vector<ssm::vec2> positions;
+	std::vector<ssm::vec3> positions;
 	std::vector<GLushort> indices;
 	fill_anim_buffers(positions, ids, indices, map, set);
 
@@ -118,10 +124,10 @@ AnimTileBatch::AnimTileBatch(ResourceCache<Texture>& resources, const TileMap& m
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ind_buf);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(ssm::vec2), positions.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(ssm::vec3), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-			sizeof(ssm::vec2), reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+			sizeof(ssm::vec3), reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
 	glBufferData(GL_ARRAY_BUFFER, uvs.capacity() * sizeof(TexCoord), nullptr, GL_STREAM_DRAW);

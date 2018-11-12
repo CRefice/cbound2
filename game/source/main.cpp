@@ -67,10 +67,10 @@ int main() {
 	}
 	auto sequencer = anim::Sequencer(*maybe_sequence);
 
-	lua.script_file(path::install_dir() / "resources/tilesets/overworld-set.lua");
-	auto tile_set = fw::tiles::parse_tileset(lua["tileset"]);
-	lua.script_file(path::install_dir() / "resources/tilemaps/overworld-map.lua");
-	auto tile_map = fw::tiles::parse_tilemap(lua["tilemap"]);
+	auto res = lua.script_file(path::install_dir() / "resources/tilesets/overworld-set.lua");
+	auto tile_set = fw::tiles::parse_tileset(res);
+	res = lua.script_file(path::install_dir() / "resources/tilemaps/overworld-map.lua");
+	auto tile_map = fw::tiles::parse_tilemap(res);
 
 	ResourceCache<render::Texture> textures([](const auto& id) { return load_texture(to_path(id)); });
 	render::SpriteBatch batch(200, textures);
@@ -86,6 +86,7 @@ int main() {
 	auto str = R"(Elena is a {color:#ffb6c1}wonderful person)";
 	anim::TextDrawl text_anim(str);
 
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	double old_time = glfwGetTime();
@@ -96,25 +97,24 @@ int main() {
 
 		post_process.new_frame();
 
-		auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, 100);
+		auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, -100);
 		glUseProgram(tile_program.handle());
-		tile_program.uniform("view_projection") = proj;
-		tile_batch.issue_draw_call();
 		anim_tile_batch.progress(dt);
 		anim_tile_batch.issue_draw_call();
+		tile_program.uniform("view_projection") = proj;
+		tile_batch.issue_draw_call();
 
-		proj = ssm::ortho<float>(WIDTH, HEIGHT, 0, 100);
 		glUseProgram(program.handle());
 		program.uniform("view_projection") = proj;
 
 		sequencer.progress(dt);
 		sprt.frame = sequencer.current_value();
 
-		batch.draw(sprt, ssm::vec2(-30, 0));
+		batch.draw(sprt, ssm::vec2(100, 100));
 		batch.flush();
 
 		text_anim.progress(dt);
-		text.draw(text_anim.current_slice(), ssm::vec2(0, 50));
+		text.draw(text_anim.current_slice(), ssm::vec2(100, 50));
 		text_batch.flush();
 
 		post_process.draw_all();

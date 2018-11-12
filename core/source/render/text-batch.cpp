@@ -48,7 +48,7 @@ std::optional<CharMetrics> TextBatch::metrics_of(std::string_view str) {
 void TextBatch::draw_glyph(const CharMetrics& cm, const ssm::vec2& pos) {
 	ssm::vec2 size(cm.frame.width(), cm.frame.height());
 	Sprite sprite = { params.font->texture_id, size, cm.frame };
-	batch.draw(sprite, pos + ssm::vec2(0, cm.vert_offset), color);
+	batch.draw(sprite, pos + ssm::vec2(0, cm.vert_offset), 0, color);
 }
 
 void TextBatch::control_code(const text::ControlCode& code) {

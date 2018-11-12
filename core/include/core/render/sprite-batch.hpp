@@ -33,9 +33,11 @@ public:
 	// Therefore, for maximum performance, draw sprites that use
 	// the same texture as much as possible.
 	// @param sprite: the sprite to be drawn.
+	// @param layer: the sprite layer to draw the sprite in.
+	// higher layers will be drawn on top of lower ones.
 	// @param pos: the top-left position of the resulting drawn rectangle.
 	// @param color: color to multiply the sprite by. Defaults to white.
-	void draw(const Sprite& sprite, const ssm::vec2& pos, const ssm::vec4& color = ssm::vec4(1.0f));
+	void draw(const Sprite& sprite, const ssm::vec2& pos, unsigned int layer = 1, const ssm::vec4& color = ssm::vec4(1.0f));
 
 	// Issue a draw call, and clear all vertex and index buffers.
 	// Note that this will bind no shaders, so make sure to bind them
@@ -52,7 +54,7 @@ private:
 	// Note that the uvs are in normalized tex coords.
 	struct SpriteVertex
 	{
-		ssm::vec2 pos;
+		ssm::vec3 pos;
 		TexCoord uv;
 		ssm::vec4 color;
 	};

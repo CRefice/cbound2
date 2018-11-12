@@ -16,7 +16,7 @@ width=attribs['width']
 height=attribs['height']
 tilewidth=attribs['tilewidth']
 tileheight=attribs['tileheight']
-layers = [layer.find('data').text.replace('\n','') for layer in root.findall('layer')]
+layers = ['tiles = {{\n\t\t\t{}\n\t\t\t}}'.format(layer.find('data').text.replace('\n','')) for layer in root.findall('layer')]
 with open(sys.argv[2], 'w') as f:
     f.write("return {\n")
     f.write("\tsize = {{{},{}}},\n".format(width, height))
