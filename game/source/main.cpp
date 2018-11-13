@@ -83,7 +83,7 @@ int main() {
 	render::TextDrawParams params{ font };
 	render::TextBatch text(text_batch, params);
 
-	auto str = R"(Elena is a {color:#ffb6c1}wonderful person)";
+	auto str = R"(I am a {color:#ffb6c1}wonderful person)";
 	anim::TextDrawl text_anim(str);
 
 	glEnable(GL_DEPTH_TEST);
