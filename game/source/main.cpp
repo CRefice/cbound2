@@ -19,6 +19,9 @@
 
 #include "common/logging.hpp"
 
+#include "debug/interface.hpp"
+#include "debug/profiling.hpp"
+
 #include "framework/anim.hpp"
 #include "framework/sprite.hpp"
 #include "framework/tiles.hpp"
@@ -38,7 +41,6 @@ int main() {
 	auto tile_frag = shaders.load("shaders/tile.f.glsl");
 	auto tile_vert = shaders.load("shaders/tile.v.glsl");
 	shader::Program tile_program(*tile_frag, *tile_vert);
-
 
 	auto ppvert = shaders.load("shaders/post.v.glsl");
 	auto ppfrag = shaders.load("shaders/post.f.glsl");
@@ -83,19 +85,23 @@ int main() {
 	render::TextDrawParams params{ font };
 	render::TextBatch text(text_batch, params);
 
-	auto str = R"(I am a {color:#ffb6c1}wonderful person)";
+	auto str = R"(Woah, I can do {color:#ff2020}colored{color} text!)";
 	anim::TextDrawl text_anim(str);
+
+	debug::interface::init(window);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glfwSwapInterval(1);
 	double old_time = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+
 		double new_time = glfwGetTime();
 		double dt = new_time - old_time;
 		old_time = new_time;
-
-		post_process.new_frame();
 
 		auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, -100);
 		glUseProgram(tile_program.handle());
@@ -118,13 +124,22 @@ int main() {
 		text_batch.flush();
 
 		post_process.draw_all();
+		
+
+		debug::interface::new_frame();
+		debug::add_time_sample(dt);
+		debug::show_profile_window();
+		debug::interface::issue_draw_call();
 		glfwSwapBuffers(window);
 
-		glfwPollEvents();
+		post_process.new_frame();
+
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
 		post_process.set_screen_size({width, height});
 	}
+	glfwDestroyWindow(window);
 	render::shutdown();
+	debug::interface::shutdown();
 	return 0;
 }

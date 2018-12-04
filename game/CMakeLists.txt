@@ -1,4 +1,6 @@
 set(SRCS
+	source/debug/interface.cpp
+	source/debug/profiling.cpp
 	source/framework/anim.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
@@ -7,6 +9,7 @@ set(SRCS
 
 set(LIBS
 	cbound-core
+	imgui
 	stdc++fs
 	${OPENGL_gl_LIBRARY}
 )

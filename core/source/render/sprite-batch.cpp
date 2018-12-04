@@ -1,6 +1,8 @@
 #include <cmath>
 #include <limits>
 
+#include <ssm/transform.hpp>
+
 #include "common/rectangle.hpp"
 
 #include "render/sprite-batch.hpp"
@@ -23,10 +25,6 @@ static inline float constrain(float x) {
 static inline float depth(const ssm::vec2& pos, unsigned layer) {
 	// Constrain y's to [-1, 1], so that layers take precedence.
 	return layer + constrain(pos.y);
-}
-
-static inline ssm::vec3 vec3(const ssm::vec2& pos, float z) {
-	return ssm::vec3(pos.x, pos.y, z);
 }
 
 namespace render {
@@ -77,10 +75,10 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos, unsigned laye
 	const auto frame = sprite.frame;
 	const size_type base_index = vertices.size();
 	const float z = depth(pos, layer);
-	vertices.emplace_back(vec3(bounds.top_left(), z), normalize(frame.top_left(), size), color);
-	vertices.emplace_back(vec3(bounds.bottom_left(), z), normalize(frame.bottom_left(), size), color);
-	vertices.emplace_back(vec3(bounds.bottom_right(), z), normalize(frame.bottom_right(), size), color);
-	vertices.emplace_back(vec3(bounds.top_right(), z), normalize(frame.top_right(), size), color);
+	vertices.emplace_back(ssm::extend(bounds.top_left(), z), normalize(frame.top_left(), size), color);
+	vertices.emplace_back(ssm::extend(bounds.bottom_left(), z), normalize(frame.bottom_left(), size), color);
+	vertices.emplace_back(ssm::extend(bounds.bottom_right(), z), normalize(frame.bottom_right(), size), color);
+	vertices.emplace_back(ssm::extend(bounds.top_right(), z), normalize(frame.top_right(), size), color);
 
 	indices.emplace_back(base_index);
 	indices.emplace_back(base_index + 1);

@@ -1,5 +1,7 @@
 #include <vector>
 
+#include <ssm/transform.hpp>
+
 #include "common/logging.hpp"
 
 #include "render/tex-coords.hpp"
@@ -15,10 +17,6 @@ struct TileVertex {
 	ssm::vec3 pos;
 	TexCoord uv;
 };
-
-static inline ssm::vec3 vec3(const ssm::vec2& pos, float z) {
-	return ssm::vec3(pos.x, pos.y, z);
-}
 
 // Fill vertex and index buffers
 static void fill_buffers(
@@ -37,10 +35,10 @@ static void fill_buffers(
 			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
 			const auto frame = frame_from_id(set, tile);
 			const GLushort base_index = vertices.size();
-			vertices.push_back({ vec3(bounds.top_left(), z),  normalize(frame.top_left(), tex_size) });
-			vertices.push_back({ vec3(bounds.bottom_left(), z), normalize(frame.bottom_left(), tex_size) });
-			vertices.push_back({ vec3(bounds.bottom_right(), z), normalize(frame.bottom_right(), tex_size) });
-			vertices.push_back({ vec3(bounds.top_right(), z), normalize(frame.top_right(), tex_size) });
+			vertices.push_back({ ssm::extend(bounds.top_left(), z),  normalize(frame.top_left(), tex_size) });
+			vertices.push_back({ ssm::extend(bounds.bottom_left(), z), normalize(frame.bottom_left(), tex_size) });
+			vertices.push_back({ ssm::extend(bounds.bottom_right(), z), normalize(frame.bottom_right(), tex_size) });
+			vertices.push_back({ ssm::extend(bounds.top_right(), z), normalize(frame.top_right(), tex_size) });
 
 			indices.emplace_back(base_index);
 			indices.emplace_back(base_index + 1);
@@ -67,10 +65,10 @@ static void fill_anim_buffers(
 			const ssm::vec2 pos = tile_pos * map.tile_size;
 			const Rectangle<float> bounds(pos, pos + ssm::vec2(map.tile_size.x, -map.tile_size.y));
 			const GLushort base_index = positions.size();
-			positions.push_back(vec3(bounds.top_left(), z));
-			positions.push_back(vec3(bounds.bottom_left(), z));
-			positions.push_back(vec3(bounds.bottom_right(), z));
-			positions.push_back(vec3(bounds.top_right(), z));
+			positions.push_back(ssm::extend(bounds.top_left(), z));
+			positions.push_back(ssm::extend(bounds.bottom_left(), z));
+			positions.push_back(ssm::extend(bounds.bottom_right(), z));
+			positions.push_back(ssm::extend(bounds.top_right(), z));
 			indices.emplace_back(base_index);
 			indices.emplace_back(base_index + 1);
 			indices.emplace_back(base_index + 2);
