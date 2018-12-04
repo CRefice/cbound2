@@ -5,12 +5,12 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw)
+add_subdirectory(imgui)
 
 find_package(Lua REQUIRED)
 add_subdirectory(sol2)
 target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
 target_include_directories(sol2 INTERFACE ${LUA_INCLUDE_DIR})
-
 
 add_subdirectory(ssm)
 add_subdirectory(stb-image)
