@@ -6,14 +6,14 @@
 #include "core/anim/text-drawl.hpp"
 
 #include "core/render/post-process.hpp"
-#include "core/render/render-common.hpp"
+#include "core/render/render.hpp"
 #include "core/render/sprite-batch.hpp"
 #include "core/render/tile-batch.hpp"
 #include "core/render/text-batch.hpp"
 
 #include "core/resource/load-file.hpp"
 #include "core/resource/resource-cache.hpp"
-#include "core/script/common.hpp"
+#include "core/script/script.hpp"
 
 #include <GLFW/glfw3.h>
 

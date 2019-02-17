@@ -2,7 +2,7 @@
 
 #include "common/logging.hpp"
 
-#include "core/script/common.hpp"
+#include "core/script/script.hpp"
 
 #include "anim.hpp"
 

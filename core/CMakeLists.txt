@@ -4,7 +4,7 @@ set(SRCS
 	source/common/color.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
-	source/render/render-common.cpp
+	source/render/render.cpp
 	source/render/shader.cpp
 	source/render/sprite-batch.cpp
 	source/render/text-batch.cpp
@@ -14,7 +14,7 @@ set(SRCS
 	source/resource/load-font.cpp
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp
-	source/script/common.cpp
+	source/script/script.cpp
 	source/text/control-codes.cpp
 )
 

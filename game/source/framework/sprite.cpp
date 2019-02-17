@@ -1,4 +1,4 @@
-#include "core/script/common.hpp"
+#include "core/script/script.hpp"
 
 #include "common/logging.hpp"
 
