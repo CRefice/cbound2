@@ -17,6 +17,13 @@ static void key_callback(GLFWwindow *wnd, int key, int, int action, int) {
       callback();
       return;
     }
+    for (auto &range : ctx.ranges) {
+			auto& keys = range.first;
+      bool pos = glfwGetKey(wnd, keys.key_pos) == GLFW_PRESS;
+      bool neg = glfwGetKey(wnd, keys.key_neg) == GLFW_PRESS;
+			auto& callback = range.second;
+      callback(pos * 1.00 + neg * -1.00);
+    }
   }
 }
 
