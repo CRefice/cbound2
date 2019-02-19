@@ -48,6 +48,9 @@ public:
 	// Useful for drawing the same stuff multiple times.
 	void issue_draw_call();
 
+	// Clear all vertex and index buffers.
+	void clear();
+
 private:
 	// How the four corners of a sprite's rectangle
 	// are represented in memory.

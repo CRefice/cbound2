@@ -32,34 +32,29 @@
 inline int HEIGHT = 180;
 inline int WIDTH = 320;
 
+bool show_debug = false;
+
 void init_input(render::Context window, ssm::vec2 &vel) {
   using namespace input;
   input::init(window);
   auto &stack = input::get_context(window);
-  Context ctx;
-  KeyEvent w_down{GLFW_KEY_W, input::KeyEvent::Action::Press};
-  KeyEvent w_up{GLFW_KEY_W, input::KeyEvent::Action::Release};
-  KeyEvent a_down{GLFW_KEY_A, input::KeyEvent::Action::Press};
-  KeyEvent a_up{GLFW_KEY_A, input::KeyEvent::Action::Release};
-  KeyEvent s_down{GLFW_KEY_S, input::KeyEvent::Action::Press};
-  KeyEvent s_up{GLFW_KEY_S, input::KeyEvent::Action::Release};
-  KeyEvent d_down{GLFW_KEY_D, input::KeyEvent::Action::Press};
-  KeyEvent d_up{GLFW_KEY_D, input::KeyEvent::Action::Release};
-  ctx.actions[w_down] = [&] { vel += ssm::vec2(0, 1); };
-  ctx.actions[a_down] = [&] { vel += ssm::vec2(-1, 0); };
-  ctx.actions[s_down] = [&] { vel += ssm::vec2(0, -1); };
-  ctx.actions[d_down] = [&] { vel += ssm::vec2(1, 0); };
-  ctx.actions[w_up] = [&] { vel -= ssm::vec2(0, 1); };
-  ctx.actions[a_up] = [&] { vel -= ssm::vec2(-1, 0); };
-  ctx.actions[s_up] = [&] { vel -= ssm::vec2(0, -1); };
-  ctx.actions[d_up] = [&] { vel -= ssm::vec2(1, 0); };
-  stack.push(ctx);
+  Context player_ctx;
+  KeyRange x{GLFW_KEY_D, GLFW_KEY_A};
+  KeyRange y{GLFW_KEY_W, GLFW_KEY_S};
+  player_ctx.ranges[x] = [&](double val) { vel.x = (float)val; };
+  player_ctx.ranges[y] = [&](double val) { vel.y = (float)val; };
+  stack.push(player_ctx);
+
+  KeyEvent debug{GLFW_KEY_Q, input::KeyEvent::Action::Press};
+  Context debug_ctx;
+  debug_ctx.actions[debug] = [] { show_debug = !show_debug; };
+  stack.push(debug_ctx);
 }
 
 int main() {
   auto window = render::create_context();
   render::init(window);
-	ssm::vec2 vel;
+  ssm::vec2 vel;
   init_input(window, vel);
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
@@ -69,6 +64,9 @@ int main() {
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   shader::Program program(*frag, *vert);
+  auto debug_vert = shaders.load("shaders/debug.v.glsl");
+  auto debug_frag = shaders.load("shaders/debug.f.glsl");
+  shader::Program debug_program(*debug_frag, *debug_vert);
   auto tile_frag = shaders.load("shaders/tile.f.glsl");
   auto tile_vert = shaders.load("shaders/tile.v.glsl");
   shader::Program tile_program(*tile_frag, *tile_vert);
@@ -109,6 +107,7 @@ int main() {
   ResourceCache<render::Texture> textures(
       [](const auto &id) { return load_texture(to_path(id)); });
   render::SpriteBatch batch(200, textures);
+  render::SpriteBatch debug_batch(200, textures);
   render::SpriteBatch text_batch(200, textures);
   render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
   render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
@@ -130,7 +129,7 @@ int main() {
 
   glfwSwapInterval(1);
   double old_time = glfwGetTime();
-	ssm::vec2 pos(0, 20);
+  ssm::vec2 pos(0, 20);
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -138,7 +137,7 @@ int main() {
     double dt = new_time - old_time;
     old_time = new_time;
 
-		pos += vel * (float)(100 * dt);
+    pos += vel * (float)(100 * dt);
 
     auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, -100);
     glUseProgram(tile_program.handle());
@@ -155,6 +154,14 @@ int main() {
 
     batch.draw(sprt, pos);
     batch.flush();
+    if (show_debug) {
+      glUseProgram(debug_program.handle());
+			debug_program.uniform("view_projection") = proj;
+			debug_batch.draw(sprt, pos);
+      debug_batch.flush();
+    }
+
+		glUseProgram(program.handle());
 
     text_anim.progress(dt);
     text.draw(text_anim.current_slice(), ssm::vec2(100, 50));
@@ -162,10 +169,12 @@ int main() {
 
     post_process.draw_all();
 
-    debug::interface::new_frame();
-    debug::add_time_sample(dt);
-    debug::show_profile_window();
-    debug::interface::issue_draw_call();
+    if (show_debug) {
+      debug::interface::new_frame();
+      debug::add_time_sample(dt);
+      debug::show_profile_window();
+      debug::interface::issue_draw_call();
+    }
     glfwSwapBuffers(window);
 
     post_process.new_frame();
@@ -174,9 +183,9 @@ int main() {
     glfwGetFramebufferSize(window, &width, &height);
     post_process.set_screen_size({width, height});
   }
-	input::shutdown(window);
+  input::shutdown(window);
   glfwDestroyWindow(window);
-  render::shutdown();
   debug::interface::shutdown();
+  render::shutdown();
   return 0;
 }
