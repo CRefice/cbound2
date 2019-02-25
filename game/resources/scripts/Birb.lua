@@ -1,3 +1,11 @@
+horiz = function(val)
+	bird.x = val
+end
+
+vert = function(val)
+	bird.y = val
+end
+
 bird = {
 	Sprite = {
 		image = "textures/Birb.png",
@@ -18,5 +26,15 @@ bird = {
 				},
 			}
 		}
+	},
+
+	x = 0.0,
+	y = 0.0,
+
+	Input = {
+		["D,A"] = horiz,
+		["Right,Left"] = horiz,
+		["W,S"] = vert,
+		["Up,Down"] = vert,
 	}
 }

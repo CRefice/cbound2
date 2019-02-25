@@ -2,6 +2,7 @@ set(SRCS
 	source/debug/interface.cpp
 	source/debug/profiling.cpp
 	source/framework/anim.cpp
+	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
 	source/main.cpp

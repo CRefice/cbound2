@@ -26,6 +26,7 @@
 #include "debug/profiling.hpp"
 
 #include "framework/anim.hpp"
+#include "framework/input.hpp"
 #include "framework/sprite.hpp"
 #include "framework/tiles.hpp"
 
@@ -34,17 +35,9 @@ inline int WIDTH = 320;
 
 bool show_debug = false;
 
-void init_input(render::Context window, ssm::vec2 &vel) {
+void init_input(render::Context window) {
   using namespace input;
-  input::init(window);
-  auto &stack = input::get_context(window);
-  Context player_ctx;
-  KeyRange x{GLFW_KEY_D, GLFW_KEY_A};
-  KeyRange y{GLFW_KEY_W, GLFW_KEY_S};
-  player_ctx.ranges[x] = [&](double val) { vel.x = (float)val; };
-  player_ctx.ranges[y] = [&](double val) { vel.y = (float)val; };
-  stack.push(player_ctx);
-
+	auto& stack = input::get_context(window);
   KeyEvent debug{GLFW_KEY_Q, input::KeyEvent::Action::Press};
   Context debug_ctx;
   debug_ctx.actions[debug] = [] { show_debug = !show_debug; };
@@ -54,8 +47,8 @@ void init_input(render::Context window, ssm::vec2 &vel) {
 int main() {
   auto window = render::create_context();
   render::init(window);
-  ssm::vec2 vel;
-  init_input(window, vel);
+	input::init(window);
+  init_input(window);
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
@@ -95,6 +88,14 @@ int main() {
     ERROR_LOG("Unable to parse sequence");
     std::abort();
   }
+  auto maybe_input = fw::input::parse_context(bird["Input"]);
+  if (!maybe_input) {
+    ERROR_LOG("Unable to parse input");
+    std::abort();
+  }
+	auto& stack = input::get_context(window);
+	stack.push(*maybe_input);
+
   auto sequencer = anim::Sequencer(*maybe_sequence);
 
   auto res = lua.script_file(path::install_dir() /
@@ -106,9 +107,9 @@ int main() {
 
   ResourceCache<render::Texture> textures(
       [](const auto &id) { return load_texture(to_path(id)); });
-  render::SpriteBatch batch(200, textures);
-  render::SpriteBatch debug_batch(200, textures);
-  render::SpriteBatch text_batch(200, textures);
+  render::SpriteBatch batch(10000, textures);
+  render::SpriteBatch debug_batch(10000, textures);
+  render::SpriteBatch text_batch(10000, textures);
   render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
   render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
 
@@ -137,7 +138,7 @@ int main() {
     double dt = new_time - old_time;
     old_time = new_time;
 
-    pos += vel * (float)(100 * dt);
+    pos += ssm::vec2(bird["x"], bird["y"]) * (float)(100 * dt);
 
     auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, -100);
     glUseProgram(tile_program.handle());
@@ -156,12 +157,12 @@ int main() {
     batch.flush();
     if (show_debug) {
       glUseProgram(debug_program.handle());
-			debug_program.uniform("view_projection") = proj;
-			debug_batch.draw(sprt, pos);
+      debug_program.uniform("view_projection") = proj;
+      debug_batch.draw(sprt, pos);
       debug_batch.flush();
     }
 
-		glUseProgram(program.handle());
+    glUseProgram(program.handle());
 
     text_anim.progress(dt);
     text.draw(text_anim.current_slice(), ssm::vec2(100, 50));

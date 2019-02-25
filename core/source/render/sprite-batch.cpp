@@ -21,14 +21,14 @@ static inline float constrain(float x) {
 // Add depth to a 2-d coordinate, given a layer.
 // Sprites are ordered by y coordinate (by a factor of 0.01)
 // Layer is also taken into account
-static inline float depth(const ssm::vec2 &pos, unsigned layer) {
+static inline float depth(const ssm::vec2& pos, unsigned layer) {
   // Constrain y's to [-1, 1], so that layers take precedence.
   return layer + constrain(pos.y);
 }
 
 namespace render {
 SpriteBatch::SpriteBatch(size_type batch_size,
-                         ResourceCache<Texture> &resources)
+                         ResourceCache<Texture>& resources)
     : resources(resources), batch_texture(nullptr, ""),
       vertices(GL_ARRAY_BUFFER, batch_size * 4),
       indices(GL_ELEMENT_ARRAY_BUFFER, batch_size * 6) {
@@ -51,21 +51,20 @@ SpriteBatch::SpriteBatch(size_type batch_size,
   // 2: col.x col.y col.z col.w (floats)
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex),
-                        reinterpret_cast<void *>(offsetof(SpriteVertex, pos)));
+                        reinterpret_cast<void*>(offsetof(SpriteVertex, pos)));
 
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_UNSIGNED_SHORT, GL_TRUE, sizeof(SpriteVertex),
-                        reinterpret_cast<void *>(offsetof(SpriteVertex, uv)));
+                        reinterpret_cast<void*>(offsetof(SpriteVertex, uv)));
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(
-      2, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex),
-      reinterpret_cast<void *>(offsetof(SpriteVertex, color)));
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex),
+                        reinterpret_cast<void*>(offsetof(SpriteVertex, color)));
 
   glBindVertexArray(0);
 }
 
-void SpriteBatch::draw(const Sprite &sprite, const ssm::vec2 &pos,
-                       unsigned layer, const ssm::vec4 &color) {
+void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos,
+                       unsigned layer, const ssm::vec4& color) {
   if (batch_texture.identifier() != sprite.texture_id) {
     flush();
     batch_texture = resources.load(sprite.texture_id);
@@ -110,7 +109,7 @@ void SpriteBatch::issue_draw_call() {
 
   glBindTexture(GL_TEXTURE_2D, batch_texture->handle());
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT,
-                 reinterpret_cast<void *>(0));
+                 reinterpret_cast<void*>(0));
 
   vertices.map(mapflags);
   indices.map(mapflags);
