@@ -1,10 +1,13 @@
 set(SRCS
+	source/ecs/animator.cpp
+	source/ecs/renderer.cpp
 	source/debug/interface.cpp
 	source/debug/profiling.cpp
 	source/framework/anim.cpp
 	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
+	source/framework/world.cpp
 	source/main.cpp
 )
 
@@ -12,6 +15,7 @@ set(LIBS
 	cbound-core
 	imgui
 	stdc++fs
+	flat_hash_map
 	${OPENGL_gl_LIBRARY}
 )
 

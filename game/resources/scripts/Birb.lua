@@ -12,6 +12,7 @@ bird = {
 		size = { 32, 32 },
 		frame = { 0, 0, 32, 32 }
 	},
+
 	Animation = {
 		fly = {
 			mode = play_mode.loop,
@@ -33,8 +34,6 @@ bird = {
 
 	Input = {
 		["D,A"] = horiz,
-		["Right,Left"] = horiz,
 		["W,S"] = vert,
-		["Up,Down"] = vert,
 	}
 }

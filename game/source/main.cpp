@@ -37,7 +37,7 @@ bool show_debug = false;
 
 void init_input(render::Context window) {
   using namespace input;
-	auto& stack = input::get_context(window);
+  auto& stack = input::get_context(window);
   KeyEvent debug{GLFW_KEY_Q, input::KeyEvent::Action::Press};
   Context debug_ctx;
   debug_ctx.actions[debug] = [] { show_debug = !show_debug; };
@@ -47,13 +47,13 @@ void init_input(render::Context window) {
 int main() {
   auto window = render::create_context();
   render::init(window);
-	input::init(window);
+  input::init(window);
   init_input(window);
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
   ResourceCache<shader::Stage> shaders(
-      [](const auto &id) { return load_shader(to_path(id)); });
+      [](const auto& id) { return load_shader(to_path(id)); });
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   shader::Program program(*frag, *vert);
@@ -93,8 +93,8 @@ int main() {
     ERROR_LOG("Unable to parse input");
     std::abort();
   }
-	auto& stack = input::get_context(window);
-	stack.push(*maybe_input);
+  auto& stack = input::get_context(window);
+  stack.push(*maybe_input);
 
   auto sequencer = anim::Sequencer(*maybe_sequence);
 
@@ -106,7 +106,7 @@ int main() {
   auto tile_map = fw::tiles::parse_tilemap(res);
 
   ResourceCache<render::Texture> textures(
-      [](const auto &id) { return load_texture(to_path(id)); });
+      [](const auto& id) { return load_texture(to_path(id)); });
   render::SpriteBatch batch(10000, textures);
   render::SpriteBatch debug_batch(10000, textures);
   render::SpriteBatch text_batch(10000, textures);
@@ -114,7 +114,7 @@ int main() {
   render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
 
   ResourceCache<render::Font> fonts(
-      [](const auto &id) { return load_font(to_path(id)); });
+      [](const auto& id) { return load_font(to_path(id)); });
   auto font = fonts.load("fonts/font.fnt");
   render::TextDrawParams params{font};
   render::TextBatch text(text_batch, params);
