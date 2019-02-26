@@ -1,3 +1,4 @@
+add_subdirectory(flat_hash_map)
 add_subdirectory(fmt)
 add_subdirectory(glad)
 
