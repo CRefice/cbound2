@@ -2,23 +2,19 @@
 
 #include <ssm/transform.hpp>
 
-#include "core/anim/sequencer.hpp"
 #include "core/anim/text-drawl.hpp"
 
-#include "core/input/context.hpp"
 #include "core/input/input.hpp"
 
 #include "core/render/post-process.hpp"
-#include "core/render/render.hpp"
-#include "core/render/sprite-batch.hpp"
 #include "core/render/text-batch.hpp"
 #include "core/render/tile-batch.hpp"
+
+#include <GLFW/glfw3.h>
 
 #include "core/resource/load-file.hpp"
 #include "core/resource/resource-cache.hpp"
 #include "core/script/script.hpp"
-
-#include <GLFW/glfw3.h>
 
 #include "common/logging.hpp"
 
@@ -29,26 +25,17 @@
 #include "framework/input.hpp"
 #include "framework/sprite.hpp"
 #include "framework/tiles.hpp"
+#include "framework/world.hpp"
 
 inline int HEIGHT = 180;
 inline int WIDTH = 320;
 
 bool show_debug = false;
 
-void init_input(render::Context window) {
-  using namespace input;
-  auto& stack = input::get_context(window);
-  KeyEvent debug{GLFW_KEY_Q, input::KeyEvent::Action::Press};
-  Context debug_ctx;
-  debug_ctx.actions[debug] = [] { show_debug = !show_debug; };
-  stack.push(debug_ctx);
-}
-
 int main() {
   auto window = render::create_context();
   render::init(window);
   input::init(window);
-  init_input(window);
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
@@ -75,28 +62,8 @@ int main() {
 
   auto lua = script::new_environment();
   fw::anim::load_libraries(lua);
-  lua.script_file(path::install_dir() / "resources/scripts/Birb.lua");
-  const auto bird = lua["bird"];
-  auto maybe_sprite = fw::render::parse_sprite(bird["Sprite"]);
-  if (!maybe_sprite) {
-    ERROR_LOG("Unable to parse sprite");
-    std::abort();
-  }
-  auto sprt = *maybe_sprite;
-  auto maybe_sequence = fw::anim::parse_sequence(bird["Animation"]["fly"]);
-  if (!maybe_sequence) {
-    ERROR_LOG("Unable to parse sequence");
-    std::abort();
-  }
-  auto maybe_input = fw::input::parse_context(bird["Input"]);
-  if (!maybe_input) {
-    ERROR_LOG("Unable to parse input");
-    std::abort();
-  }
-  auto& stack = input::get_context(window);
-  stack.push(*maybe_input);
-
-  auto sequencer = anim::Sequencer(*maybe_sequence);
+	sol::table birb_tbl =
+      lua.script_file(path::install_dir() / "resources/scripts/Birb.lua");
 
   auto res = lua.script_file(path::install_dir() /
                              "resources/tilesets/overworld-set.lua");
@@ -107,11 +74,14 @@ int main() {
 
   ResourceCache<render::Texture> textures(
       [](const auto& id) { return load_texture(to_path(id)); });
-  render::SpriteBatch batch(10000, textures);
   render::SpriteBatch debug_batch(10000, textures);
   render::SpriteBatch text_batch(10000, textures);
   render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
   render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
+
+  fw::World world(textures);
+	input::set_handler(window, world);
+  auto bird = world.load_entity(lua, birb_tbl);
 
   ResourceCache<render::Font> fonts(
       [](const auto& id) { return load_font(to_path(id)); });
@@ -138,31 +108,18 @@ int main() {
     double dt = new_time - old_time;
     old_time = new_time;
 
-    pos += ssm::vec2(bird["x"], bird["y"]) * (float)(100 * dt);
-
     auto proj = ssm::ortho<float>(0, WIDTH, HEIGHT, 0, 0, -100);
+
     glUseProgram(tile_program.handle());
+    tile_program.uniform("view_projection") = proj;
     anim_tile_batch.progress(dt);
     anim_tile_batch.issue_draw_call();
-    tile_program.uniform("view_projection") = proj;
     tile_batch.issue_draw_call();
 
     glUseProgram(program.handle());
     program.uniform("view_projection") = proj;
 
-    sequencer.progress(dt);
-    sprt.frame = sequencer.current_value();
-
-    batch.draw(sprt, pos);
-    batch.flush();
-    if (show_debug) {
-      glUseProgram(debug_program.handle());
-      debug_program.uniform("view_projection") = proj;
-      debug_batch.draw(sprt, pos);
-      debug_batch.flush();
-    }
-
-    glUseProgram(program.handle());
+    world.update(dt);
 
     text_anim.progress(dt);
     text.draw(text_anim.current_slice(), ssm::vec2(100, 50));

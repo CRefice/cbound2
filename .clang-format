@@ -1,0 +1,10 @@
+---
+# We'll use defaults from the LLVM style
+BasedOnStyle: LLVM
+---
+Language: Cpp
+# Put template declarations on own line
+AlwaysBreakTemplateDeclarations: Yes
+# Force pointers to the type for C++.
+DerivePointerAlignment: false
+PointerAlignment: Left

@@ -32,4 +32,7 @@ std::optional<Rectangle<T>> parse_rect(const sol::table& table) {
 // Create a new environment
 // that a singular script can be sourced in.
 sol::state new_environment();
+
+// Define common types and functions in the given state.
+void load_common_libs(sol::state& table);
 } // namespace script

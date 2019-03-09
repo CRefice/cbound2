@@ -43,6 +43,7 @@ static const std::unordered_map<std::string, int> key_names = {
     {"F25", GLFW_KEY_F25},
 };
 
+using namespace ecs;
 using namespace ::input;
 
 static KeyEvent::Action action_from_sign(char sign) {
@@ -50,13 +51,10 @@ static KeyEvent::Action action_from_sign(char sign) {
 }
 
 namespace fw::input {
-std::optional<Context> parse_context(const sol::table &table) {
-  if (table == sol::nil)
-    return {};
-
-  Context ctx;
-  for (const auto& [name, fn] : table) {
-		auto key = name.as<std::string>();
+std::optional<InputContext> parse_context(const sol::table &table) {
+  InputContext ctx;
+  for (const auto &[name, fn] : table) {
+    auto key = name.as<std::string>();
     if (char sign = key.back(); sign == '+' || sign == '-') {
       auto action = action_from_sign(sign);
       auto key_name = key.substr(0, key.size() - 1);
@@ -64,27 +62,29 @@ std::optional<Context> parse_context(const sol::table &table) {
       if (it == key_names.end()) {
         WARN_LOG("Couldn't map key to action: {} does not name a valid key!",
                  key_name);
-				continue;
+        continue;
       }
       auto event = ::input::KeyEvent{it->second, action};
       ctx.actions[event] = fn.as<sol::function>();
-    } else if (auto sz = key.find(','); sz != std::string::npos) {
+    } /*else if (auto sz = key.find(','); sz != std::string::npos) {
       auto pos = key.substr(0, sz);
       auto neg = key.substr(sz + 1);
       auto it_pos = key_names.find(pos);
       auto it_neg = key_names.find(neg);
       if (it_pos == key_names.end() || it_neg == key_names.end()) {
-        WARN_LOG("Couldn't map key to action: {} or {} does not name a valid key!",
-                 pos, neg);
-				continue;
+        WARN_LOG(
+            "Couldn't map key to action: {} or {} does not name a valid key!",
+            pos, neg);
+        continue;
       }
       auto range = KeyRange{it_pos->second, it_neg->second};
       ctx.ranges[range] = fn.as<sol::function>();
     } else {
       WARN_LOG("Couldn't map key to action: {} does not name a valid key!",
                key);
-			continue;
+      continue;
     }
+		*/
   }
 	return ctx;
 }

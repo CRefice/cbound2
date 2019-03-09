@@ -8,14 +8,14 @@ template <typename T>
 class Sequencer
 {
 public:
-	Sequencer(const Sequence<T>& seq) : seq(&seq) {
+	Sequencer(Sequence<T> seq) : seq(std::move(seq)) {
 		restart();
 	}
 
 	// Switch to a new sequence.
 	// Also resets the play counter.
-	void switch_to(const Sequence<T>& sequence) {
-		seq = &sequence;
+	void switch_to(Sequence<T> sequence) {
+		seq = std::move(sequence);
 		restart();
 	}
 
@@ -25,7 +25,7 @@ public:
 		time -= dt;
 		if (time <= 0.0) {
 			if (is_last_frame()) {
-				switch (seq->mode) {
+				switch (seq.mode) {
 					case PlayMode::Once:
 						direction = 0;
 						break;
@@ -44,7 +44,7 @@ public:
 
 	// Reset the play counter.
 	void restart() {
-		cur_frame = seq->frames.begin();
+		cur_frame = seq.frames.begin();
 		time = cur_frame->duration;
 		direction = 1;
 	}
@@ -57,11 +57,11 @@ public:
 
 private:
 	bool is_last_frame() const {
-		return cur_frame == (seq->frames.end() - 1)
-			|| (cur_frame == seq->frames.begin() && direction < 0);
+		return cur_frame == (seq.frames.end() - 1)
+			|| (cur_frame == seq.frames.begin() && direction < 0);
 	}
 
-	const Sequence<T>* seq;
+	Sequence<T> seq;
 	typename std::vector<Frame<T>>::const_iterator cur_frame;
 	double time = 0.0;
 	short direction = 1;
