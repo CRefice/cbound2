@@ -9,17 +9,21 @@
 namespace fw {
 void World::define_fw_functions(sol::state& tbl) {
   tbl.new_usertype<ecs::EntityId>(
-      "Entity", "pos",
-      sol::property([&](ecs::EntityId& id) { return scene.get_position(id); },
-                    [&](ecs::EntityId& id, ssm::vec2 val) {
-                      scene.get_position(id) = val;
-                    }),
+      "Entity", "pos", sol::property([&](ecs::EntityId& id) {
+        return scene.get_movement(id).pos;
+      }),
+      "vel",
+      sol::property(
+          [&](ecs::EntityId& id) { return scene.get_movement(id).velocity; },
+          [&](ecs::EntityId& id, ssm::vec2 val) {
+            scene.get_movement(id).velocity = val;
+          }),
       "new", sol::no_constructor);
 }
 
 ecs::EntityId World::load_entity(sol::state& lua, sol::table& tbl) {
   define_fw_functions(lua);
-  auto id = scene.submit(ssm::vec2(0, 0));
+  auto id = scene.submit(ecs::Movement{ssm::vec2(0, 0), ssm::vec2(0, 0)});
   if (auto spr = tbl.get<sol::optional<sol::table>>("Sprite")) {
     if (auto maybe_sprite = render::parse_sprite(*spr)) {
       renderer.submit(id, *maybe_sprite);
@@ -39,6 +43,7 @@ ecs::EntityId World::load_entity(sol::state& lua, sol::table& tbl) {
 }
 
 void World::update(double dt) {
+  scene.update(dt);
   animator.update(dt);
   renderer.update(dt);
 }

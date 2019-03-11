@@ -9,17 +9,25 @@
 #include "entity.hpp"
 
 namespace ecs {
-// Holds the positions of all entities.
+struct Movement {
+  ssm::vec2 pos, velocity;
+};
+
+// Holds the movement components of all entities.
 class Scene {
 public:
-  ssm::vec2 get_position(EntityId id) const { return *positions.find(id); }
-  ssm::vec2& get_position(EntityId id) { return *positions.find(id); }
+  const Movement& get_movement(EntityId id) const { return *data.find(id); }
+  Movement& get_movement(EntityId id) { return *data.find(id); }
 
-  EntityId submit(ssm::vec2 pos) {
-		return positions.add(pos);
-	}
+  EntityId submit(Movement mov) { return data.add(mov); }
+
+  void update(double dt) {
+    for (auto& mvmt : data) {
+      mvmt.pos += (float)dt * mvmt.velocity;
+    }
+  }
 
 private:
-  SlotMap<ssm::vec2> positions;
+  SlotMap<Movement> data;
 };
 } // namespace ecs

@@ -7,8 +7,8 @@ void Renderer::submit(EntityId id, render::Sprite spr) {
 
 void Renderer::update(double dt) {
 	for (const auto& [id, sprite] : sprites) {
-		auto pos = scene.get_position(id);
-		batch.draw(sprite, pos);
+		auto movement = scene.get_movement(id);
+		batch.draw(sprite, movement.pos);
 	}
 	batch.flush();
 }

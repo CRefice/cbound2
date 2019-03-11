@@ -1,4 +1,4 @@
-speed = 10
+speed = 100
 
 return {
 	Sprite = {
@@ -21,16 +21,28 @@ return {
 	},
 	Input = {
 		["D+"] = function(self)
-			self.pos = self.pos + Vec2:new(speed, 0)
+			self.vel = self.vel + Vec2:new(speed, 0)
+		end,
+		["D-"] = function(self)
+			self.vel = self.vel + Vec2:new(-speed, 0)
 		end,
 		["A+"] = function(self)
-			self.pos = self.pos + Vec2:new(-speed, 0)
+			self.vel = self.vel + Vec2:new(-speed, 0)
+		end,
+		["A-"] = function(self)
+			self.vel = self.vel + Vec2:new(speed, 0)
 		end,
 		["W+"] = function(self)
-			self.pos = self.pos + Vec2:new(0, speed)
+			self.vel = self.vel + Vec2:new(0, speed)
+		end,
+		["W-"] = function(self)
+			self.vel = self.vel + Vec2:new(0, -speed)
 		end,
 		["S+"] = function(self)
-			self.pos = self.pos + Vec2:new(0, -speed)
+			self.vel = self.vel + Vec2:new(0, -speed)
+		end,
+		["S-"] = function(self)
+			self.vel = self.vel + Vec2:new(0, speed)
 		end,
 	}
 }
