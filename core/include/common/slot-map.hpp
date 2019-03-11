@@ -3,36 +3,39 @@
 #include <cassert>
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <memory>
 #include <vector>
+
+struct SlotMapHandle {
+  std::uint32_t id, version = 0;
+};
 
 template <typename T>
 class SlotMap {
 public:
-  struct Handle {
-    std::uint32_t id, version = 0;
-  };
-
   using iterator = typename std::deque<T>::iterator;
   using const_iterator = typename std::deque<T>::const_iterator;
 
-  Handle add(T item) {
-    auto item_idx = size();
+  SlotMapHandle add(T item) {
+    std::uint32_t item_idx = size();
     data.push_back(std::move(item));
 
     if (free_list.empty()) {
-      expand(chunk_size);
+      free_list.push_back(item_idx);
+      indirection.push_back(SlotMapHandle{item_idx});
     }
+
     auto free = free_list.back();
     free_list.pop_back();
     last_idx = free;
 
     auto& handle = indirection[free];
     handle.id = item_idx;
-    return Handle{free, handle.version};
+    return SlotMapHandle{free, handle.version};
   }
 
-  iterator find(Handle handle) {
+  iterator find(SlotMapHandle handle) {
     auto obj_handle = indirection[handle.id];
     if (obj_handle.version == handle.version) {
       return begin() + obj_handle.id;
@@ -40,7 +43,7 @@ public:
     return end();
   }
 
-  const_iterator find(Handle handle) const {
+  const_iterator find(SlotMapHandle handle) const {
     auto obj_handle = indirection[handle.id];
     if (obj_handle.version == handle.version) {
       return begin() + obj_handle.id;
@@ -48,7 +51,7 @@ public:
     return end();
   }
 
-  void remove(Handle handle) {
+  void remove(SlotMapHandle handle) {
     auto& obj_handle = indirection[handle.id];
     if (obj_handle.version == handle.version) {
       free_list.push_back(handle.id);
@@ -69,18 +72,31 @@ private:
   static constexpr std::size_t chunk_size = 256;
 
   void expand(std::size_t count) {
-    assert(indirection.size() == free_list.size());
     auto new_sz = indirection.size() + count;
     indirection.resize(new_sz);
-    free_list.resize(new_sz);
+    free_list.reserve(new_sz);
     for (std::uint32_t i = 0; i < count; ++i) {
       free_list.push_back(size() - i);
     }
-    assert(indirection.size() == free_list.size());
   }
 
   std::deque<T> data;
   std::size_t last_idx;
-  std::vector<Handle> indirection;
+  std::vector<SlotMapHandle> indirection;
   std::vector<std::uint32_t> free_list;
 };
+
+namespace std {
+template <>
+struct hash<SlotMapHandle> {
+  std::size_t operator()(const SlotMapHandle& handle) const {
+    auto a = hash<std::uint32_t>()(handle.id);
+    auto b = hash<std::uint32_t>()(handle.version);
+    return a >= b ? a * a + a + b : a + b * b;
+  }
+};
+} // namespace std
+
+inline bool operator==(const SlotMapHandle& a, const SlotMapHandle& b) {
+  return a.id == b.id && a.version == b.version;
+}

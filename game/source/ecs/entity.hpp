@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+#include "common/slot-map.hpp"
+
 namespace ecs {
-using EntityId = std::size_t;
+// Since each entity has a position, use its slot-map index as Id
+using EntityId = SlotMapHandle;
 }

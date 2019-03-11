@@ -25,7 +25,6 @@ public:
 
 private:
   void define_fw_functions(sol::state& tbl);
-  ecs::EntityId next_id = 0ul;
   ecs::Scene scene;
   ecs::Renderer renderer;
   ecs::Animator animator;
