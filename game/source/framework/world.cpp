@@ -8,14 +8,13 @@
 
 namespace fw {
 void World::define_fw_functions(sol::state& tbl) {
-  tbl.new_usertype<ecs::EntityId>("Entity", "inc_x",
-                                  [&](ecs::EntityId& id, float val) {
-                                    scene.get_position(id) += ssm::vec2(val, 0);
-                                  },
-                                  "inc_y",
-                                  [&](ecs::EntityId& id, float val) {
-                                    scene.get_position(id) += ssm::vec2(0, val);
-                                  });
+  tbl.new_usertype<ecs::EntityId>(
+      "Entity", "pos",
+      sol::property([&](ecs::EntityId& id) { return scene.get_position(id); },
+                    [&](ecs::EntityId& id, ssm::vec2 val) {
+                      scene.get_position(id) = val;
+                    }),
+      "new", sol::no_constructor);
 }
 
 ecs::EntityId World::load_entity(sol::state& lua, sol::table& tbl) {

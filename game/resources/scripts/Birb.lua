@@ -1,3 +1,5 @@
+speed = 10
+
 return {
 	Sprite = {
 		image = "textures/Birb.png",
@@ -19,16 +21,16 @@ return {
 	},
 	Input = {
 		["D+"] = function(self)
-			self:inc_x(10)
+			self.pos = self.pos + Vec2:new(speed, 0)
 		end,
 		["A+"] = function(self)
-			self:inc_x(-10)
+			self.pos = self.pos + Vec2:new(-speed, 0)
 		end,
 		["W+"] = function(self)
-			self:inc_y(10)
+			self.pos = self.pos + Vec2:new(0, speed)
 		end,
 		["S+"] = function(self)
-			self:inc_y(-10)
+			self.pos = self.pos + Vec2:new(0, -speed)
 		end,
 	}
 }
