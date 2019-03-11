@@ -8,11 +8,16 @@
 
 namespace fw {
 void World::define_fw_functions(sol::state& tbl) {
-  tbl["pos"] = [&](ecs::EntityId id) { return scene.get_position(id); };
+  tbl.new_usertype<ecs::EntityId>(
+      "Entity", "pos",
+      sol::property([&](ecs::EntityId id) { return scene.get_position(id); },
+                    [&](ecs::EntityId id, ssm::vec2 val) {
+                      scene.get_position(id) = val;
+                    }));
 }
 
 ecs::EntityId World::load_entity(sol::state& lua, sol::table& tbl) {
-	define_fw_functions(lua);
+  define_fw_functions(lua);
   auto id = next_id++;
   scene.submit(id, ssm::vec2(0, 0));
   if (auto spr = tbl.get<sol::optional<sol::table>>("Sprite")) {

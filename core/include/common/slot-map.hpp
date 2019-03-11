@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -9,51 +10,77 @@ template <typename T>
 class SlotMap {
 public:
   struct Handle {
-    std::uint32_t id, version;
+    std::uint32_t id, version = 0;
   };
 
-  template <typename U>
-  Handle add(U&& item) {
+  using iterator = typename std::deque<T>::iterator;
+  using const_iterator = typename std::deque<T>::const_iterator;
+
+  Handle add(T item) {
+    auto item_idx = size();
+    data.push_back(std::move(item));
+
     if (free_list.empty()) {
-      chunks.push_back(create_chunk());
+      expand(chunk_size);
     }
     auto free = free_list.back();
     free_list.pop_back();
-    auto& obj = chunks[free / chunk_size][free % chunk_size];
-    obj.item = std::forward<T>(item);
-    return obj.handle;
+    last_idx = free;
+
+    auto& handle = indirection[free];
+    handle.id = item_idx;
+    return Handle{free, handle.version};
   }
 
-  T* find(Handle handle) {
-    auto& obj = chunks[handle.id / chunk_size][handle.id % chunk_size];
-    if (obj.handle == handle) {
-      return &obj.item;
+  iterator find(Handle handle) {
+    auto obj_handle = indirection[handle.id];
+    if (obj_handle.version == handle.version) {
+      return begin() + obj_handle.id;
     }
-    return nullptr;
+    return end();
   }
 
-  std::size_t size() const { return chunk_size * chunks.size(); }
+  const_iterator find(Handle handle) const {
+    auto obj_handle = indirection[handle.id];
+    if (obj_handle.version == handle.version) {
+      return begin() + obj_handle.id;
+    }
+    return end();
+  }
+
+  void remove(Handle handle) {
+    auto& obj_handle = indirection[handle.id];
+    if (obj_handle.version == handle.version) {
+      free_list.push_back(handle.id);
+      obj_handle.version++;
+      std::swap(data[obj_handle.id], data.back());
+      data.pop_back();
+    }
+  }
+
+  std::size_t size() const { return data.size(); }
+
+  iterator begin() { return data.begin(); }
+  const_iterator begin() const { return data.begin(); }
+  iterator end() { return data.end(); }
+  const_iterator end() const { return data.end(); }
 
 private:
   static constexpr std::size_t chunk_size = 256;
 
-  struct Object {
-    T item;
-    Handle handle;
-  };
-  using Chunk = std::unique_ptr<Object[]>;
-
-  Chunk create_chunk() {
-    auto chunk = std::make_unique<Object>(chunk_size);
-    for (std::uint32_t i = 0; i < chunk_size; ++i) {
-      chunk[i].handle = Handle{size() + i, 0};
-      // Update free list in reverse, so 0th index is used first
+  void expand(std::size_t count) {
+    assert(indirection.size() == free_list.size());
+    auto new_sz = indirection.size() + count;
+    indirection.resize(new_sz);
+    free_list.resize(new_sz);
+    for (std::uint32_t i = 0; i < count; ++i) {
       free_list.push_back(size() - i);
     }
-    return chunk;
+    assert(indirection.size() == free_list.size());
   }
 
-  std::vector<Chunk> chunks;
-  std::vector<std::uint32_t> indirection;
+  std::deque<T> data;
+  std::size_t last_idx;
+  std::vector<Handle> indirection;
   std::vector<std::uint32_t> free_list;
 };

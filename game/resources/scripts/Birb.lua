@@ -19,16 +19,16 @@ return {
 	},
 	Input = {
 		["D+"] = function(self)
-			pos(self).x = pos(self).x + 10
+			self.pos.x = self.pos.x + 10
 		end,
 		["A+"] = function(self)
-			pos(self).x = pos(self).x - 10
+			self.pos.x = self.pos.x - 10
 		end,
 		["W+"] = function(self)
-			pos(self).y = pos(self).y + 10
+			self.pos.y = self.pos.y + 10
 		end,
 		["S+"] = function(self)
-			pos(self).y = pos(self).y - 10
+			self.pos.y = self.pos.y - 10
 		end,
 	}
 }
