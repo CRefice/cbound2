@@ -6,33 +6,28 @@
 #include <utility>
 
 template <typename ResT, typename IdT = std::string>
-class Resource
-{
+class Resource {
 public:
-	Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
+  Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
 
-	ResT& operator*() {
-		return *resource;
-	}
-	ResT* operator->() {
-		return resource;
-	}
+  ResT& operator*() { return *resource; }
+  ResT* operator->() { return resource; }
 
-	const ResT& operator*() const {
-		return *resource;
-	}
-	const ResT* operator->() const {
-		return resource;
-	}
+  const ResT& operator*() const { return *resource; }
+  const ResT* operator->() const { return resource; }
 
-	auto identifier() const { return id; }
+  IdT identifier() const { return id; }
 
 private:
-	IdT id;
-	ResT* resource;
+  IdT id;
+  ResT* resource;
 };
 
 template <typename KeyT>
 std::filesystem::path to_path(const KeyT& id) {
-	return path::install_dir() / "resources" / id;
+  return path::install_dir() / "resources" / id;
 }
+
+// To be explicitly instantiated per-type
+template <typename ResT>
+ResT load_resource(const std::filesystem::path& path);

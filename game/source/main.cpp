@@ -12,7 +12,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "core/resource/load-file.hpp"
 #include "core/resource/resource-cache.hpp"
 #include "core/script/script.hpp"
 
@@ -39,8 +38,7 @@ int main() {
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
-  ResourceCache<shader::Stage> shaders(
-      [](const auto& id) { return load_shader(to_path(id)); });
+  ResourceCache<shader::Stage> shaders;
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   shader::Program program(*frag, *vert);
@@ -72,8 +70,7 @@ int main() {
                         "resources/tilemaps/overworld-map.lua");
   auto tile_map = fw::tiles::parse_tilemap(res);
 
-  ResourceCache<render::Texture> textures(
-      [](const auto& id) { return load_texture(to_path(id)); });
+  ResourceCache<render::Texture> textures;
   render::SpriteBatch debug_batch(10000, textures);
   render::SpriteBatch text_batch(10000, textures);
   render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
@@ -83,8 +80,7 @@ int main() {
 	input::set_handler(window, world);
   auto bird = world.load_entity(lua, birb_tbl);
 
-  ResourceCache<render::Font> fonts(
-      [](const auto& id) { return load_font(to_path(id)); });
+  ResourceCache<render::Font> fonts;
   auto font = fonts.load("fonts/font.fnt");
   render::TextDrawParams params{font};
   render::TextBatch text(text_batch, params);
