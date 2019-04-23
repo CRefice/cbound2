@@ -13,20 +13,11 @@
 namespace ecs {
 class Renderer {
 public:
-  using iterator =
-      typename ska::flat_hash_map<EntityId, render::Sprite>::iterator;
-  using const_iterator =
-      typename ska::flat_hash_map<EntityId, render::Sprite>::const_iterator;
-
   Renderer(const Scene& scene, ResourceCache<render::Texture>& textures)
       : scene(scene), batch(10000, textures) {}
 
-  iterator get_sprite(EntityId id) { return sprites.find(id); }
-
-  const_iterator get_sprite(EntityId id) const { return sprites.find(id); }
-
-  iterator not_found() { return sprites.end(); }
-  const_iterator not_found() const { return sprites.end(); }
+  render::Sprite* find(EntityId id);
+  const render::Sprite* find(EntityId id) const;
 
   void submit(EntityId id, render::Sprite spr);
 

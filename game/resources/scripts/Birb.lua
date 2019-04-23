@@ -1,5 +1,11 @@
 speed = 100
 
+menu_state = {
+	update = function(self)
+
+	end
+}
+
 return {
 	Sprite = {
 		image = "textures/Birb.png",
@@ -20,6 +26,9 @@ return {
 		}
 	},
 	Input = {
+		["Q+"] = function(self)
+			window(Vec2:new(40, 40), Vec2:new(200, 20), "Poopsy daisy!")
+		end,
 		["D+"] = function(self)
 			self.vel = self.vel + Vec2:new(speed, 0)
 		end,
@@ -44,5 +53,8 @@ return {
 		["S-"] = function(self)
 			self.vel = self.vel + Vec2:new(0, speed)
 		end,
-	}
+	},
+	Update = function(self)
+
+	end
 }

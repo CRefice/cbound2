@@ -1,5 +1,6 @@
 set(SRCS
 	source/ecs/animator.cpp
+	source/ecs/scene.cpp
 	source/ecs/renderer.cpp
 	source/ecs/input.cpp
 	source/debug/interface.cpp
@@ -9,6 +10,7 @@ set(SRCS
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
 	source/framework/world.cpp
+	source/ui/ui.cpp
 	source/main.cpp
 )
 

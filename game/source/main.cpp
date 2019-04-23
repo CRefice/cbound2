@@ -72,7 +72,6 @@ int main() {
 
   ResourceCache<render::Texture> textures;
   render::SpriteBatch debug_batch(10000, textures);
-  render::SpriteBatch text_batch(10000, textures);
   render::StaticTileBatch tile_batch(textures, *tile_map, *tile_set);
   render::AnimTileBatch anim_tile_batch(textures, *tile_map, *tile_set);
 
@@ -80,13 +79,7 @@ int main() {
 	input::set_handler(window, world);
   auto bird = world.load_entity(lua, birb_tbl);
 
-  ResourceCache<render::Font> fonts;
-  auto font = fonts.load("fonts/font.fnt");
-  render::TextDrawParams params{font};
-  render::TextBatch text(text_batch, params);
-
-  auto str = R"(Woah, I can do {color:#ff2020}colored{color} text!)";
-  anim::TextDrawl text_anim(str);
+  //anim::TextDrawl text_anim(str);
 
   debug::interface::init(window);
 
@@ -117,9 +110,9 @@ int main() {
 
     world.update(dt);
 
-    text_anim.progress(dt);
-    text.draw(text_anim.current_slice(), ssm::vec2(100, 50));
-    text_batch.flush();
+    //text_anim.progress(dt);
+    //text.draw(text_anim.current_slice(), ssm::vec2(100, 50));
+    //text_batch.flush();
 
     post_process.draw_all();
 

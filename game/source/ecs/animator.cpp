@@ -10,11 +10,10 @@ void Animator::submit(EntityId id, Sequencer anim) {
 void Animator::update(double dt) {
   for (auto &[id, anim] : anims) {
     anim.progress(dt);
-    auto it = renderer.get_sprite(id);
+    auto sprite = renderer.find(id);
     // Every entity with an Anim component should also have a Sprite component
-    assert(it != renderer.not_found());
-		auto& sprite = it->second;
-    sprite.frame = anim.current_value();
+    assert(sprite != nullptr);
+    sprite->frame = anim.current_value();
   }
 }
 }

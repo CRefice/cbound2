@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cassert>
-
 #include <ssm/vector.hpp>
 
 #include "common/slot-map.hpp"
@@ -16,16 +14,11 @@ struct Movement {
 // Holds the movement components of all entities.
 class Scene {
 public:
-  const Movement& get_movement(EntityId id) const { return *data.find(id); }
-  Movement& get_movement(EntityId id) { return *data.find(id); }
+  const Movement* find(EntityId id) const;
+  Movement* find(EntityId id);
 
-  EntityId submit(Movement mov) { return data.add(mov); }
-
-  void update(double dt) {
-    for (auto& mvmt : data) {
-      mvmt.pos += (float)dt * mvmt.velocity;
-    }
-  }
+  EntityId submit(Movement mov);
+  void update(double dt);
 
 private:
   SlotMap<Movement> data;

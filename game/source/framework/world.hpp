@@ -11,12 +11,13 @@
 #include "ecs/input.hpp"
 #include "ecs/renderer.hpp"
 #include "ecs/scene.hpp"
+#include "ui/ui.hpp"
 
 namespace fw {
 class World : public ::input::KeyHandler {
 public:
   World(ResourceCache<::render::Texture>& textures)
-      : renderer(scene, textures), animator(renderer) {}
+      : renderer(scene, textures), animator(renderer), ui(textures) {}
 
   ecs::EntityId load_entity(sol::state& lua, sol::table& tbl);
   void update(double dt);
@@ -29,5 +30,6 @@ private:
   ecs::Renderer renderer;
   ecs::Animator animator;
   ecs::InputManager input;
+  ui::UiContext ui;
 };
 } // namespace fw
