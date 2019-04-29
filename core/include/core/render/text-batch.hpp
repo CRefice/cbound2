@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string_view>
 #include <optional>
+#include <string_view>
 
 #include "core/text/control-code.hpp"
 
@@ -10,45 +10,47 @@
 #include "sprite-batch.hpp"
 
 namespace render {
-struct TextDrawParams
-{
-	// The font to draw this text with.
-	Resource<Font> font;
-	// The base color to draw text with.
-	ssm::vec4 color = ssm::vec4(1.0f);
-	// If not empty, the renderer will go to the next line
-	// if the text width exceeds this value,
-	// instead of overflowing off-screen.
-	std::optional<float> max_width = {};
-	// Spacing between characters, in pixels.
-	float char_spacing = 1;
-	// Spacing between lines, in pixels.
-	float line_spacing = 13;
+struct TextDrawParams {
+  // The font to draw this text with.
+  Resource<Font> font;
+  // The base color to draw text with.
+  ssm::vec4 color = ssm::vec4(1.0f);
+  // If not empty, the renderer will go to the next line
+  // if the text width exceeds this value,
+  // instead of overflowing off-screen.
+  std::optional<float> max_width = {};
+  // Spacing between characters, in pixels.
+  float char_spacing = 1;
+  // Spacing between lines, in pixels.
+  float line_spacing = 13;
 };
 
 // A SpriteBatch adapter that can draw text.
-class TextBatch
-{
+class TextBatch {
 public:
-	// @param font: the font to draw the text with.
-	// @param batch: a reference to the spritebatch to draw text to.
-	// @param params: drawing parameters.
-	TextBatch(SpriteBatch& batch, TextDrawParams params) :
-		batch(batch), params(std::move(params)) {}
+  // @param font: the font to draw the text with.
+  // @param batch: a reference to the spritebatch to draw text to.
+  // @param params: drawing parameters.
+  TextBatch(SpriteBatch& batch, TextDrawParams params)
+      : batch(batch), params(std::move(params)) {}
 
-	// Draws the given string at the given world position.
-	void draw(std::string_view str, const ssm::vec2& pos);
+  // Draws the given string at the given world position, with the given color
+  // (default = white).
+  void draw(std::string_view str, const ssm::vec2& pos,
+            ssm::vec4 color = ssm::vec4(1.0f));
+
+  void set_max_width(std::optional<float> w) {
+    params.max_width = std::move(w);
+  }
 
 private:
-	void control_code(const text::ControlCode& code);
-	void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos);
-	std::optional<CharMetrics> metrics_of(std::string_view ch);
-	void set_color(ssm::vec4 clr) {
-		color = std::move(clr);
-	}
+  void control_code(const text::ControlCode& code, ssm::vec4& out_color);
+  void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos,
+                  const ssm::vec4& clr);
+  std::optional<CharMetrics> metrics_of(std::string_view ch);
 
-	SpriteBatch& batch;
-	TextDrawParams params;
-	ssm::vec4 color;
+  SpriteBatch& batch;
+  TextDrawParams params;
+  ssm::vec4 color;
 };
-}
+} // namespace render
