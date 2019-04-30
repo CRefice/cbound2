@@ -12,6 +12,7 @@ set(SRCS
 	source/render/texture.cpp
 	source/render/tiles.cpp
 	source/render/tile-batch.cpp
+	source/render/uniform-buffer.cpp
 	source/resource/load-font.cpp
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp

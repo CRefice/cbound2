@@ -3,6 +3,7 @@
 #include <ssm/vector.hpp>
 
 #include "common/slot-map.hpp"
+#include "core/render/tiles.hpp"
 
 #include "entity.hpp"
 
@@ -19,6 +20,9 @@ public:
 
   EntityId submit(Movement mov);
   void update(double dt);
+
+	render::TileMap tile_map;
+	render::TileSet tile_set;
 
 private:
   SlotMap<Movement> data;

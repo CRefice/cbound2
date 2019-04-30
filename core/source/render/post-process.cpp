@@ -2,9 +2,11 @@
 
 #include "render/post-process.hpp"
 
+#include <GLFW/glfw3.h>
+
 namespace render {
 // Initialize the screen vao and vbo.
-PostProcessStack::PostProcessStack(ssm::ivec2 scrsz) : screen_size(scrsz) {
+PostProcessStack::PostProcessStack(render::Context context) : context(context) {
   glBindVertexArray(screen_vao);
   glBindBuffer(GL_ARRAY_BUFFER, screen_vbo);
 
@@ -42,7 +44,7 @@ void PostProcessStack::new_frame() {
   ssm::ivec2 size;
   if (stack.empty()) {
     handle = 0;
-    size = screen_size;
+    size = screen_size();
   } else {
     auto& fb = stack.front().frame_buffer;
     handle = fb.handle();
@@ -70,7 +72,7 @@ void PostProcessStack::draw_all() {
       size = fb.size();
     } else {
       handle = 0;
-      size = screen_size;
+      size = screen_size();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, handle);
     glViewport(0, 0, size.x, size.y);
@@ -79,5 +81,12 @@ void PostProcessStack::draw_all() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLES, 0, 6);
   }
+}
+
+
+ssm::ivec2 PostProcessStack::screen_size() const {
+  int width, height;
+  glfwGetFramebufferSize(context, &width, &height);
+	return ssm::ivec2(width, height);
 }
 } // namespace render

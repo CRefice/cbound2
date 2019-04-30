@@ -8,6 +8,7 @@
 template <typename ResT, typename IdT = std::string>
 class Resource {
 public:
+  Resource() = default;
   Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
 
   ResT& operator*() { return *resource; }

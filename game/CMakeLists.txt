@@ -1,7 +1,8 @@
 set(SRCS
 	source/ecs/animator.cpp
 	source/ecs/scene.cpp
-	source/ecs/renderer.cpp
+	source/ecs/sprite-renderer.cpp
+	source/ecs/master-renderer.cpp
 	source/ecs/input.cpp
 	source/debug/interface.cpp
 	source/debug/profiling.cpp

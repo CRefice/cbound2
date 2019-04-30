@@ -8,16 +8,15 @@
 #include "core/resource/resource-cache.hpp"
 
 #include "ecs/animator.hpp"
+#include "ecs/camera.hpp"
 #include "ecs/input.hpp"
-#include "ecs/renderer.hpp"
+#include "ecs/master-renderer.hpp"
 #include "ecs/scene.hpp"
-#include "ui/ui.hpp"
 
 namespace fw {
 class World : public ::input::KeyHandler {
 public:
-  World(ResourceCache<::render::Texture>& textures)
-      : renderer(scene, textures), animator(renderer), ui(textures) {}
+  explicit World(::render::Context context);
 
   ecs::EntityId load_entity(sol::state& lua, sol::table& tbl);
   void update(double dt);
@@ -26,10 +25,11 @@ public:
 
 private:
   void define_fw_functions(sol::state& tbl);
+
+	ecs::Camera camera;
   ecs::Scene scene;
-  ecs::Renderer renderer;
+  ecs::MasterRenderer renderer;
   ecs::Animator animator;
   ecs::InputManager input;
-  ui::UiContext ui;
 };
 } // namespace fw

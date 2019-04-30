@@ -1,4 +1,7 @@
+#include <ssm/transform.hpp>
+
 #include "core/anim/sequencer.hpp"
+#include "core/input/input.hpp"
 
 #include "anim.hpp"
 #include "input.hpp"
@@ -6,7 +9,16 @@
 
 #include "world.hpp"
 
+inline int SCREEN_HEIGHT = 180;
+inline int SCREEN_WIDTH = 320;
+
 namespace fw {
+World::World(::render::Context context) : renderer(context, animator) {
+  ::input::set_handler(context, *this);
+  camera.projection =
+      ssm::ortho<float>(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, -100);
+}
+
 void World::define_fw_functions(sol::state& tbl) {
   tbl.new_usertype<ecs::EntityId>(
       "Entity", "pos",
@@ -19,7 +31,7 @@ void World::define_fw_functions(sol::state& tbl) {
       "new", sol::no_constructor);
   tbl["window"] = [this](ssm::vec2 tl, ssm::vec2 br, std::string_view text) {
     auto rect = Rectangle<float>(tl, br);
-    ui.text_window(rect, text);
+    // ui.text_window(rect, text);
   };
 }
 
@@ -47,7 +59,6 @@ ecs::EntityId World::load_entity(sol::state& lua, sol::table& tbl) {
 void World::update(double dt) {
   scene.update(dt);
   animator.update(dt);
-  renderer.update(dt);
-  ui.flush();
+  renderer.draw_all(scene, camera);
 }
 } // namespace fw
