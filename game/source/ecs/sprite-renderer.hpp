@@ -23,7 +23,7 @@ public:
 
   void submit(EntityId id, render::Sprite spr);
 
-  void draw_all(const Scene& scene, const shader::Program& shader);
+  void draw_all(const Scene& scene);
 
 private:
   const Animator& anim;

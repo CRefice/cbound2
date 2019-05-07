@@ -36,20 +36,10 @@ int main() {
 
   auto lua = script::new_environment();
   fw::anim::load_libraries(lua);
-  sol::table birb_tbl =
-      lua.script_file(path::install_dir() / "resources/scripts/Birb.lua");
-
-  auto res = lua.script_file(path::install_dir() /
-                             "resources/tilesets/overworld-set.lua");
-  auto tile_set = fw::tiles::parse_tileset(res);
-  res = lua.script_file(path::install_dir() /
-                        "resources/tilemaps/overworld-map.lua");
-  auto tile_map = fw::tiles::parse_tilemap(res);
 
   fw::World world(window);
-  auto bird = world.load_entity(lua, birb_tbl);
-
-  // anim::TextDrawl text_anim(str);
+  world.load_scene(lua, lua.script_file(path::install_dir() /
+                                        "resources/scripts/scene1.lua"));
 
   debug::interface::init(window);
 
@@ -68,10 +58,6 @@ int main() {
     old_time = new_time;
 
     world.update(dt);
-
-    // text_anim.progress(dt);
-    // text.draw(text_anim.current_slice(), ssm::vec2(100, 50));
-    // text_batch.flush();
 
     if (show_debug) {
       debug::interface::new_frame();

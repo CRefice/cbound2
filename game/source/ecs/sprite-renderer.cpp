@@ -17,9 +17,7 @@ render::Sprite *SpriteRenderer::find(EntityId id) {
   return it == sprites.end() ? nullptr : &(it->second);
 }
 
-void SpriteRenderer::draw_all(const Scene &scene,
-                              const shader::Program &shader) {
-  glUseProgram(shader.handle());
+void SpriteRenderer::draw_all(const Scene &scene) {
   for (const auto &[id, s] : sprites) {
 		render::Sprite sprite{s};
     auto movement = scene.find(id);

@@ -2,8 +2,8 @@
 
 #include <hash/flat_hash_map.hpp>
 
-#include "core/render/render.hpp"
 #include "core/render/post-process.hpp"
+#include "core/render/render.hpp"
 #include "core/render/tile-batch.hpp"
 
 #include "camera.hpp"
@@ -37,7 +37,7 @@ private:
   SpriteRenderer sprite_renderer;
   render::StaticTileBatch static_tiles;
   render::AnimTileBatch dynamic_tiles;
-	render::PostProcessStack post_process;
+  render::PostProcessStack post_process;
   shader::Program sprite_shader;
   shader::Program tile_shader;
 };

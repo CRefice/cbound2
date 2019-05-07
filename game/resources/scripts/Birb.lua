@@ -1,18 +1,12 @@
 speed = 100
 
-menu_state = {
-	update = function(self)
-
-	end
-}
-
 return {
-	Sprite = {
+	sprite = {
 		image = "textures/Birb.png",
 		size = { 32, 32 },
 		frame = { 0, 0, 32, 32 }
 	},
-	Anim = {
+	anim = {
 		mode = play_mode.loop,
 		frames = {
 			{
@@ -25,7 +19,7 @@ return {
 			},
 		}
 	},
-	Input = {
+	input = {
 		["Q+"] = function(self)
 			window(Vec2:new(40, 40), Vec2:new(200, 20), "Poopsy daisy!")
 		end,
@@ -54,7 +48,4 @@ return {
 			self.vel = self.vel + Vec2:new(0, speed)
 		end,
 	},
-	Update = function(self)
-
-	end
 }

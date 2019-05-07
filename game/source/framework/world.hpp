@@ -18,15 +18,16 @@ class World : public ::input::KeyHandler {
 public:
   explicit World(::render::Context context);
 
-  ecs::EntityId load_entity(sol::state& lua, sol::table& tbl);
+  void load_scene(sol::state& lua, const sol::table& tbl);
   void update(double dt);
 
   void handle(::input::KeyEvent e) final { input.handle(e); }
 
 private:
+  ecs::EntityId load_entity(sol::state& lua, const sol::table& tbl);
   void define_fw_functions(sol::state& tbl);
 
-	ecs::Camera camera;
+  ecs::Camera camera;
   ecs::Scene scene;
   ecs::MasterRenderer renderer;
   ecs::Animator animator;

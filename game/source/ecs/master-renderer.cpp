@@ -34,10 +34,11 @@ void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
 	post_process.new_frame();
 
   glUseProgram(tile_shader.handle());
-  static_tiles.issue_draw_call();
   dynamic_tiles.issue_draw_call(scene.tile_set);
+  static_tiles.issue_draw_call();
 
-  sprite_renderer.draw_all(scene, sprite_shader);
+  glUseProgram(sprite_shader.handle());
+  sprite_renderer.draw_all(scene);
 
 	post_process.draw_all();
 }
