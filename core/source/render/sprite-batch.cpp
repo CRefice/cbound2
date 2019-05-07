@@ -85,12 +85,12 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos,
   vertices.emplace_back(ssm::extend(bounds.top_right(), z),
                         normalize(frame.top_right(), size), color);
 
-  indices.emplace_back(base_index);
-  indices.emplace_back(base_index + 1);
-  indices.emplace_back(base_index + 2);
-  indices.emplace_back(base_index);
-  indices.emplace_back(base_index + 2);
-  indices.emplace_back(base_index + 3);
+  indices.push_back(base_index);
+  indices.push_back(base_index + 1);
+  indices.push_back(base_index + 2);
+  indices.push_back(base_index);
+  indices.push_back(base_index + 2);
+  indices.push_back(base_index + 3);
 }
 
 void SpriteBatch::flush() {
