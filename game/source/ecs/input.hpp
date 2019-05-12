@@ -21,7 +21,7 @@ struct InputContext {
 class InputManager : public input::KeyHandler {
 public:
   void submit(EntityId id, InputContext ctx) {
-    contexts.emplace_back(id, ctx);
+    contexts.emplace_back(id, std::move(ctx));
   }
 
   void handle(::input::KeyEvent event) final;

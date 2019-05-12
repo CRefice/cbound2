@@ -6,8 +6,11 @@
 #include "core/render/render.hpp"
 #include "core/render/tile-batch.hpp"
 
+#include "ui/widget.hpp"
+
 #include "camera.hpp"
 #include "sprite-renderer.hpp"
+#include "ui-manager.hpp"
 
 namespace ecs {
 class MasterRenderer {
@@ -24,7 +27,7 @@ public:
     sprite_renderer.submit(id, spr);
   }
 
-  void update(double dt) { dynamic_tiles.progress(dt); }
+  void update(double dt);
   void switch_tiles(const render::TileMap& map, const render::TileSet& set);
 
   void draw_all(const Scene& scene, const Camera& camera);
@@ -35,6 +38,8 @@ private:
   ResourceCache<render::Texture> textures;
 
   SpriteRenderer sprite_renderer;
+  UiManager ui;
+
   render::StaticTileBatch static_tiles;
   render::AnimTileBatch dynamic_tiles;
   render::PostProcessStack post_process;

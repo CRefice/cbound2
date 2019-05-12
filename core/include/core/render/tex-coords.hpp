@@ -19,4 +19,13 @@ inline TexCoord normalize(const PixelCoord& coord, const PixelCoord& size) {
 	auto y = coord.y * std::numeric_limits<unsigned short>::max() / size.y;
 	return TexCoord(x, y);
 }
+
+template <typename T>
+Rectangle<float> convert(Rectangle<T> frame) {
+	float l = frame.left();
+	float r = frame.right();
+	float t = frame.top();
+	float b = frame.bottom();
+	return Rectangle<float>(l, r, t, b);
+}
 }

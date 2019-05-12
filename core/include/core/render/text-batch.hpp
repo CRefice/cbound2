@@ -39,10 +39,6 @@ public:
   void draw(std::string_view str, const ssm::vec2& pos,
             ssm::vec4 color = ssm::vec4(1.0f));
 
-  void set_max_width(std::optional<float> w) {
-    params.max_width = std::move(w);
-  }
-
 private:
   void control_code(const text::ControlCode& code, ssm::vec4& out_color);
   void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos,

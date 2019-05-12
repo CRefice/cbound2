@@ -4,6 +4,7 @@ set(SRCS
 	source/ecs/sprite-renderer.cpp
 	source/ecs/master-renderer.cpp
 	source/ecs/input.cpp
+	source/ecs/ui-manager.cpp
 	source/debug/interface.cpp
 	source/debug/profiling.cpp
 	source/framework/anim.cpp
@@ -11,7 +12,7 @@ set(SRCS
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
 	source/framework/world.cpp
-	source/ui/ui.cpp
+	source/ui/text.cpp
 	source/main.cpp
 )
 

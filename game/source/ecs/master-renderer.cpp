@@ -5,7 +5,7 @@ inline int SCREEN_WIDTH = 320;
 
 namespace ecs {
 MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
-    : sprite_renderer(anim, textures), post_process(context) {
+    : sprite_renderer(anim, textures), ui(textures), post_process(context) {
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   sprite_shader = shader::Program(*frag, *vert);
@@ -22,6 +22,11 @@ MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
       shader::Program(*vert, *frag));
 }
 
+void MasterRenderer::update(double dt) {
+  dynamic_tiles.progress(dt);
+  ui.update(dt);
+}
+
 void MasterRenderer::switch_tiles(const render::TileMap& map,
                                   const render::TileSet& set) {
   static_tiles = render::StaticTileBatch(textures, map, set);
@@ -31,7 +36,7 @@ void MasterRenderer::switch_tiles(const render::TileMap& map,
 void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
   camera_buf.store<Camera>(camera);
 
-	post_process.new_frame();
+  post_process.new_frame();
 
   glUseProgram(tile_shader.handle());
   dynamic_tiles.issue_draw_call(scene.tile_set);
@@ -40,6 +45,6 @@ void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
   glUseProgram(sprite_shader.handle());
   sprite_renderer.draw_all(scene);
 
-	post_process.draw_all();
+  post_process.draw_all();
 }
 } // namespace ecs
