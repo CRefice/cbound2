@@ -30,8 +30,8 @@ set(LIBS
 	fmt
 	glad
 	glfw
-	ssm
 	sol2
+	ssm
 	stb-image
 	${OPENGL_gl_LIBRARY}
 )

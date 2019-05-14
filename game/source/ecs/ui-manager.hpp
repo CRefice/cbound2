@@ -13,6 +13,7 @@
 #include "ui/widget.hpp"
 
 #include "entity.hpp"
+#include "scene.hpp"
 
 namespace ecs {
 class UiManager {
@@ -23,7 +24,7 @@ public:
   void remove(EntityId id);
 
   void update(double dt);
-  void draw_all();
+  void draw_all(const Scene& scene);
 
 private:
   ska::flat_hash_map<EntityId, std::unique_ptr<ui::Widget>> widgets;

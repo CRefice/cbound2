@@ -11,11 +11,13 @@
 namespace ui {
 class Text : public Widget {
 public:
-  Text(std::string text, render::TexFrame frame);
-  Text(std::string text, double speed, render::TexFrame frame);
+  Text(std::string text, ssm::vec2 size);
+  Text(std::string text, double speed, ssm::vec2 size);
 
   void update(double dt) override;
-  void draw(UiContext& context) const override;
+  void draw(ssm::vec2 pos, UiContext& context) const override;
+
+  std::unique_ptr<Widget> clone() const override;
 
 private:
   anim::TextDrawl drawl;

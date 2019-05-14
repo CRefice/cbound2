@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sol.hpp>
+#include <sol/sol.hpp>
 
 #include "core/input/key.hpp"
 #include "core/render/render.hpp"
@@ -18,6 +18,8 @@ class World : public ::input::KeyHandler {
 public:
   explicit World(::render::Context context);
 
+  void register_functions(sol::state& tbl);
+
   void load_scene(sol::state& lua, const sol::table& tbl);
   void update(double dt);
 
@@ -25,7 +27,6 @@ public:
 
 private:
   ecs::EntityId load_entity(sol::state& lua, const sol::table& tbl);
-  void define_fw_functions(sol::state& tbl);
 
   ecs::Camera camera;
   ecs::Scene scene;

@@ -27,6 +27,10 @@ public:
     sprite_renderer.submit(id, spr);
   }
 
+  void submit(EntityId id, std::unique_ptr<ui::Widget> widget) {
+    ui.submit(id, std::move(widget));
+  }
+
   void update(double dt);
   void switch_tiles(const render::TileMap& map, const render::TileSet& set);
 

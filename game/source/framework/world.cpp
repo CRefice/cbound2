@@ -1,14 +1,16 @@
-#include <ssm/transform.hpp>
-
 #include "common/logging.hpp"
+#include <ssm/transform.hpp>
 
 #include "core/anim/sequencer.hpp"
 #include "core/input/input.hpp"
 
+#include "ui/text.hpp"
+
 #include "anim.hpp"
 #include "input.hpp"
-#include "tiles.hpp"
 #include "sprite.hpp"
+#include "tiles.hpp"
+#include "ui.hpp"
 
 #include "world.hpp"
 
@@ -23,7 +25,7 @@ World::World(::render::Context context) : renderer(context, animator) {
       ssm::ortho<float>(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, -100);
 }
 
-void World::define_fw_functions(sol::state& tbl) {
+void World::register_functions(sol::state& tbl) {
   tbl.new_usertype<ecs::EntityId>(
       "Entity", "pos",
       sol::property([&](ecs::EntityId& id) { return scene.find(id)->pos; }),
@@ -33,14 +35,12 @@ void World::define_fw_functions(sol::state& tbl) {
                       scene.find(id)->velocity = val;
                     }),
       "new", sol::no_constructor);
-  tbl["window"] = [this](ssm::vec2 tl, ssm::vec2 br, std::string_view text) {
-    auto rect = Rectangle<float>(tl, br);
-    // ui.text_window(rect, text);
-  };
+
+  anim::load_libraries(tbl);
+  ui::load_libraries(tbl);
 }
 
 void World::load_scene(sol::state& lua, const sol::table& tbl) {
-  define_fw_functions(lua);
   auto tile_map = tiles::parse_tilemap(tbl["tile_map"]);
   auto tile_set = tiles::parse_tileset(tbl["tile_set"]);
   auto entities = tbl.get<sol::optional<sol::table>>("entities");
@@ -59,7 +59,10 @@ void World::load_scene(sol::state& lua, const sol::table& tbl) {
 }
 
 ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
-  auto id = scene.submit(ecs::Movement{ssm::vec2(0, 0), ssm::vec2(0, 0)});
+  auto default_pos = ssm::vec2{};
+  auto pos =
+      tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
+  auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
   if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
     if (auto maybe_sprite = render::parse_sprite(*spr)) {
       renderer.submit(id, *maybe_sprite);
@@ -75,7 +78,9 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
       input.submit(id, *maybe_context);
     }
   }
-  return id;
+  if (auto widget = tbl.get<::ui::Widget*>("ui")) {
+    renderer.submit(id, widget->clone());
+  }
 }
 
 void World::update(double dt) {

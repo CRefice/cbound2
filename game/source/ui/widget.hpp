@@ -1,22 +1,26 @@
 #pragma once
 
-#include "core/render/tex-coords.hpp"
+#include <memory>
+
+#include <ssm/vector.hpp>
 
 #include "ui.hpp"
 
 namespace ui {
 class Widget {
 public:
-  Widget(render::TexFrame frame) : frm(frame) {}
+  Widget(ssm::vec2 size) : sz(size) {}
   virtual ~Widget() = 0;
 
-  render::TexFrame frame() const { return frm; }
+  ssm::vec2 size() const { return sz; }
 
   virtual void update(double dt) {}
-  virtual void draw(UiContext& context) const = 0;
+  virtual void draw(ssm::vec2 pos, UiContext& context) const = 0;
+
+  virtual std::unique_ptr<Widget> clone() const = 0;
 
 private:
-  render::TexFrame frm;
+  ssm::vec2 sz;
 };
 
 inline Widget::~Widget() {}

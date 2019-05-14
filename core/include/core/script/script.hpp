@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include <sol.hpp>
+#include <sol/sol.hpp>
 #include <ssm/vector.hpp>
 
 #include "common/rectangle.hpp"

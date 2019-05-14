@@ -45,6 +45,8 @@ void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
   glUseProgram(sprite_shader.handle());
   sprite_renderer.draw_all(scene);
 
+	ui.draw_all(scene);
+
   post_process.draw_all();
 }
 } // namespace ecs

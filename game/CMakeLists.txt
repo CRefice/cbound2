@@ -1,19 +1,20 @@
 set(SRCS
-	source/ecs/animator.cpp
-	source/ecs/scene.cpp
-	source/ecs/sprite-renderer.cpp
-	source/ecs/master-renderer.cpp
-	source/ecs/input.cpp
-	source/ecs/ui-manager.cpp
 	source/debug/interface.cpp
 	source/debug/profiling.cpp
+	source/ecs/animator.cpp
+	source/ecs/input.cpp
+	source/ecs/master-renderer.cpp
+	source/ecs/scene.cpp
+	source/ecs/sprite-renderer.cpp
+	source/ecs/ui-manager.cpp
 	source/framework/anim.cpp
 	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
+	source/framework/ui.cpp
 	source/framework/world.cpp
-	source/ui/text.cpp
 	source/main.cpp
+	source/ui/text.cpp
 )
 
 set(LIBS
