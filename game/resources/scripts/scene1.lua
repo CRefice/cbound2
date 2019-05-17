@@ -5,9 +5,13 @@ return {
 		require("scripts/Birb"),
 		require("scripts/Birb"),
 		{
-			ui = Text.new("This is {color:#000000}colored {color}text!",
-				0.02, Vec2.new(1000, 20)),
-			position = Vec2.new(50, 100)
-		}
+			ui = Window.new(Vec2.new(100, 100)),
+			position = Vec2.new(20, 20)
+		},
+		{
+			ui = Text.new("This is\nreaaaaallly loong text that will definitely overflow!",
+				0.02, Vec2.new(100, 100)),
+			position = Vec2.new(27, 100)
+		},
 	}
 }

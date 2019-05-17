@@ -15,6 +15,7 @@ set(SRCS
 	source/framework/world.cpp
 	source/main.cpp
 	source/ui/text.cpp
+	source/ui/window.cpp
 )
 
 set(LIBS

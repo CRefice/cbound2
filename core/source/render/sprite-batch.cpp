@@ -77,13 +77,13 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos,
   const size_type base_index = vertices.size();
   const float z = depth(pos, layer);
   vertices.emplace_back(ssm::extend(bounds.top_left(), z),
-                        normalize(frame.top_left(), size), color);
-  vertices.emplace_back(ssm::extend(bounds.bottom_left(), z),
                         normalize(frame.bottom_left(), size), color);
+  vertices.emplace_back(ssm::extend(bounds.bottom_left(), z),
+                        normalize(frame.top_left(), size), color);
   vertices.emplace_back(ssm::extend(bounds.bottom_right(), z),
-                        normalize(frame.bottom_right(), size), color);
-  vertices.emplace_back(ssm::extend(bounds.top_right(), z),
                         normalize(frame.top_right(), size), color);
+  vertices.emplace_back(ssm::extend(bounds.top_right(), z),
+                        normalize(frame.bottom_right(), size), color);
 
   indices.push_back(base_index);
   indices.push_back(base_index + 1);
