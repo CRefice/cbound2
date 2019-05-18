@@ -22,5 +22,10 @@ struct Sprite
 	// The portion of the texture that will be used for rendering,
 	// defined in pixel coordinates.
 	TexFrame frame;
+	// The depth layer the sprite is located on.
+	// Sprites with lower depth will be drawn on top of ones with a higher one.
+	float depth = 0.0f;
+	// The color tint the sprite will be drawn with.
+	ssm::vec4 color = ssm::vec4(1.0f);
 };
 }

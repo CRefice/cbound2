@@ -36,12 +36,12 @@ public:
 
   // Draws the given string at the given world position, with the given color
   // (default = white).
-  void draw(std::string_view str, const ssm::vec2& pos,
+  void draw(std::string_view str, const ssm::vec2& pos, float layer = 0.0,
             ssm::vec4 color = ssm::vec4(1.0f));
 
 private:
   void control_code(const text::ControlCode& code, ssm::vec4& out_color);
-  void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos,
+  void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos, float layer,
                   const ssm::vec4& clr);
   std::optional<CharMetrics> metrics_of(std::string_view ch);
 

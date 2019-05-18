@@ -11,21 +11,6 @@ static const GLbitfield mapflags = GL_MAP_WRITE_BIT |
                                    GL_MAP_INVALIDATE_BUFFER_BIT |
                                    GL_MAP_INVALIDATE_RANGE_BIT;
 
-// Logistic-like function that maps the range [-inf, inf] to [-1, 1]
-// The higher growth is, the slower it will reach the asymptote
-static inline float constrain(float x) {
-  constexpr float growth = 100;
-  return x / std::sqrt(x * x + growth);
-}
-
-// Add depth to a 2-d coordinate, given a layer.
-// Sprites are ordered by y coordinate (by a factor of 0.01)
-// Layer is also taken into account
-static inline float depth(const ssm::vec2& pos, unsigned layer) {
-  // Constrain y's to [-1, 1], so that layers take precedence.
-  return layer + constrain(pos.y);
-}
-
 namespace render {
 SpriteBatch::SpriteBatch(size_type batch_size,
                          ResourceCache<Texture>& resources)
@@ -63,8 +48,7 @@ SpriteBatch::SpriteBatch(size_type batch_size,
   glBindVertexArray(0);
 }
 
-void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos,
-                       unsigned layer, const ssm::vec4& color) {
+void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos) {
   if (batch_texture.identifier() != sprite.texture_id) {
     flush();
     batch_texture = resources.load(sprite.texture_id);
@@ -74,8 +58,9 @@ void SpriteBatch::draw(const Sprite& sprite, const ssm::vec2& pos,
   const Rectangle<float> bounds(pos, pos + sprite.size);
   const auto size = batch_texture->size();
   const auto frame = sprite.frame;
+  const auto color = sprite.color;
   const size_type base_index = vertices.size();
-  const float z = depth(pos, layer);
+  const float z = sprite.depth;
   vertices.emplace_back(ssm::extend(bounds.top_left(), z),
                         normalize(frame.bottom_left(), size), color);
   vertices.emplace_back(ssm::extend(bounds.bottom_left(), z),

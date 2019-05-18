@@ -47,23 +47,23 @@ void Window::draw(ssm::vec2 pos, UiContext& ctx) const {
                                        top_right_rect.bottom_left());
 
   auto& batch = ctx.sprite_batch;
-  batch.draw(Sprite{texture, top_left_rect.size(), top_left},
+  batch.draw(Sprite{texture, top_left_rect.size(), top_left, 0.1f},
              top_left_rect.bottom_left());
-  batch.draw(Sprite{texture, top_mid_rect.size(), top_mid},
+  batch.draw(Sprite{texture, top_mid_rect.size(), top_mid, 0.1f},
              top_mid_rect.bottom_left());
-  batch.draw(Sprite{texture, top_right_rect.size(), top_right},
+  batch.draw(Sprite{texture, top_right_rect.size(), top_right, 0.1f},
              top_right_rect.bottom_left());
-  batch.draw(Sprite{texture, mid_left_rect.size(), mid_left},
+  batch.draw(Sprite{texture, mid_left_rect.size(), mid_left, 0.1f},
              mid_left_rect.bottom_left());
-  batch.draw(Sprite{texture, mid_mid_rect.size(), mid_mid},
+  batch.draw(Sprite{texture, mid_mid_rect.size(), mid_mid, 0.1f},
              mid_mid_rect.bottom_left());
-  batch.draw(Sprite{texture, mid_right_rect.size(), mid_right},
+  batch.draw(Sprite{texture, mid_right_rect.size(), mid_right, 0.1f},
              mid_right_rect.bottom_left());
-  batch.draw(Sprite{texture, bottom_left_rect.size(), bottom_left},
+  batch.draw(Sprite{texture, bottom_left_rect.size(), bottom_left, 0.1f},
              bottom_left_rect.bottom_left());
-  batch.draw(Sprite{texture, bottom_mid_rect.size(), bottom_mid},
+  batch.draw(Sprite{texture, bottom_mid_rect.size(), bottom_mid, 0.1f},
              bottom_mid_rect.bottom_left());
-  batch.draw(Sprite{texture, bottom_right_rect.size(), bottom_right},
+  batch.draw(Sprite{texture, bottom_right_rect.size(), bottom_right, 0.1f},
              bottom_right_rect.bottom_left());
 }
 

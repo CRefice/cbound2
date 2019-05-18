@@ -1,7 +1,6 @@
 set(SRCS
 	source/anim/text-drawl.cpp
 	source/common/paths.cpp
-	source/common/color.cpp
 	source/input/input.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
