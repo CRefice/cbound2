@@ -22,6 +22,7 @@ public:
   const render::Sprite* find(EntityId id) const;
 
   void submit(EntityId id, render::Sprite spr);
+  void remove(EntityId id);
 
   void draw_all(const Scene& scene);
 

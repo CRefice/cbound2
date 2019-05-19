@@ -31,6 +31,8 @@ public:
     ui.submit(id, std::move(widget));
   }
 
+	void remove(EntityId id);
+
   void update(double dt);
   void switch_tiles(const render::TileMap& map, const render::TileSet& set);
 

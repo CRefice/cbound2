@@ -36,6 +36,13 @@ void World::register_functions(sol::state& tbl) {
                     }),
       "new", sol::no_constructor);
 
+  tbl.create_named_table(
+      "world", "instantiate",
+      [this](const sol::table& table, sol::this_state s) {
+        return load_entity((sol::state&)s, table);
+      },
+      "remove", [this](const ecs::EntityId& id) { remove(id); });
+
   anim::load_libraries(tbl);
   ui::load_libraries(tbl);
 }
@@ -81,6 +88,14 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
   if (auto widget = tbl.get<::ui::Widget*>("ui")) {
     renderer.submit(id, widget->clone());
   }
+  return id;
+}
+
+void World::remove(ecs::EntityId id) {
+  scene.remove(id);
+  animator.remove(id);
+  input.remove(id);
+  renderer.remove(id);
 }
 
 void World::update(double dt) {
@@ -88,5 +103,7 @@ void World::update(double dt) {
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene, camera);
+
+	input.delete_dead();
 }
 } // namespace fw

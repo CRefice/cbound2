@@ -18,6 +18,8 @@ public:
   Sequencer* find(EntityId id);
   const Sequencer* find(EntityId id) const;
 
+	void remove(EntityId id);
+
   void update(double dt);
 
 private:

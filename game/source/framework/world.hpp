@@ -21,13 +21,15 @@ public:
   void register_functions(sol::state& tbl);
 
   void load_scene(sol::state& lua, const sol::table& tbl);
+  ecs::EntityId load_entity(sol::state& lua, const sol::table& tbl);
+
+  void remove(ecs::EntityId id);
+
   void update(double dt);
 
   void handle(::input::KeyEvent e) final { input.handle(e); }
 
 private:
-  ecs::EntityId load_entity(sol::state& lua, const sol::table& tbl);
-
   ecs::Camera camera;
   ecs::Scene scene;
   ecs::MasterRenderer renderer;

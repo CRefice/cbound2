@@ -16,6 +16,10 @@ const Sequencer *Animator::find(EntityId id) const {
   return it == anims.end() ? nullptr : &(it->second);
 }
 
+void Animator::remove(EntityId id) {
+  anims.erase(id);
+}
+
 void Animator::update(double dt) {
   for (auto &[id, anim] : anims) {
     anim.progress(dt);

@@ -24,9 +24,14 @@ public:
     contexts.emplace_back(id, std::move(ctx));
   }
 
+	void remove(EntityId id);
+
+	void delete_dead();
+
   void handle(::input::KeyEvent event) final;
 
 private:
   std::vector<std::pair<EntityId, InputContext>> contexts;
+	std::size_t to_delete = 0;
 };
 } // namespace ecs

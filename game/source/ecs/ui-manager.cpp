@@ -15,10 +15,10 @@ void UiManager::update(double dt) {
   }
 }
 
-void UiManager::draw_all(const Scene& scene) {
+void UiManager::draw_all(const Scene &scene) {
   auto context = ui::UiContext{fonts.load("fonts/font.fnt"), batch};
   for (auto &[id, widget] : widgets) {
-		auto mvmt = scene.find(id);
+    auto mvmt = scene.find(id);
     widget->draw(mvmt->pos, context);
   }
   batch.flush();

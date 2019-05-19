@@ -11,7 +11,12 @@ return {
 		},
 		{
 			ui = Window.new(Vec2.new(100, 100)),
-			position = Vec2.new(20, 20)
+			position = Vec2.new(20, 20),
+			input = {
+				["Q+"] = function(self)
+					world.remove(self)
+				end
+			}
 		},
 	}
 }

@@ -18,4 +18,6 @@ void Scene::update(double dt) {
     mvmt.pos += mvmt.velocity * (float)dt;
   }
 }
+
+void Scene::remove(EntityId id) { data.remove(id); }
 } // namespace ecs

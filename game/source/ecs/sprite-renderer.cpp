@@ -33,6 +33,10 @@ render::Sprite *SpriteRenderer::find(EntityId id) {
   return it == sprites.end() ? nullptr : &(it->second);
 }
 
+void SpriteRenderer::remove(EntityId id) {
+	sprites.erase(id);
+}
+
 void SpriteRenderer::draw_all(const Scene &scene) {
   for (const auto &[id, s] : sprites) {
     render::Sprite sprite{s};

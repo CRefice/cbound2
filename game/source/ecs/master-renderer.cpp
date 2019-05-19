@@ -27,6 +27,11 @@ void MasterRenderer::update(double dt) {
   ui.update(dt);
 }
 
+void MasterRenderer::remove(EntityId id) {
+	sprite_renderer.remove(id);
+	ui.remove(id);
+}
+
 void MasterRenderer::switch_tiles(const render::TileMap& map,
                                   const render::TileSet& set) {
   static_tiles = render::StaticTileBatch(textures, map, set);

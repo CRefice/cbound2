@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "input.hpp"
 
 namespace ecs {
@@ -16,6 +18,24 @@ void InputManager::handle(input::KeyEvent event) {
     auto &[id, ctx] = *it;
     if (ctx.handle(id, event))
       return;
+  }
+}
+
+void InputManager::remove(EntityId id) {
+  for (auto it = contexts.rbegin(); it != contexts.rend(); ++it) {
+    const auto &[entry_id, ctx] = *it;
+    if (id == entry_id) {
+      std::swap(*it, contexts.back());
+      to_delete++;
+      return;
+    }
+  }
+}
+
+void InputManager::delete_dead() {
+  while (to_delete) {
+    contexts.pop_back();
+		to_delete--;
   }
 }
 } // namespace ecs

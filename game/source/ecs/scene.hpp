@@ -19,6 +19,8 @@ public:
   Movement* find(EntityId id);
 
   EntityId submit(Movement mov);
+	void remove(EntityId id);
+
   void update(double dt);
 
 	render::TileMap tile_map;
