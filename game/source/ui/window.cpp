@@ -66,8 +66,4 @@ void Window::draw(ssm::vec2 pos, UiContext& ctx) const {
   batch.draw(Sprite{texture, bottom_right_rect.size(), bottom_right, 0.1f},
              bottom_right_rect.bottom_left());
 }
-
-std::unique_ptr<Widget> Window::clone() const {
-  return std::make_unique<Window>(*this);
-}
 } // namespace ui

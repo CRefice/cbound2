@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hash/flat_hash_map.hpp>
+#include <sol/sol.hpp>
 
 #include "core/render/post-process.hpp"
 #include "core/render/render.hpp"
@@ -27,8 +28,8 @@ public:
     sprite_renderer.submit(id, spr);
   }
 
-  void submit(EntityId id, std::unique_ptr<ui::Widget> widget) {
-    ui.submit(id, std::move(widget));
+  void submit(EntityId id, ui::Widget* widget) {
+    ui.submit(id, widget);
   }
 
 	void remove(EntityId id);
@@ -37,6 +38,8 @@ public:
   void switch_tiles(const render::TileMap& map, const render::TileSet& set);
 
   void draw_all(const Scene& scene, const Camera& camera);
+
+	void load_libraries(sol::state& state);
 
 private:
   render::UniformBuffer camera_buf{sizeof(Camera)};

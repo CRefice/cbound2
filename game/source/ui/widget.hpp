@@ -17,8 +17,6 @@ public:
   virtual void update(double dt) {}
   virtual void draw(ssm::vec2 pos, UiContext& context) const = 0;
 
-  virtual std::unique_ptr<Widget> clone() const = 0;
-
 private:
   ssm::vec2 sz;
 };

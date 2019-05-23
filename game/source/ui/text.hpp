@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 #include "core/anim/text-drawl.hpp"
 #include "core/render/font.hpp"
@@ -11,15 +11,17 @@
 namespace ui {
 class Text : public Widget {
 public:
-  Text(std::string text, ssm::vec2 size);
-  Text(std::string text, double speed, ssm::vec2 size);
+  Text(std::string_view text, ssm::vec2 size, Resource<render::Font> font);
+  Text(std::string_view text, double speed, ssm::vec2 size, Resource<render::Font> font);
 
   void update(double dt) override;
   void draw(ssm::vec2 pos, UiContext& context) const override;
 
-  std::unique_ptr<Widget> clone() const override;
+  void skip() { drawl.skip(); }
+  bool done() const { return drawl.done(); }
 
 private:
+  render::TextDrawParams params;
   anim::TextDrawl drawl;
 };
 } // namespace ui

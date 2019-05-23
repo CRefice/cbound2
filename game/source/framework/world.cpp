@@ -44,7 +44,7 @@ void World::register_functions(sol::state& tbl) {
       "remove", [this](const ecs::EntityId& id) { remove(id); });
 
   anim::load_libraries(tbl);
-  ui::load_libraries(tbl);
+  renderer.load_libraries(tbl);
 }
 
 void World::load_scene(sol::state& lua, const sol::table& tbl) {
@@ -86,7 +86,7 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
     }
   }
   if (auto widget = tbl.get<::ui::Widget*>("ui")) {
-    renderer.submit(id, widget->clone());
+    renderer.submit(id, widget);
   }
   return id;
 }

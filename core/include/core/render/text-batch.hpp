@@ -13,17 +13,20 @@ namespace render {
 struct TextDrawParams {
   // The font to draw this text with.
   Resource<Font> font;
-  // The base color to draw text with.
-  ssm::vec4 color = ssm::vec4(1.0f);
   // If not empty, the renderer will go to the next line
   // if the text width exceeds this value,
   // instead of overflowing off-screen.
   std::optional<float> max_width = {};
+  // The base color to draw text with.
+  ssm::vec4 color = ssm::vec4(1.0f);
   // Spacing between characters, in pixels.
   float char_spacing = 1;
   // Spacing between lines, in pixels.
   float line_spacing = 13;
 };
+
+std::string split_whitespace(std::string_view str,
+                             const TextDrawParams& params);
 
 // A SpriteBatch adapter that can draw text.
 class TextBatch {
@@ -43,7 +46,6 @@ private:
   void control_code(const text::ControlCode& code, ssm::vec4& out_color);
   void draw_glyph(const CharMetrics& metrics, const ssm::vec2& pos, float layer,
                   const ssm::vec4& clr);
-  std::optional<CharMetrics> metrics_of(std::string_view ch);
 
   SpriteBatch& batch;
   TextDrawParams params;

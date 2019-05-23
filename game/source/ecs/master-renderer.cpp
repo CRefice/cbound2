@@ -54,4 +54,8 @@ void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
 
   post_process.draw_all();
 }
+
+void MasterRenderer::load_libraries(sol::state& state) {
+	ui.load_libraries(state);
+}
 } // namespace ecs

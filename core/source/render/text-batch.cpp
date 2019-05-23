@@ -1,12 +1,54 @@
+#include <cctype>
+
 #include "common/logging.hpp"
 #include "core/script/script.hpp"
 
 #include "render/text-batch.hpp"
 
 namespace render {
+std::optional<CharMetrics> metrics_of(std::string_view str,
+                                      const TextDrawParams& params) {
+  const auto& font = params.font;
+  const auto it = font->char_map.find(std::string(str));
+  if (it == font->char_map.end()) {
+    WARN_LOG("Couldn't find a glyph for character {} in font {}", str,
+             font->texture_id);
+    return std::nullopt;
+  }
+  return std::optional(it->second);
+}
+
+std::string split_whitespace(std::string_view str,
+                             const TextDrawParams& params) {
+  if (!params.max_width.has_value()) {
+    return std::string(str);
+  }
+
+  std::string ret;
+  std::size_t start = 0, end = 0;
+  float width = 0.0f;
+  for (char c : str) {
+    if (auto metrics = metrics_of(std::string_view(&c, 1), params)) {
+      width += metrics->frame.width() + params.char_spacing;
+    }
+    if (width >= *params.max_width) {
+      ret += '\n';
+      width = 0.0f;
+    }
+    end++;
+    if (std::isspace(c)) {
+      auto word = str.substr(start, end - start);
+      ret += std::string(word);
+      start = end;
+    }
+  }
+  auto word = str.substr(start, end - start);
+  ret += std::string(word);
+  return ret;
+}
+
 void TextBatch::draw(std::string_view text, const ssm::vec2& pos, float layer,
                      ssm::vec4 color) {
-
   auto cursor = pos;
   auto newline = [&]() {
     cursor = ssm::vec2(pos.x, cursor.y - params.line_spacing);
@@ -24,25 +66,11 @@ void TextBatch::draw(std::string_view text, const ssm::vec2& pos, float layer,
       str.remove_prefix(index - 1);
       continue;
     }
-    if (auto metrics = metrics_of(std::string_view(&c, 1))) {
+    if (auto metrics = metrics_of(std::string_view(&c, 1), params)) {
       draw_glyph(*metrics, cursor, layer, color);
       cursor += ssm::vec2(metrics->frame.width() + params.char_spacing, 0);
-      if (params.max_width && cursor.x >= *params.max_width) {
-        newline();
-      }
     }
   }
-}
-
-std::optional<CharMetrics> TextBatch::metrics_of(std::string_view str) {
-  const auto& font = params.font;
-  const auto it = font->char_map.find(std::string(str));
-  if (it == font->char_map.end()) {
-    WARN_LOG("Couldn't find a glyph for character {} in font {}", str,
-             font->texture_id);
-    return std::nullopt;
-  }
-  return std::optional(it->second);
 }
 
 void TextBatch::draw_glyph(const CharMetrics& cm, const ssm::vec2& pos,

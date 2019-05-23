@@ -8,7 +8,5 @@ public:
   Window(ssm::vec2 sz) : Widget(sz) {}
 
   void draw(ssm::vec2 pos, UiContext& context) const override;
-
-  std::unique_ptr<Widget> clone() const override;
 };
 } // namespace ui
