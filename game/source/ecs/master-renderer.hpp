@@ -53,5 +53,6 @@ private:
   render::PostProcessStack post_process;
   shader::Program sprite_shader;
   shader::Program tile_shader;
+  shader::Program ui_shader;
 };
 } // namespace ecs

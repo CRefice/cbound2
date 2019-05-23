@@ -11,7 +11,6 @@ set(SRCS
 	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
-	source/framework/ui.cpp
 	source/framework/world.cpp
 	source/main.cpp
 	source/ui/text.cpp

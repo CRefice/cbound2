@@ -11,6 +11,8 @@ MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   sprite_shader = shader::Program(*frag, *vert);
+  vert = shaders.load("shaders/ui.v.glsl");
+  ui_shader = shader::Program(*frag, *vert);
   sprite_shader.bind("Camera", camera_buf);
   frag = shaders.load("shaders/tile.f.glsl");
   vert = shaders.load("shaders/tile.v.glsl");
@@ -56,6 +58,7 @@ void MasterRenderer::draw_all(const Scene& scene) {
   glUseProgram(sprite_shader.handle());
   sprite_renderer.draw_all(scene);
 
+  glUseProgram(ui_shader.handle());
   ui.draw_all(scene);
 
   post_process.draw_all();

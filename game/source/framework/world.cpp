@@ -10,7 +10,6 @@
 #include "input.hpp"
 #include "sprite.hpp"
 #include "tiles.hpp"
-#include "ui.hpp"
 
 #include "world.hpp"
 
