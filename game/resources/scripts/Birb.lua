@@ -24,6 +24,9 @@ return {
 		["Q+"] = function(self)
 			text_window("Holy fuck, I can't believe this works! This is insane! I am so happy I am speaking {color:#ff0000} in red! Can you believe it??", Vec2:new(20, 20), Vec2:new(200,100))
 		end,
+		["C+"] = function(self)
+			render.camera.pan_to(Vec2:new(0, 0) - self.pos);
+		end,
 		["D+"] = function(self)
 			self.vel = self.vel + Vec2:new(speed, 0)
 		end,

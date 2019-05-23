@@ -13,5 +13,5 @@ layout (std140) uniform Camera
 
 void main() {
 	tex_coord = vec2(tex_coords.x, 1 - tex_coords.y);
-	gl_Position = view * projection * vertex;
+	gl_Position = projection * view * vertex;
 }

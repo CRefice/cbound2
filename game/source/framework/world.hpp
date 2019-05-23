@@ -30,7 +30,6 @@ public:
   void handle(::input::KeyEvent e) final { input.handle(e); }
 
 private:
-  ecs::Camera camera;
   ecs::Scene scene;
   ecs::MasterRenderer renderer;
   ecs::Animator animator;

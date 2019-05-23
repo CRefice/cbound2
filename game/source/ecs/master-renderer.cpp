@@ -1,3 +1,5 @@
+#include <ssm/transform.hpp>
+
 #include "master-renderer.hpp"
 
 inline int SCREEN_HEIGHT = 180;
@@ -20,6 +22,10 @@ MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
   post_process.emplace_pass(
       render::Texture(ssm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), nullptr),
       shader::Program(*vert, *frag));
+
+  camera.view = ssm::identity<float, 4>();
+  camera.projection =
+      ssm::ortho<float>(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, -100);
 }
 
 void MasterRenderer::update(double dt) {
@@ -28,8 +34,8 @@ void MasterRenderer::update(double dt) {
 }
 
 void MasterRenderer::remove(EntityId id) {
-	sprite_renderer.remove(id);
-	ui.remove(id);
+  sprite_renderer.remove(id);
+  ui.remove(id);
 }
 
 void MasterRenderer::switch_tiles(const render::TileMap& map,
@@ -38,7 +44,7 @@ void MasterRenderer::switch_tiles(const render::TileMap& map,
   dynamic_tiles = render::AnimTileBatch(textures, map, set);
 }
 
-void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
+void MasterRenderer::draw_all(const Scene& scene) {
   camera_buf.store<Camera>(camera);
 
   post_process.new_frame();
@@ -50,12 +56,18 @@ void MasterRenderer::draw_all(const Scene& scene, const Camera& camera) {
   glUseProgram(sprite_shader.handle());
   sprite_renderer.draw_all(scene);
 
-	ui.draw_all(scene);
+  ui.draw_all(scene);
 
   post_process.draw_all();
 }
 
 void MasterRenderer::load_libraries(sol::state& state) {
-	ui.load_libraries(state);
+  ui.load_libraries(state);
+
+  auto table = state.create_table("render");
+  table.create_named("camera", "pan_to", [this](ssm::vec2 position) {
+    auto vec = ssm::extend(position, 0.0);
+    camera.view = ssm::translation(vec);
+  });
 }
 } // namespace ecs

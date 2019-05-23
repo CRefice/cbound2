@@ -14,15 +14,9 @@
 
 #include "world.hpp"
 
-inline int SCREEN_HEIGHT = 180;
-inline int SCREEN_WIDTH = 320;
-
 namespace fw {
 World::World(::render::Context context) : renderer(context, animator) {
   ::input::set_handler(context, *this);
-  camera.view = ssm::identity<float, 4>();
-  camera.projection =
-      ssm::ortho<float>(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, -100);
 }
 
 void World::register_functions(sol::state& tbl) {
@@ -102,8 +96,8 @@ void World::update(double dt) {
   scene.update(dt);
   animator.update(dt);
   renderer.update(dt);
-  renderer.draw_all(scene, camera);
+  renderer.draw_all(scene);
 
-	input.delete_dead();
+  input.delete_dead();
 }
 } // namespace fw

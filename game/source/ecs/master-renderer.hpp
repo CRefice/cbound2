@@ -28,18 +28,16 @@ public:
     sprite_renderer.submit(id, spr);
   }
 
-  void submit(EntityId id, ui::Widget* widget) {
-    ui.submit(id, widget);
-  }
+  void submit(EntityId id, ui::Widget* widget) { ui.submit(id, widget); }
 
-	void remove(EntityId id);
+  void remove(EntityId id);
 
   void update(double dt);
   void switch_tiles(const render::TileMap& map, const render::TileSet& set);
 
-  void draw_all(const Scene& scene, const Camera& camera);
+  void draw_all(const Scene& scene);
 
-	void load_libraries(sol::state& state);
+  void load_libraries(sol::state& state);
 
 private:
   render::UniformBuffer camera_buf{sizeof(Camera)};
@@ -49,6 +47,7 @@ private:
   SpriteRenderer sprite_renderer;
   UiManager ui;
 
+  ecs::Camera camera;
   render::StaticTileBatch static_tiles;
   render::AnimTileBatch dynamic_tiles;
   render::PostProcessStack post_process;
