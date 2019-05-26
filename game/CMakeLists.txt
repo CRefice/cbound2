@@ -38,7 +38,9 @@ target_include_directories(cbound-game PRIVATE source/)
 target_link_libraries(cbound-game PRIVATE "${LIBS}")
 target_compile_options(cbound-game PRIVATE "${OPTS}")
 target_compile_features(cbound-game PRIVATE cxx_std_17)
-target_compile_definitions(cbound-game PRIVATE "SOL_CHECK_ARGUMENTS" "SOL_PRINT_ERRORS")
+if (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+	target_compile_definitions(cbound-game PRIVATE "SOL_CHECK_ARGUMENTS" "SOL_PRINT_ERRORS")
+endif()
 
 # Add a custom copy-resources command
 set(RESOURCE_INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
@@ -46,7 +48,8 @@ set(RESOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
 add_custom_command(
 	TARGET cbound-game POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E create_symlink
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	${RESOURCE_INPUT_DIR}
 	${RESOURCE_OUTPUT_DIR}
+	&& python "${PROJECT_SOURCE_DIR}/scripts/resources.py" ${RESOURCE_OUTPUT_DIR}
 	)
