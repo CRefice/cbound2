@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <hash/flat_hash_map.hpp>
-#include <sol/sol.hpp>
+#include <sol/forward.hpp>
 
 #include "core/render/font.hpp"
 #include "core/render/sprite-batch.hpp"

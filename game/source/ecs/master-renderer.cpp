@@ -1,4 +1,5 @@
 #include <ssm/transform.hpp>
+#include <sol/sol.hpp>
 
 #include "master-renderer.hpp"
 

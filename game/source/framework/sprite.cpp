@@ -1,3 +1,5 @@
+#include <sol/sol.hpp>
+
 #include "core/script/script.hpp"
 
 #include "common/logging.hpp"

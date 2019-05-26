@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <sol/sol.hpp>
+
 #include "input.hpp"
 
 namespace ecs {

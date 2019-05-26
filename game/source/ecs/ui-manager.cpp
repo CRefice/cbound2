@@ -1,3 +1,5 @@
+#include <sol/sol.hpp>
+
 #include "ui/text.hpp"
 #include "ui/ui.hpp"
 #include "ui/window.hpp"

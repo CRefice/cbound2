@@ -1,7 +1,7 @@
 #pragma once
 
 #include <hash/flat_hash_map.hpp>
-#include <sol/sol.hpp>
+#include <sol/forward.hpp>
 
 #include "core/render/post-process.hpp"
 #include "core/render/render.hpp"

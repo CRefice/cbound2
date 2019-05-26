@@ -2,28 +2,14 @@
 
 #include <ssm/transform.hpp>
 
-#include "core/anim/text-drawl.hpp"
+#include "ecs/world.hpp"
 
 #include "core/input/input.hpp"
-
-#include "core/render/text-batch.hpp"
-#include "core/render/tile-batch.hpp"
-
-#include <GLFW/glfw3.h>
-
-#include "core/resource/resource-cache.hpp"
 #include "core/script/script.hpp"
-
-#include "common/logging.hpp"
 
 #include "debug/interface.hpp"
 #include "debug/profiling.hpp"
 
-#include "framework/anim.hpp"
-#include "framework/input.hpp"
-#include "framework/sprite.hpp"
-#include "framework/tiles.hpp"
-#include "framework/world.hpp"
 
 bool show_debug = false;
 

@@ -1,15 +1,16 @@
-#include "common/logging.hpp"
+#include <sol/sol.hpp>
 #include <ssm/transform.hpp>
 
+#include "common/logging.hpp"
 #include "core/anim/sequencer.hpp"
 #include "core/input/input.hpp"
 
 #include "ui/text.hpp"
 
-#include "anim.hpp"
-#include "input.hpp"
-#include "sprite.hpp"
-#include "tiles.hpp"
+#include "framework/anim.hpp"
+#include "framework/input.hpp"
+#include "framework/sprite.hpp"
+#include "framework/tiles.hpp"
 
 #include "world.hpp"
 

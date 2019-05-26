@@ -7,11 +7,11 @@ set(SRCS
 	source/ecs/scene.cpp
 	source/ecs/sprite-renderer.cpp
 	source/ecs/ui-manager.cpp
+	source/ecs/world.cpp
 	source/framework/anim.cpp
 	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/framework/tiles.cpp
-	source/framework/world.cpp
 	source/main.cpp
 	source/ui/text.cpp
 	source/ui/window.cpp

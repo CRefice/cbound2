@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include <sol/sol.hpp>
+#include <sol/forward.hpp>
 
 #include "core/render/sprite.hpp"
 

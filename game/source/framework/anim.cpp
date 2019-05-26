@@ -1,5 +1,7 @@
 #include <vector>
 
+#include <sol/sol.hpp>
+
 #include "common/logging.hpp"
 
 #include "core/script/script.hpp"

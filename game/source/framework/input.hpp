@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include <sol/sol.hpp>
+#include <sol/forward.hpp>
 
 #include "core/input/key.hpp"
 #include "ecs/input.hpp"

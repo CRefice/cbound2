@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include <sol/sol.hpp>
+#include <sol/forward.hpp>
 
 #include "core/anim/sequence.hpp"
 #include "core/render/tex-coords.hpp"
