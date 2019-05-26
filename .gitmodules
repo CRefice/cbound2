@@ -10,12 +10,13 @@
 [submodule "externals/ssm"]
 	path = externals/ssm
 	url = https://github.com/CRefice/ssm
-[submodule "externals/sol2"]
-	path = externals/sol2
-	url = https://github.com/ThePhD/sol2.git
 [submodule "externals/imgui/imgui"]
 	path = externals/imgui/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "externals/flat_hash_map/flat_hash_map"]
 	path = externals/flat_hash_map/hash
 	url = git@github.com:skarupke/flat_hash_map.git
+[submodule "externals/sol2"]
+	path = externals/sol2
+	url = git@github.com:ThePhD/sol2.git
+	branch = develop
