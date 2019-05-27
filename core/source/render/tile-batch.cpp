@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 
 #include <ssm/transform.hpp>
 
@@ -24,6 +25,7 @@ static void fill_buffers(std::vector<TileVertex> &vertices,
                          const TileSet &set, const ssm::ivec2 tex_size) {
   for (const auto &layer : map.layers) {
     const auto z = layer.depth;
+    std::cout << z << '\n';
     for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
       int tile = layer.tiles[i];
       if (tile == 0)
@@ -64,6 +66,7 @@ static void fill_anim_buffers(std::vector<ssm::vec3> &positions,
                               const TileMap &map, const TileSet &set) {
   for (const auto &layer : map.layers) {
     const auto z = layer.depth;
+    std::cout << z << '\n';
     for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
       int tile = layer.tiles[i] - 1;
       if (set.anim_tiles.find(tile) == set.anim_tiles.end())

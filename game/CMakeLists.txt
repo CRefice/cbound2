@@ -46,8 +46,8 @@ endif()
 set(RESOURCE_INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(RESOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
-add_custom_command(
-	TARGET cbound-game POST_BUILD
+add_custom_target(
+	build-resources ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	${RESOURCE_INPUT_DIR}
 	${RESOURCE_OUTPUT_DIR}

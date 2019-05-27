@@ -75,7 +75,7 @@ TileMap::Layer parse_layer(const sol::table& table, int default_depth) {
 std::vector<TileMap::Layer> parse_layers(const sol::table& table) {
 	std::vector<TileMap::Layer> layers;
 	layers.reserve(table.size());
-	int depth = table.size() + 1;
+	int depth = table.size();
 	for (const auto& [key, val] : table) {
 		layers.emplace_back(parse_layer(val, depth--));
 	}
