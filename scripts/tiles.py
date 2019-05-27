@@ -49,6 +49,6 @@ def convert_tsx(infile, outfile):
         f.write("return {\n")
         f.write("\tsize = {{{},{}}},\n".format(int(width), int(height)))
         f.write("\ttile_size = {{{},{}}},\n".format(tilewidth, tileheight))
-        f.write("\timage = \"{}\",\n".format(split_until('resources', image)))
+        f.write("\timage = \"{}\",\n".format(split_until('..', image)))
         f.write("\ttiles = {{\n\t\t{}\n\t}}\n".format(',\n\t\t'.join("{{\n\t\t\tid = {}, frames = {{\n{}\n}}\n\t\t}}".format(tile.attrib['id'], format_anim(tile)) for tile in anims)))
         f.write("}\n")
