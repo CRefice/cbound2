@@ -1,12 +1,15 @@
 class Tabulator:
     def __init__(self):
-        self.indent = 0
+        self.tabs = 0
 
-    def push_indent(self):
-        self.indent = self.indent+1
+    def indent(self):
+        self.tabs += 1
 
-    def pop_indent(self):
-        self.indent = self.indent-1
+    def unindent(self):
+        self.tabs -= 1
+
+    def string(self, text):
+        return "\t" * self.tabs + text
 
     def line(self, text):
-        return '\t' * self.indent + text + '\n'
+        return self.string(text) + "\n"
