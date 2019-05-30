@@ -4,12 +4,13 @@
 
 #include "ecs/world.hpp"
 
+#include "common/logging.hpp"
+
 #include "core/input/input.hpp"
 #include "core/script/script.hpp"
 
 #include "debug/interface.hpp"
 #include "debug/profiling.hpp"
-
 
 bool show_debug = false;
 
@@ -25,8 +26,17 @@ int main() {
   {
     fw::World world(window);
     world.register_functions(lua);
-    world.load_scene(lua, lua.script_file(path::install_dir() /
-                                          "resources/scripts/scene1.lua"));
+
+    auto maybe_scene = lua.safe_script_file(path::install_dir() /
+                                                "resources/scripts/scene1.lua",
+                                            script::on_error)
+                           .get<sol::optional<sol::table>>();
+
+    if (!maybe_scene) {
+      FATAL_LOG("Unable to load main scene");
+      std::abort();
+    }
+    world.load_scene(lua, *maybe_scene);
 
     debug::interface::init(window);
 

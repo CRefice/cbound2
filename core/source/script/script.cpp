@@ -1,7 +1,9 @@
 #include <charconv>
 #include <cstdint>
 
+#include "common/logging.hpp"
 #include "common/paths.hpp"
+
 #include "script/script.hpp"
 
 static bool result_valid(std::from_chars_result result) {
@@ -30,7 +32,7 @@ std::optional<ssm::vec4> parse_color(std::string_view str) {
 
 sol::state new_environment() {
   sol::state lua;
-  lua.open_libraries(sol::lib::base, sol::lib::package);
+  lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine);
 
   std::string package_path = lua["package"]["path"];
   lua["package"]["path"] = package_path + (package_path.empty() ? "" : ";") +
@@ -49,5 +51,12 @@ void load_common_libs(sol::state& state) {
                     [](ssm::vec2& vec, float val) { vec.y = val; }),
       "__add", [](ssm::vec2& a, ssm::vec2 b) { return a + b; }, "__sub",
       [](ssm::vec2& a, ssm::vec2 b) { return a - b; });
+}
+
+sol::protected_function_result on_error(lua_State*,
+                                        sol::protected_function_result pfr) {
+  sol::error err = pfr;
+  ERROR_LOG("Lua error: {}", err.what());
+  return pfr;
 }
 } // namespace script
