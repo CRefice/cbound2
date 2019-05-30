@@ -31,14 +31,16 @@ static auto parse_frames(std::istream& s) {
 
 template <>
 Font load_resource<Font>(const fs::path& path) {
-  SCOPE_LOG("Loading font: {}", path.string());
+  SCOPE_LOG("Loading font file \"{}\"", path.string());
   std::ifstream file(path);
   if (!file.good()) {
-    ERROR_LOG("Unable to open file {}", path.string());
+    ERROR_LOG("Unable to open file \"{}\"", path.string());
+    return Font{};
   }
   std::string texture_id;
   if (!std::getline(file, texture_id)) {
-    ERROR_LOG("File {} is empty", path.string());
+    ERROR_LOG("File \"{}\" is empty", path.string());
+    return Font{};
   }
   auto map = parse_frames(file);
   return Font{texture_id, std::move(map)};

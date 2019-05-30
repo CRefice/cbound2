@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 template <>
 shader::Stage load_resource<shader::Stage>(const fs::path& path) {
-  SCOPE_LOG("Loading shader: {}", path.string());
+  SCOPE_LOG("Loading shader file \"{}\"", path.string());
   shader::Type type;
   if (path.string().rfind(".f") != std::string::npos)
     type = shader::Type::Fragment;
@@ -19,7 +19,8 @@ shader::Stage load_resource<shader::Stage>(const fs::path& path) {
 
   std::ifstream file(path, std::ios::ate);
   if (!file.good()) {
-    ERROR_LOG("Unable to open file {}", path.string());
+    ERROR_LOG("Unable to open file \"{}\"", path.string());
+		return shader::Stage(type, "");
   }
   auto length = file.tellg();
   file.seekg(0, std::ios::beg);
