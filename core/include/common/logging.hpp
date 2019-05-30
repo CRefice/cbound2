@@ -1,13 +1,15 @@
 #pragma once
-#include <fmt/core.h>
 #include <fmt/chrono.h>
+#include <fmt/core.h>
 // Since fmt defines the "fmt" macro, which fucks up other stuff,
 // we undefine it. YAGNI, anyways.
 #undef fmt
 
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <string_view>
+#include <tuple>
 
 #ifndef LOG_FILE_PATH
 #include "paths.hpp"
@@ -36,67 +38,84 @@ inline std::string_view to_string(LogLevel level) {
 // Takes care of formatting the given inputs,
 // and passes them along to the sink.
 // Sinks must provide a write(std::string_view) method.
-template <typename Sink> class Logger {
+template <typename Sink>
+class Logger {
 public:
-  Logger(Sink &sink) : out(sink) {}
+  // Any successive log of a lower level
+  // than the minimum will be skipped.
+  Logger(Sink& sink, LogLevel minimum = LogLevel::Debug)
+      : out(sink), min_level(minimum) {}
 
   // Note that input must be in fmt format strings.
-  template <typename... Args> void log(LogLevel level, Args... args) {
+  template <typename... Args>
+  void log(LogLevel level, Args&&... args) {
     if (level < min_level)
       return;
     auto t = std::time(nullptr);
     out.write(fmt::format("{:%H:%M:%S} ~ [{}]: ", *std::localtime(&t),
                           to_string(level)));
-    out.writeln(fmt::format(args...));
+    out.writeln(fmt::format(std::forward<Args>(args)...));
   }
 
-  // Sets the minimum log level for this particular log.
-  // Any successive log of a lower level
-  // than the provided one will be skipped.
-  void filter(LogLevel minimum) { min_level = minimum; }
+private:
+  Sink& out;
+  LogLevel min_level = Debug;
+};
+
+// Writes logs to multiple loggers at once, each with its own
+// minimum level.
+template <typename... Loggers>
+class MultiLogger {
+public:
+  MultiLogger(Loggers&&... loggers) : logs(std::forward<Loggers>(loggers)...) {}
+
+  template <typename... Args>
+  void log(LogLevel level, Args&&... args) {
+    std::apply(
+        [&](auto&... x) { (..., x.log(level, std::forward<Args>(args)...)); },
+        logs);
+  }
 
 private:
-  LogLevel min_level = Debug;
-  Sink &out;
+  std::tuple<Loggers...> logs;
 };
 
 // Writes debug messages to a log on construction and destruction.
 // Extremely useful for function debugging.
-template <typename Sink, typename... Args>
-class ScopedLogger
-{
+template <typename Log, typename... Args>
+class ScopedLogger {
 public:
-	ScopedLogger(Logger<Sink>& log, Args... args) : log(log),
-	title(fmt::format(args...)) {
-		log.log(LogLevel::Debug, "Entering: {}", title);
-	}
+  ScopedLogger(Log& log, Args... args) : log(log), title(fmt::format(args...)) {
+    log.log(LogLevel::Debug, "Entering: {}", title);
+  }
 
-	~ScopedLogger() {
-		log.log(LogLevel::Debug, "Exited: {}", title);
-	}
+  ~ScopedLogger() { log.log(LogLevel::Debug, "Exited: {}", title); }
 
 private:
-	Logger<Sink>& log;
-	std::string title;
+  Log& log;
+  std::string title;
 };
 
-// Writes logs down to a file.
-class FileSink {
+// Writes logs to a std::stream
+class StreamSink {
 public:
-  FileSink(std::ofstream os) : out(std::move(os)) {}
+  StreamSink(std::ostream& os) : out(os) {}
 
   void write(std::string_view line) { out << line; }
   void writeln(std::string_view line) { out << line << std::endl; }
 
 private:
-  std::ofstream out;
+  std::ostream& out;
 };
 
 // The common log used by macros.
 // Wrapped in a function to avoid being created in release builds.
 inline auto& shared_log() {
-  static FileSink sink(std::ofstream(LOG_FILE_PATH, std::ios::trunc));
-  static Logger log(sink);
+  static std::ofstream file_stream{LOG_FILE_PATH, std::ios::trunc};
+  static StreamSink file_sink(file_stream);
+  static StreamSink cerr_sink(std::cerr);
+  // Write all outputs to file, only critical to stderr
+  static MultiLogger log{Logger(file_sink), Logger(cerr_sink, LogLevel::Fatal)};
   return log;
 }
 
@@ -124,8 +143,10 @@ inline auto& shared_log() {
     logging::shared_log().log(logging::Fatal, __VA_ARGS__);                    \
   } while (0)
 
-#define SCOPE_LOG(...) logging::ScopedLogger _scope_log_{logging::shared_log(), __VA_ARGS__}
-#define FN_LOG logging::ScopedLogger _fn_log_(logging::shared_log(), "function {}", __func__)
+#define SCOPE_LOG(...)                                                         \
+  logging::ScopedLogger _scope_log_ { logging::shared_log(), __VA_ARGS__ }
+#define FN_LOG                                                                 \
+  logging::ScopedLogger _fn_log_(logging::shared_log(), "function {}", __func__)
 #else
 #define DEBUG_LOG(...)
 #define INFO_LOG(...)
