@@ -3,7 +3,7 @@ import sys
 import xml.etree.ElementTree as ET
 from collections import deque
 
-from lua import LuaFormatter
+import lua
 
 
 def split_until(name, path):
@@ -27,15 +27,14 @@ def format_tmx(file):
     tmx = ET.parse(file)
     root = tmx.getroot()
     attribs = root.attrib
-    size = [int(attribs["width"]), int(attribs["height"])]
-    tile_size = [int(attribs["tilewidth"]), int(attribs["tileheight"])]
-    layers = [
+    table = {}
+    table["size"] = [int(attribs["width"]), int(attribs["height"])]
+    table["tile_size"] = [int(attribs["tilewidth"]), int(attribs["tileheight"])]
+    table["layers"] = [
         {"tiles": list(map(int, layer.find("data").text.replace("\n", "").split(",")))}
         for layer in root.findall("layer")
     ]
-    return LuaFormatter().format(
-        {"size": size, "tile_size": tile_size, "layers": layers}
-    )
+    return lua.format(table)
 
 
 def parse_anim(tile):
@@ -50,21 +49,16 @@ def format_tsx(file):
     tsx = ET.parse(file)
     root = tsx.getroot()
     attribs = root.attrib
+    table = {}
     width = int(attribs["columns"])
     height = int(attribs["tilecount"]) // width
-    tile_size = [int(attribs["tilewidth"]), int(attribs["tileheight"])]
+    table["size"] = [width, height]
+    table["tile_size"] = [int(attribs["tilewidth"]), int(attribs["tileheight"])]
     image = root.find("image").attrib["source"]
-    image = resource_path(file, image)
-    tiles = [
+    table["image"] = resource_path(file, image)
+    table["tiles"] = [
         {"id": int(tile.attrib["id"]), "frames": parse_anim(tile)}
         for tile in root.findall("tile")
         if tile.find("animation")
     ]
-    return LuaFormatter().format(
-        {
-            "size": [width, height],
-            "tile_size": tile_size,
-            "image": image,
-            "tiles": tiles,
-        }
-    )
+    return lua.format(table)
