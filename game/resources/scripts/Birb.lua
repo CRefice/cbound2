@@ -27,7 +27,6 @@ function birb()
 			end,
 			["D+"] = function(self)
 				self.vel = self.vel + Vec2:new(speed, 0)
-				print(self)
 			end,
 			["D-"] = function(self)
 				self.vel = self.vel + Vec2:new(-speed, 0)

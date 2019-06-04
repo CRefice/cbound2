@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
 
 #include <sol/sol.hpp>
 
@@ -15,11 +14,13 @@ class Scheduler {
 public:
   void tick();
 
-	template <typename... Args>
-  void run(sol::coroutine coro, Args&&... args) {
+  template <typename... Args>
+  void run(sol::function fn, Args&&... args) {
+    sol::thread runner = sol::thread::create(fn.lua_state());
+    sol::state_view runner_state = runner.state();
+    sol::coroutine coro(runner_state, fn);
     coro(std::forward<Args>(args)...);
     if (coro.runnable()) {
-			std::cout << "pushed a coro on the poop\n";
       scheduled.push_back(coro);
     }
   }

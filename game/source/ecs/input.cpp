@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 
 #include <sol/sol.hpp>
 
@@ -10,7 +9,7 @@ bool InputContext::handle(const EntityId &id, input::KeyEvent event,
                           Scheduler &sched) {
   auto it = actions.find(event);
   if (it != actions.end()) {
-    sched.run(sol::coroutine(it->second), id);
+    sched.run(it->second, id);
     return true;
   }
   return false;
