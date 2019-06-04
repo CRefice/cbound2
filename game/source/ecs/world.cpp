@@ -15,7 +15,8 @@
 #include "world.hpp"
 
 namespace fw {
-World::World(::render::Context context) : renderer(context, animator) {
+World::World(::render::Context context)
+    : renderer(context, animator), input(sched) {
   ::input::set_handler(context, *this);
 }
 
@@ -35,7 +36,8 @@ void World::register_functions(sol::state& tbl) {
       [this](const sol::table& table, sol::this_state s) {
         return load_entity((sol::state&)s, table);
       },
-      "remove", [this](const ecs::EntityId& id) { remove(id); });
+      "remove", [this](const ecs::EntityId& id) { remove(id); }, "game_time",
+      [this]() { return time; });
 
   anim::load_libraries(tbl);
   renderer.load_libraries(tbl);
@@ -97,7 +99,8 @@ void World::update(double dt) {
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene);
-
+  sched.tick();
   input.delete_dead();
+  time += dt;
 }
 } // namespace fw

@@ -6,6 +6,7 @@
 #include "core/render/render.hpp"
 #include "core/render/texture.hpp"
 #include "core/resource/resource-cache.hpp"
+#include "core/script/scheduler.hpp"
 
 #include "animator.hpp"
 #include "input.hpp"
@@ -29,9 +30,12 @@ public:
   void handle(::input::KeyEvent e) final { input.handle(e); }
 
 private:
+  double time = 0.0;
+
   ecs::Scene scene;
   ecs::MasterRenderer renderer;
   ecs::Animator animator;
   ecs::InputManager input;
+  ecs::Scheduler sched;
 };
 } // namespace fw

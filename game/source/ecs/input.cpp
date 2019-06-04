@@ -1,15 +1,16 @@
 #include <algorithm>
+#include <iostream>
 
 #include <sol/sol.hpp>
 
 #include "input.hpp"
 
 namespace ecs {
-bool InputContext::handle(EntityId id, input::KeyEvent event) {
+bool InputContext::handle(const EntityId &id, input::KeyEvent event,
+                          Scheduler &sched) {
   auto it = actions.find(event);
   if (it != actions.end()) {
-    auto &fn = it->second;
-    fn(id);
+    sched.run(sol::coroutine(it->second), id);
     return true;
   }
   return false;
@@ -18,7 +19,7 @@ bool InputContext::handle(EntityId id, input::KeyEvent event) {
 void InputManager::handle(input::KeyEvent event) {
   for (auto it = contexts.rbegin(); it != contexts.rend(); ++it) {
     auto &[id, ctx] = *it;
-    if (ctx.handle(id, event))
+    if (ctx.handle(id, event, sched))
       return;
   }
 }
@@ -37,7 +38,7 @@ void InputManager::remove(EntityId id) {
 void InputManager::delete_dead() {
   while (to_delete) {
     contexts.pop_back();
-		to_delete--;
+    to_delete--;
   }
 }
 } // namespace ecs
