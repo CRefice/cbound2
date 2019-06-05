@@ -5,11 +5,11 @@
 #include "input.hpp"
 
 namespace ecs {
-bool InputContext::handle(const EntityId &id, input::KeyEvent event,
-                          Scheduler &sched) {
+bool InputContext::handle(EntityId id, input::KeyEvent event,
+                          BehaviorManager &behav) {
   auto it = actions.find(event);
   if (it != actions.end()) {
-    sched.run(it->second, id);
+    behav.run(id, it->second);
     return true;
   }
   return false;
@@ -18,7 +18,7 @@ bool InputContext::handle(const EntityId &id, input::KeyEvent event,
 void InputManager::handle(input::KeyEvent event) {
   for (auto it = contexts.rbegin(); it != contexts.rend(); ++it) {
     auto &[id, ctx] = *it;
-    if (ctx.handle(id, event, sched))
+    if (ctx.handle(id, event, behave))
       return;
   }
 }

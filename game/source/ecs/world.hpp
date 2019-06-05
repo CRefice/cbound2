@@ -3,12 +3,9 @@
 #include <sol/forward.hpp>
 
 #include "core/input/key.hpp"
-#include "core/render/render.hpp"
-#include "core/render/texture.hpp"
-#include "core/resource/resource-cache.hpp"
-#include "core/script/scheduler.hpp"
 
 #include "animator.hpp"
+#include "behavior.hpp"
 #include "input.hpp"
 #include "master-renderer.hpp"
 #include "scene.hpp"
@@ -36,6 +33,6 @@ private:
   ecs::MasterRenderer renderer;
   ecs::Animator animator;
   ecs::InputManager input;
-  ecs::Scheduler sched;
+  ecs::BehaviorManager behav;
 };
 } // namespace fw

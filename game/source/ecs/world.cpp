@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <sol/sol.hpp>
 #include <ssm/transform.hpp>
 
@@ -16,7 +18,7 @@
 
 namespace fw {
 World::World(::render::Context context)
-    : renderer(context, animator), input(sched) {
+    : renderer(context, animator), input(behav) {
   ::input::set_handler(context, *this);
 }
 
@@ -99,8 +101,8 @@ void World::update(double dt) {
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene);
-  sched.tick();
   input.delete_dead();
+  behav.tick_all();
   time += dt;
 }
 } // namespace fw

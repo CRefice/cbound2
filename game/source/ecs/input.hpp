@@ -6,23 +6,22 @@
 #include <sol/sol.hpp>
 
 #include "core/input/key.hpp"
-#include "core/script/scheduler.hpp"
 
+#include "behavior.hpp"
 #include "entity.hpp"
 
 namespace ecs {
-using Scheduler = script::Scheduler;
 using ActionCallback = sol::function;
 
 struct InputContext {
-  bool handle(const EntityId& id, ::input::KeyEvent event, Scheduler& sched);
+  bool handle(EntityId id, ::input::KeyEvent event, BehaviorManager& behav);
 
   ska::flat_hash_map<::input::KeyEvent, ActionCallback> actions;
 };
 
 class InputManager : public input::KeyHandler {
 public:
-  InputManager(Scheduler& scheduler) : sched(scheduler) {}
+  InputManager(BehaviorManager& behave) : behave(behave) {}
 
   void submit(EntityId id, InputContext ctx) {
     contexts.emplace_back(id, std::move(ctx));
@@ -35,7 +34,7 @@ public:
   void handle(::input::KeyEvent event) final;
 
 private:
-  Scheduler& sched;
+  BehaviorManager& behave;
   std::vector<std::pair<EntityId, InputContext>> contexts;
   std::size_t to_delete = 0;
 };

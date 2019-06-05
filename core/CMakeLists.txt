@@ -16,7 +16,6 @@ set(SRCS
 	source/resource/load-shader.cpp
 	source/resource/load-texture.cpp
 	source/script/script.cpp
-	source/script/scheduler.cpp
 	source/text/control-codes.cpp
 )
 
