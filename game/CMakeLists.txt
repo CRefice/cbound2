@@ -22,7 +22,6 @@ set(LIBS
 	cbound-core
 	imgui
 	stdc++fs
-	flat_hash_map
 	${OPENGL_gl_LIBRARY}
 )
 

@@ -38,6 +38,16 @@
    <frame tileid="41" duration="500"/>
   </animation>
  </tile>
+ <tile id="44">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="45">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
  <tile id="56">
   <animation>
    <frame tileid="56" duration="100"/>
@@ -58,19 +68,39 @@
    <frame tileid="141" duration="100"/>
   </animation>
  </tile>
+ <tile id="84">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="85">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="86">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
  <tile id="87">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="88">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="89">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="90">
+  <properties>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="120" terrain="2,2,2,0"/>
@@ -86,50 +116,85 @@
    <frame tileid="165" duration="100"/>
   </animation>
  </tile>
+ <tile id="126">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
  <tile id="127">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="128">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="129">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="130">
+  <properties>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="160" terrain="2,0,2,0"/>
  <tile id="161" terrain="0,0,0,0"/>
  <tile id="162" terrain="0,2,0,2"/>
+ <tile id="166">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="167">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="168">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="169">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
+ <tile id="170">
+  <properties>
+   <property name="collision_type" value="Full"/>
+  </properties>
+ </tile>
  <tile id="200" terrain="2,0,2,2"/>
  <tile id="201" terrain="0,0,2,2"/>
  <tile id="202" terrain="0,2,2,2"/>
  <tile id="206">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="207">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="208">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="209">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="210">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="240" terrain="0,0,0,2"/>
@@ -170,17 +235,17 @@
  <tile id="363" terrain="1,1,2,1"/>
  <tile id="364">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="365" terrain="2,2,2,2">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="366">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="367" terrain="2,2,2,2"/>
@@ -210,34 +275,34 @@
  <tile id="403" terrain="2,1,1,1"/>
  <tile id="404">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="405" terrain="2,2,2,2">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="406">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="407" terrain="2,2,2,2"/>
  <tile id="408" terrain="2,2,2,2"/>
  <tile id="444">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="445">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="446">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="455" terrain=",,,3"/>
@@ -245,17 +310,17 @@
  <tile id="457" terrain=",,3,"/>
  <tile id="484">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="485">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="486">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="495" terrain=",3,,3"/>
@@ -263,17 +328,17 @@
  <tile id="497" terrain="3,,3,"/>
  <tile id="524">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="525">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="526">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="535" terrain=",3,,"/>
@@ -281,17 +346,17 @@
  <tile id="537" terrain="3,,,"/>
  <tile id="564">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="565">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="566">
   <properties>
-   <property name="CollisionType" value="Full"/>
+   <property name="collision_type" value="Full"/>
   </properties>
  </tile>
  <tile id="575" terrain="3,3,3,"/>

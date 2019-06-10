@@ -45,6 +45,17 @@ def parse_anim(tile):
     ]
 
 
+def parse_tile(tile):
+    ret = {"id": int(tile.attrib["id"])}
+    if tile.find("animation"):
+        ret["frames"] = parse_anim(tile)
+    props = tile.find("properties")
+    if props:
+        for p in props.findall("property"):
+            ret[p.attrib["name"]] = p.attrib["value"]
+    return ret
+
+
 def format_tsx(file):
     tsx = ET.parse(file)
     root = tsx.getroot()
@@ -57,8 +68,8 @@ def format_tsx(file):
     image = root.find("image").attrib["source"]
     table["image"] = resource_path(file, image)
     table["tiles"] = [
-        {"id": int(tile.attrib["id"]), "frames": parse_anim(tile)}
-        for tile in root.findall("tile")
-        if tile.find("animation")
+        parse_tile(xmltile)
+        for xmltile in root.findall("tile")
+        if xmltile.find("animation") or xmltile.find("properties")
     ]
     return lua.format(table)

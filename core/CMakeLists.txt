@@ -32,6 +32,7 @@ set(LIBS
 	sol2
 	ssm
 	stb-image
+	flat_hash_map
 	${OPENGL_gl_LIBRARY}
 )
 
