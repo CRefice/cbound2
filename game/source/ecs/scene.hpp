@@ -4,6 +4,7 @@
 
 #include "common/slot-map.hpp"
 #include "core/render/tiles.hpp"
+#include "core/resource/resource.hpp"
 
 #include "entity.hpp"
 
@@ -19,12 +20,12 @@ public:
   Movement* find(EntityId id);
 
   EntityId submit(Movement mov);
-	void remove(EntityId id);
+  void remove(EntityId id);
 
   void update(double dt);
 
-	render::TileMap tile_map;
-	render::TileSet tile_set;
+  Resource<render::TileMap> tile_map;
+  Resource<render::TileSet> tile_set;
 
 private:
   SlotMap<Movement> data;

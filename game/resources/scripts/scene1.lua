@@ -12,8 +12,8 @@ birb2.input = {
 }
 
 return {
-	tile_map = require("tiles/overworld-map");
-	tile_set = require("tiles/overworld-set");
+	tile_map = "tiles/overworld.tmx";
+	tile_set = "tiles/overworld.tsx";
 	entities = {
 		birb1,
 		birb2

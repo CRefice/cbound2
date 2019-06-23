@@ -1,6 +1,7 @@
 set(SRCS
 	source/anim/text-drawl.cpp
 	source/common/paths.cpp
+	source/common/string.cpp
 	source/input/input.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
@@ -14,6 +15,8 @@ set(SRCS
 	source/render/uniform-buffer.cpp
 	source/resource/load-font.cpp
 	source/resource/load-shader.cpp
+	source/resource/load-tileset.cpp
+	source/resource/load-tilemap.cpp
 	source/resource/load-texture.cpp
 	source/script/script.cpp
 	source/text/control-codes.cpp
@@ -31,6 +34,7 @@ set(LIBS
 	glfw
 	sol2
 	ssm
+	pugixml
 	stb-image
 	flat_hash_map
 	${OPENGL_gl_LIBRARY}

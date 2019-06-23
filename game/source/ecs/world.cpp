@@ -12,7 +12,6 @@
 #include "framework/anim.hpp"
 #include "framework/input.hpp"
 #include "framework/sprite.hpp"
-#include "framework/tiles.hpp"
 
 #include "world.hpp"
 
@@ -46,18 +45,18 @@ void World::register_functions(sol::state& tbl) {
 }
 
 void World::load_scene(sol::state& lua, const sol::table& tbl) {
-  auto tile_map = tiles::parse_tilemap(tbl["tile_map"]);
-  auto tile_set = tiles::parse_tileset(tbl["tile_set"]);
   auto entities = tbl.get<sol::optional<sol::table>>("entities");
-  if (!tile_map || !tile_set || !entities) {
+  auto map_path = tbl.get<sol::optional<std::string>>("tile_map");
+  auto set_path = tbl.get<sol::optional<std::string>>("tile_set");
+  if (!map_path || !set_path || !entities) {
     WARN_LOG("Parsing scene failed: not all required components are present!");
     return;
   }
 
   scene = ecs::Scene();
-  scene.tile_map = *tile_map;
-  scene.tile_set = *tile_set;
-  renderer.switch_tiles(*tile_map, *tile_set);
+  scene.tile_map = tile_maps.load(*map_path);
+  scene.tile_set = tile_sets.load(*set_path);
+  renderer.switch_tiles(*scene.tile_map, *scene.tile_set);
   for (auto [name, entity] : *entities) {
     load_entity(lua, entity);
   }

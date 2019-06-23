@@ -10,8 +10,6 @@
 #include "tex-coords.hpp"
 
 namespace render {
-enum class TileCollisionType : std::uint8_t { None, Full };
-
 struct TileSet {
   std::string texture_id;
   // Number of tiles in both directions
@@ -20,8 +18,14 @@ struct TileSet {
   PixelCoord tile_size;
   // Maps tile-id to their animation sequence
   ska::flat_hash_map<int, anim::Sequence<int>> anim_tiles;
-  // Contains each tile's collision type
-  Matrix<TileCollisionType> collisions;
+
+  struct CollisionData {
+    // Number of subtiles for each tile in both directions
+    ssm::ivec2 subtile_res;
+    // Contains each tile's collision type
+    Matrix<bool> data;
+  };
+  CollisionData collision;
 };
 
 TexFrame frame_from_id(const TileSet& set, int id);

@@ -56,6 +56,9 @@
 </data>
  </layer>
  <layer id="8" name="roofs" width="25" height="14">
+  <properties>
+   <property name="Depth" type="int" value="0"/>
+  </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,7,8,9,10,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

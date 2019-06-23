@@ -20,3 +20,6 @@
 	path = externals/sol2
 	url = git@github.com:ThePhD/sol2.git
 	branch = develop
+[submodule "externals/pugixml"]
+	path = externals/pugixml
+	url = git@github.com:zeux/pugixml.git

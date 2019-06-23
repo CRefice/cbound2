@@ -53,7 +53,7 @@ void MasterRenderer::draw_all(const Scene& scene) {
   post_process.new_frame();
 
   glUseProgram(tile_shader.handle());
-  dynamic_tiles.issue_draw_call(scene.tile_set);
+  dynamic_tiles.issue_draw_call(*scene.tile_set);
   static_tiles.issue_draw_call();
 
   glUseProgram(sprite_shader.handle());

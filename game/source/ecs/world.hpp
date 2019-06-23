@@ -34,5 +34,8 @@ private:
   ecs::Animator animator;
   ecs::InputManager input;
   ecs::BehaviorManager behav;
+
+  ResourceCache<::render::TileMap> tile_maps;
+  ResourceCache<::render::TileSet> tile_sets;
 };
 } // namespace fw

@@ -12,7 +12,6 @@ set(SRCS
 	source/framework/anim.cpp
 	source/framework/input.cpp
 	source/framework/sprite.cpp
-	source/framework/tiles.cpp
 	source/main.cpp
 	source/ui/text.cpp
 	source/ui/window.cpp
@@ -46,10 +45,8 @@ endif()
 set(RESOURCE_INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(RESOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
-add_custom_target(
-	build-resources ALL
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
+add_custom_command(TARGET cbound-game POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E create_symlink
 	${RESOURCE_INPUT_DIR}
 	${RESOURCE_OUTPUT_DIR}
-	&& python "${PROJECT_SOURCE_DIR}/scripts/resources.py" ${RESOURCE_OUTPUT_DIR}
 	)
