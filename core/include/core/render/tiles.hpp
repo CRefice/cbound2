@@ -32,10 +32,10 @@ TexFrame frame_from_id(const TileSet& set, int id);
 
 struct TileMap {
   struct Layer {
-    // Drawing depth, in the range [1,inf]
+    // Drawing depth
     int depth;
-    // Vector of tile IDs
-    std::vector<int> tiles;
+    // 2D Vector of tile IDs
+    Matrix<int> tiles;
   };
   // Number of tiles in both directions
   ssm::ivec2 size;

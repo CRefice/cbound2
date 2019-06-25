@@ -15,8 +15,7 @@ namespace fs = std::filesystem;
 
 static void change_resolution(TileSet& tileset, ssm::ivec2 res) {
   tileset.collision.subtile_res = res;
-  auto tile_dims = tileset.size * res;
-  tileset.collision.data = Matrix<bool>(tile_dims.x, tile_dims.y);
+  tileset.collision.data = Matrix<bool>(tileset.size * res);
 }
 
 static void draw_collisions(TileSet& tileset, const ImVec4& color,
@@ -24,7 +23,7 @@ static void draw_collisions(TileSet& tileset, const ImVec4& color,
   auto tile_dims = tileset.size * tileset.collision.subtile_res;
   for (int x = 0; x < tile_dims.x; ++x) {
     for (int y = 0; y < tile_dims.y; ++y) {
-      if (tileset.collision.data(x, y)) {
+      if (tileset.collision.data[ssm::ivec2(x, y)]) {
         auto tl =
             ImVec2(origin.x + tile_size.x * x, origin.y + tile_size.y * y);
         auto br = tl;
@@ -45,7 +44,7 @@ static void handle_mouse(TileSet& tileset, ssm::vec2 tile_size, ImVec2 origin) {
     auto mouse = ImGui::GetMousePos();
     auto mouse_rel = ssm::vec2(mouse.x - origin.x, mouse.y - origin.y);
     auto tile_coords = ssm::ivec2(mouse_rel / tile_size);
-    tileset.collision.data(tile_coords.x, tile_coords.y) = pressed;
+    tileset.collision.data[tile_coords] = pressed;
   }
 }
 
@@ -152,8 +151,8 @@ void tileset_editor(ResourceCache<::render::TileSet>& tilesets,
   }
   ImGui::ColorEdit4("Collision GUI color", &color.x);
   if (ImGui::Button("Save")) {
-		io::save_collision(tileset.identifier(), *tileset);
-	}
+    io::save_collision(tileset.identifier(), *tileset);
+  }
   ImGui::EndChild();
 
   ImGui::End();

@@ -24,7 +24,7 @@ static void fill_buffers(std::vector<TileVertex> &vertices,
                          const TileSet &set, const ssm::ivec2 tex_size) {
   for (const auto &layer : map.layers) {
     const auto z = layer.depth;
-    for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
+    for (std::size_t i = 0; i < layer.tiles.num_elements(); ++i) {
       int tile = layer.tiles[i];
       if (tile == 0)
         continue;
@@ -64,7 +64,7 @@ static void fill_anim_buffers(std::vector<ssm::vec3> &positions,
                               const TileMap &map, const TileSet &set) {
   for (const auto &layer : map.layers) {
     const auto z = layer.depth;
-    for (std::size_t i = 0; i < layer.tiles.size(); ++i) {
+    for (std::size_t i = 0; i < layer.tiles.num_elements(); ++i) {
       int tile = layer.tiles[i] - 1;
       if (set.anim_tiles.find(tile) == set.anim_tiles.end())
         continue;

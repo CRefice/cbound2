@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 using namespace render;
 using namespace std::literals;
 
-TileMap::Layer parse_layer(const pugi::xml_node& node) {
+TileMap::Layer parse_layer(const pugi::xml_node& node, const ssm::ivec2& size) {
   auto depth = node.child("properties")
                    .find_child([](const auto& n) {
                      return n.attribute("name").value() == "Depth"s;
@@ -21,13 +21,14 @@ TileMap::Layer parse_layer(const pugi::xml_node& node) {
                    .as_int(-1);
 
   auto data = util::parse_csv(node.child("data").child_value());
-  return TileMap::Layer{depth, std::move(data)};
+  return TileMap::Layer{depth, Matrix(size, std::move(data))};
 }
 
-std::vector<TileMap::Layer> parse_layers(const pugi::xml_node& node) {
+std::vector<TileMap::Layer> parse_layers(const pugi::xml_node& node,
+                                         const ssm::ivec2& size) {
   std::vector<TileMap::Layer> layers;
   for (auto layer : node.children("layer")) {
-    layers.push_back(parse_layer(layer));
+    layers.push_back(parse_layer(layer, size));
   }
 
   // Set default depths after the fact, since we
@@ -39,7 +40,7 @@ std::vector<TileMap::Layer> parse_layers(const pugi::xml_node& node) {
     }
     depth--;
   }
-	return layers;
+  return layers;
 }
 
 template <>
@@ -64,7 +65,7 @@ TileMap load_resource<TileMap>(const fs::path& path) {
   auto size = ssm::ivec2(width, height);
   auto tile_size = ssm::vec2(tilewidth, tileheight);
 
-  return TileMap{size, tile_size, parse_layers(tilemap)};
+  return TileMap{size, tile_size, parse_layers(tilemap, size)};
 }
 
 template TileMap load_resource<TileMap>(const fs::path& path);

@@ -46,7 +46,7 @@ auto parse_collisions(const pugi::xml_node& node, const fs::path& parent_path,
           .attribute("value")
           .value();
   if (!coll_data_path) {
-    return TileSet::CollisionData{ssm::ivec2(1), Matrix<bool>(size.x, size.y)};
+    return TileSet::CollisionData{ssm::ivec2(1), Matrix<bool>(size)};
   }
 
   auto path = parent_path / coll_data_path;
@@ -56,7 +56,7 @@ auto parse_collisions(const pugi::xml_node& node, const fs::path& parent_path,
   if (!result) {
     ERROR_LOG("Error parsing collision data file \"{}\": {}", coll_data_path,
               result.description());
-    return TileSet::CollisionData{ssm::ivec2(1), Matrix<bool>(size.x, size.y)};
+    return TileSet::CollisionData{ssm::ivec2(1), Matrix<bool>(size)};
   }
 
   auto collision = doc.child("collision");
@@ -64,7 +64,7 @@ auto parse_collisions(const pugi::xml_node& node, const fs::path& parent_path,
   auto subrows = collision.attribute("subrows").as_int();
   auto subtile_res = ssm::ivec2(subcols, subrows);
   auto subtile_dims = size * subtile_res;
-  auto matrix = Matrix<bool>(subtile_dims.x, subtile_dims.y);
+  auto matrix = Matrix<bool>(subtile_dims);
 
   auto coll_list = util::parse_csv(collision.child("data").child_value());
   if (coll_list.size() != matrix.num_elements()) {
@@ -72,7 +72,7 @@ auto parse_collisions(const pugi::xml_node& node, const fs::path& parent_path,
   }
   auto n = std::min(coll_list.size(), matrix.num_elements());
   for (std::size_t i = 0; i < n; ++i) {
-    matrix.nth(i) = coll_list[i];
+    matrix[i] = coll_list[i];
   }
   return TileSet::CollisionData{subtile_res, std::move(matrix)};
 }
