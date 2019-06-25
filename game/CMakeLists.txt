@@ -19,6 +19,7 @@ set(SRCS
 
 set(LIBS
 	cbound-core
+	cbound-editor
 	imgui
 	stdc++fs
 	${OPENGL_gl_LIBRARY}

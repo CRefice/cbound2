@@ -9,10 +9,12 @@
 #include "core/input/input.hpp"
 #include "core/script/script.hpp"
 
+#include "editor/tiles.hpp"
+
 #include "debug/interface.hpp"
 #include "debug/profiling.hpp"
 
-bool show_debug = false;
+bool show_debug = true;
 
 int main() {
   auto window = render::create_context();
@@ -31,6 +33,9 @@ int main() {
                                                 "resources/scripts/scene1.lua",
                                             script::on_error)
                            .get<sol::optional<sol::table>>();
+
+		ResourceCache<::render::Texture> textures;
+		ResourceCache<::render::TileSet> tilesets;
 
     if (!maybe_scene) {
       FATAL_LOG("Unable to load main scene");
@@ -60,6 +65,7 @@ int main() {
         debug::interface::new_frame();
         debug::add_time_sample(dt);
         debug::show_profile_window();
+				editor::tileset_editor(tilesets, textures);
         debug::interface::issue_draw_call();
       }
       glfwSwapBuffers(window);

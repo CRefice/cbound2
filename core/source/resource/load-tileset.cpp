@@ -36,7 +36,8 @@ auto parse_anim_tiles(const pugi::xml_node& node) {
   return anims;
 }
 
-auto parse_collisions(const pugi::xml_node& node, const ssm::ivec2& size) {
+auto parse_collisions(const pugi::xml_node& node, const fs::path& parent_path,
+                      const ssm::ivec2& size) {
   auto coll_data_path =
       node.child("properties")
           .find_child([](const auto& n) {
@@ -48,8 +49,10 @@ auto parse_collisions(const pugi::xml_node& node, const ssm::ivec2& size) {
     return TileSet::CollisionData{ssm::ivec2(1), Matrix<bool>(size.x, size.y)};
   }
 
+  auto path = parent_path / coll_data_path;
+
   pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(coll_data_path);
+  pugi::xml_parse_result result = doc.load_file(path.c_str());
   if (!result) {
     ERROR_LOG("Error parsing collision data file \"{}\": {}", coll_data_path,
               result.description());
@@ -63,7 +66,7 @@ auto parse_collisions(const pugi::xml_node& node, const ssm::ivec2& size) {
   auto subtile_dims = size * subtile_res;
   auto matrix = Matrix<bool>(subtile_dims.x, subtile_dims.y);
 
-  auto coll_list = util::parse_csv(doc.child("data").value());
+  auto coll_list = util::parse_csv(collision.child("data").child_value());
   if (coll_list.size() != matrix.num_elements()) {
     WARN_LOG("Collision data length doesn't match subtile count!");
   }
@@ -100,7 +103,7 @@ TileSet load_resource<TileSet>(const fs::path& path) {
   auto tile_size = ssm::ivec2(tilewidth, tileheight);
 
   return TileSet{texture, size, tile_size, parse_anim_tiles(tileset),
-                 parse_collisions(tileset, size)};
+                 parse_collisions(tileset, path.parent_path(), size)};
 }
 
 template TileSet load_resource<TileSet>(const fs::path& path);
