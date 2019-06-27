@@ -26,7 +26,7 @@ int main() {
   auto lua = script::new_environment();
 
   {
-    fw::World world(window);
+    ecs::World world(window);
     world.register_functions(lua);
 
     auto maybe_scene = lua.safe_script_file(path::install_dir() /
@@ -34,8 +34,8 @@ int main() {
                                             script::on_error)
                            .get<sol::optional<sol::table>>();
 
-		ResourceCache<::render::Texture> textures;
-		ResourceCache<::render::TileSet> tilesets;
+    ResourceCache<::render::Texture> textures;
+    ResourceCache<::render::TileSet> tilesets;
 
     if (!maybe_scene) {
       FATAL_LOG("Unable to load main scene");
@@ -65,7 +65,7 @@ int main() {
         debug::interface::new_frame();
         debug::add_time_sample(dt);
         debug::show_profile_window();
-				editor::tileset_editor(tilesets, textures);
+        editor::tileset_editor(tilesets, textures);
         debug::interface::issue_draw_call();
       }
       glfwSwapBuffers(window);

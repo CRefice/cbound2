@@ -6,11 +6,12 @@
 
 #include "animator.hpp"
 #include "behavior.hpp"
+#include "collision.hpp"
 #include "input.hpp"
 #include "master-renderer.hpp"
 #include "scene.hpp"
 
-namespace fw {
+namespace ecs {
 class World : public ::input::KeyHandler {
 public:
   explicit World(::render::Context context);
@@ -34,8 +35,9 @@ private:
   ecs::Animator animator;
   ecs::InputManager input;
   ecs::BehaviorManager behav;
+  ecs::CollisionManager collision;
 
   ResourceCache<::render::TileMap> tile_maps;
   ResourceCache<::render::TileSet> tile_sets;
 };
-} // namespace fw
+} // namespace ecs

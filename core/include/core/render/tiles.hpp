@@ -28,6 +28,7 @@ struct TileSet {
   CollisionData collision;
 };
 
+MatrixView<bool> collision_set_from_id(const TileSet& set, int id);
 TexFrame frame_from_id(const TileSet& set, int id);
 
 struct TileMap {

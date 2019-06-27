@@ -37,3 +37,8 @@ public:
 private:
   ssm::vector<T, 2> bl, tr;
 };
+
+template <typename T>
+Rectangle<T> translate(const Rectangle<T>& rect, ssm::vector<T, 2> pos) {
+  return Rectangle(rect.bottom_left() + pos, rect.top_right() + pos);
+}

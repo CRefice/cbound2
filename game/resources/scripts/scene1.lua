@@ -16,6 +16,5 @@ return {
 	tile_set = "tiles/overworld.tsx";
 	entities = {
 		birb1,
-		birb2
 	}
 }

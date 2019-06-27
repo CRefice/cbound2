@@ -15,7 +15,7 @@ Movement* Scene::find(EntityId id) {
 
 void Scene::update(double dt) {
   for (auto& mvmt : data) {
-    mvmt.pos += mvmt.velocity * (float)dt;
+    //mvmt.pos += mvmt.velocity * (float)dt;
   }
 }
 

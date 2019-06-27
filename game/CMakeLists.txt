@@ -3,6 +3,7 @@ set(SRCS
 	source/debug/profiling.cpp
 	source/ecs/animator.cpp
 	source/ecs/behavior.cpp
+	source/ecs/collision.cpp
 	source/ecs/input.cpp
 	source/ecs/master-renderer.cpp
 	source/ecs/scene.cpp

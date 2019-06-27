@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iterator>
 #include <vector>
 
 #include "rectangle.hpp"
@@ -40,6 +41,7 @@ public:
   reference operator[](std::size_t idx) { return vec[idx]; }
   const_reference operator[](std::size_t idx) const { return vec[idx]; }
 
+  ssm::ivec2 size() const { return sz; };
   std::size_t width() const { return sz.x; };
   std::size_t height() const { return sz.y; };
   std::size_t num_elements() const { return vec.size(); };
@@ -70,6 +72,7 @@ public:
     return mat[pos + area.pos()];
   }
 
+  ssm::ivec2 size() const { return area.size(); };
   std::size_t width() const { return area.width(); };
   std::size_t height() const { return area.height(); };
   std::size_t num_elements() const { return area.area(); };
@@ -93,23 +96,35 @@ class MatrixViewIterator {
   using ViewRef = MatrixView<T, is_const>&;
 
 public:
+  using iterator_category = std::input_iterator_tag;
+  using value_type = T;
+  using difference_type = void;
+  using pointer = void;
+  using reference = ViewRef;
+
   MatrixViewIterator(ViewRef ref, ssm::ivec2 pos = ssm::ivec2(0))
       : ref(ref), pos(pos) {}
 
   decltype(auto) operator*() { return ref[pos]; }
+  auto* operator-> () { return &ref[pos]; }
 
   auto& operator++() {
     pos.x = pos.x + 1;
-    if (pos.x >= ref.width()) {
+    if ((std::size_t)pos.x >= ref.width()) {
       pos.x = 0;
       pos.y = pos.y + 1;
     }
     return *this;
   }
 
-  friend bool operator!=(const MatrixViewIterator<T, is_const>& a,
-                         const MatrixViewIterator<T, is_const>& b) {
-    return a.pos != b.pos;
+  inline friend bool operator==(const MatrixViewIterator<T, is_const>& a,
+                                const MatrixViewIterator<T, is_const>& b) {
+    return a.pos == b.pos;
+  }
+
+  inline friend bool operator!=(const MatrixViewIterator<T, is_const>& a,
+                                const MatrixViewIterator<T, is_const>& b) {
+    return !(a == b);
   }
 
 private:
