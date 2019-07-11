@@ -11,6 +11,7 @@ set(SRCS
 	source/ecs/ui-manager.cpp
 	source/ecs/world.cpp
 	source/framework/anim.cpp
+	source/framework/collision.cpp
 	source/framework/input.cpp
 	source/framework/sprite.cpp
 	source/main.cpp

@@ -8,7 +8,9 @@ function birb()
 			size = { 32, 32 },
 			frame = { 0, 0, 32, 32 }
 		},
-		collision = { 0, 0, 32, 32 },
+		collision = { 
+			bounds = {0, 0, 32, 32 },
+		},
 		anim = {
 			mode = play_mode.loop,
 			frames = {

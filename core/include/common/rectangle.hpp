@@ -6,6 +6,8 @@
 template <typename T>
 class Rectangle {
 public:
+  Rectangle() = default;
+
   Rectangle(ssm::vector<T, 2> p1, ssm::vector<T, 2> p2) {
     T left = p1.x < p2.x ? p1.x : p2.x;
     T right = p1.x < p2.x ? p2.x : p1.x;

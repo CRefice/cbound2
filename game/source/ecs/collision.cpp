@@ -91,37 +91,67 @@ void CollisionManager::submit(EntityId id, Collision coll) {
   collisions.emplace(id, coll);
 }
 
-void CollisionManager::update(double dt, Scene &scene) {
+void CollisionManager::update(double dt, Scene &scene, BehaviorManager &behav) {
   carry_dt += dt;
   while (carry_dt >= fixed_update_dt) {
     for (const auto &[id, coll] : collisions) {
       auto mvmt = scene.find(id);
-      auto &pos = mvmt->pos;
-      {
-        auto old_pos = pos;
-        pos.x = pos.x + (mvmt->velocity.x * (float)fixed_update_dt);
-        if (collides(coll, pos, scene)) {
-          pos = old_pos;
-        }
-      }
-      {
-        auto old_pos = pos;
-        pos.y = pos.y + (mvmt->velocity.y * (float)fixed_update_dt);
-        if (collides(coll, pos, scene)) {
-          pos = old_pos;
-        }
-      }
+      auto horiz_vel = mvmt->velocity;
+      horiz_vel.y = 0.0f;
+      apply_velocity(id, coll, horiz_vel, scene, behav);
+      auto vert_vel = mvmt->velocity;
+      vert_vel.x = 0.0f;
+      apply_velocity(id, coll, vert_vel, scene, behav);
     }
     carry_dt -= fixed_update_dt;
   }
 }
 
-bool CollisionManager::collides(const Collision &coll, const ssm::vec2 &pos,
-                                const Scene &scene) {
+bool CollisionManager::scene_collision(const Collision &coll,
+                                       const ssm::vec2 &pos,
+                                       const Scene &scene) {
   auto map_bounds = bounds(*scene.tile_map);
   auto rect = translate(coll.bounds, pos);
   return rect.left() < 0.0f || rect.right() > map_bounds.right() ||
          rect.bottom() < 0.0f || rect.top() > map_bounds.top() ||
          tilemap_collision(rect, scene);
+}
+
+CollisionManager::iterator
+CollisionManager::overlap_entity(const EntityId &id, const Collision &coll,
+                                 const ssm::vec2 &pos, const Scene &scene) {
+  auto rect = translate(coll.bounds, pos);
+  return std::find_if(collisions.begin(), collisions.end(), [&](const auto &x) {
+    const auto &[id2, coll] = x;
+    if (id == id2)
+      return false;
+    auto pos2 = scene.find(id2)->pos;
+    auto rect2 = translate(coll.bounds, pos2);
+    return collision::overlap(rect, rect2);
+  });
+}
+
+void CollisionManager::apply_velocity(const EntityId &id, const Collision &coll,
+                                      const ssm::vec2 &vel, Scene &scene,
+                                      BehaviorManager &behav) {
+  auto mvmt = scene.find(id);
+  auto &pos = mvmt->pos;
+  auto old_pos = pos;
+  pos += vel * (float)fixed_update_dt;
+  if (scene_collision(coll, pos, scene)) {
+    pos = old_pos;
+  } else if (auto other = overlap_entity(id, coll, pos, scene);
+             other != collisions.end()) {
+    const auto &[id2, coll2] = *other;
+    if (coll2.solid) {
+      pos = old_pos;
+    }
+    if (coll.on_collision) {
+      behav.run(id, *coll.on_collision, id2);
+    }
+    if (coll2.on_collision) {
+      behav.run(id2, *coll2.on_collision, id);
+    }
+  }
 }
 } // namespace ecs

@@ -11,6 +11,7 @@
 #include "ui/text.hpp"
 
 #include "framework/anim.hpp"
+#include "framework/collision.hpp"
 #include "framework/input.hpp"
 #include "framework/sprite.hpp"
 
@@ -74,8 +75,8 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
     }
   }
   if (auto coll = tbl.get<sol::optional<sol::table>>("collision")) {
-    if (auto maybe_rect = script::parse_rect<float>(*coll)) {
-      collision.submit(id, Collision{*maybe_rect});
+    if (auto maybe_coll = fw::collision::parse_collision(*coll)) {
+      collision.submit(id, *maybe_coll);
     }
   }
   if (auto anim = tbl.get<sol::optional<sol::table>>("anim")) {
@@ -103,7 +104,7 @@ void World::remove(ecs::EntityId id) {
 
 void World::update(double dt) {
   scene.update(dt);
-  collision.update(dt, scene);
+  collision.update(dt, scene, behav);
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene);
