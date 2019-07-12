@@ -68,7 +68,6 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
   auto pos =
       tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
   auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
-	fmt::print("Created entity #{}.{}\n", id.id, id.version);
   if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
     if (auto maybe_sprite = fw::render::parse_sprite(*spr)) {
       renderer.submit(id, *maybe_sprite);
@@ -105,8 +104,6 @@ void World::remove(ecs::EntityId id) { remove_list.push_back(std::move(id)); }
 void World::update(double dt) {
   while (!remove_list.empty()) {
     auto id = remove_list.back();
-
-		fmt::print("Removed entity #{}.{}\n", id.id, id.version);
 
     scene.remove(id);
     renderer.remove(id);
