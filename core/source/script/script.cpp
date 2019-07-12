@@ -50,7 +50,8 @@ void load_common_libs(sol::state& state) {
       sol::property([](ssm::vec2& vec) { return static_cast<float>(vec.y); },
                     [](ssm::vec2& vec, float val) { vec.y = val; }),
       "__add", [](ssm::vec2& a, ssm::vec2 b) { return a + b; }, "__sub",
-      [](ssm::vec2& a, ssm::vec2 b) { return a - b; });
+      [](ssm::vec2& a, ssm::vec2 b) { return a - b; }, "__mul",
+      [](ssm::vec2& a, float b) { return a * b; });
 }
 
 sol::protected_function_result on_error(lua_State*,

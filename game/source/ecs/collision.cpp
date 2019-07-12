@@ -91,19 +91,30 @@ void CollisionManager::submit(EntityId id, Collision coll) {
   collisions.emplace(id, coll);
 }
 
+void CollisionManager::remove(EntityId id) { collisions.erase(id); }
+
 void CollisionManager::update(double dt, Scene &scene, BehaviorManager &behav) {
   carry_dt += dt;
+  collision_set.clear();
   while (carry_dt >= fixed_update_dt) {
-    for (const auto &[id, coll] : collisions) {
+    for (auto &[id, coll] : collisions) {
       auto mvmt = scene.find(id);
       auto horiz_vel = mvmt->velocity;
       horiz_vel.y = 0.0f;
-      apply_velocity(id, coll, horiz_vel, scene, behav);
+      apply_velocity(id, coll, horiz_vel, scene);
       auto vert_vel = mvmt->velocity;
       vert_vel.x = 0.0f;
-      apply_velocity(id, coll, vert_vel, scene, behav);
+      apply_velocity(id, coll, vert_vel, scene);
     }
     carry_dt -= fixed_update_dt;
+  }
+
+  for (auto &[id1, id2] : collision_set) {
+    auto &coll1 = collisions[id1];
+    auto &coll2 = collisions[id2];
+    if (coll1.on_collision) {
+      behav.run(id1, *coll1.on_collision, coll2.tag);
+    }
   }
 }
 
@@ -131,9 +142,8 @@ CollisionManager::overlap_entity(const EntityId &id, const Collision &coll,
   });
 }
 
-void CollisionManager::apply_velocity(const EntityId &id, const Collision &coll,
-                                      const ssm::vec2 &vel, Scene &scene,
-                                      BehaviorManager &behav) {
+void CollisionManager::apply_velocity(const EntityId &id, Collision &coll,
+                                      const ssm::vec2 &vel, Scene &scene) {
   auto mvmt = scene.find(id);
   auto &pos = mvmt->pos;
   auto old_pos = pos;
@@ -146,12 +156,8 @@ void CollisionManager::apply_velocity(const EntityId &id, const Collision &coll,
     if (coll2.solid) {
       pos = old_pos;
     }
-    if (coll.on_collision) {
-      behav.run(id, *coll.on_collision, id2);
-    }
-    if (coll2.on_collision) {
-      behav.run(id2, *coll2.on_collision, id);
-    }
+    collision_set.emplace(id, id2);
+    collision_set.emplace(id2, id);
   }
 }
 } // namespace ecs

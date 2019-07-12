@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <deque>
@@ -30,13 +31,13 @@ public:
     free_list.pop_back();
     last_idx = free;
 
-    auto& handle = indirection[free];
+    auto& handle = indirection.at(free);
     handle.id = item_idx;
     return SlotMapHandle{free, handle.version};
   }
 
   iterator find(SlotMapHandle handle) {
-    auto obj_handle = indirection[handle.id];
+    auto obj_handle = indirection.at(handle.id);
     if (obj_handle.version == handle.version) {
       return begin() + obj_handle.id;
     }
@@ -44,7 +45,7 @@ public:
   }
 
   const_iterator find(SlotMapHandle handle) const {
-    auto obj_handle = indirection[handle.id];
+    auto obj_handle = indirection.at(handle.id);
     if (obj_handle.version == handle.version) {
       return begin() + obj_handle.id;
     }
@@ -56,8 +57,16 @@ public:
     if (obj_handle.version == handle.version) {
       free_list.push_back(handle.id);
       obj_handle.version++;
-      std::swap(data[obj_handle.id], data.back());
+
+      std::swap(data.at(obj_handle.id), data.back());
       data.pop_back();
+
+      // Update indirection list
+      auto previous_idx = data.size();
+      auto prev_slot = std::find_if(
+          indirection.rbegin(), indirection.rend(),
+          [=](const auto& slot) { return slot.id == previous_idx; });
+      prev_slot->id = obj_handle.id;
     }
   }
 

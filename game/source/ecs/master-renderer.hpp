@@ -28,7 +28,9 @@ public:
     sprite_renderer.submit(id, spr);
   }
 
-  void submit(EntityId id, ui::Widget* widget) { ui.submit(id, widget); }
+  void submit(EntityId id, std::unique_ptr<ui::Widget> widget) {
+    ui.submit(id, std::move(widget));
+  }
 
   void remove(EntityId id);
 

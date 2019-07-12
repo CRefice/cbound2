@@ -11,6 +11,8 @@ public:
   Resource() = default;
   Resource(ResT* resource, IdT id) : id(std::move(id)), resource(resource) {}
 
+  operator bool() const { return resource; }
+
   ResT& operator*() { return *resource; }
   ResT* operator->() { return resource; }
 

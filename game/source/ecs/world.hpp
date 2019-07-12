@@ -35,7 +35,10 @@ private:
   ecs::Animator animator;
   ecs::InputManager input;
   ecs::BehaviorManager behav;
+  ecs::UpdateManager updates;
   ecs::CollisionManager collision;
+
+  std::vector<ecs::EntityId> remove_list;
 
   ResourceCache<::render::TileMap> tile_maps;
   ResourceCache<::render::TileSet> tile_sets;

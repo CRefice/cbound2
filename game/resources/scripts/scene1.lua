@@ -1,20 +1,18 @@
 require("scripts/Birb")
 require("scripts/coroutine")
+require("scripts/ui")
 
 birb1 = birb()
 birb2 = birb()
 
-birb1.collision.on_collision = function(self, other)
-end
-
 birb2.position = { 100, 10 }
-birb2.input = {
-	["E+"] = function(self)
-			self.vel = Vec2:new(10, 0)
-			coro.wait(1.0)
-			self.vel = Vec2:new(-10, 0)
-	end,
-}
+birb2.input = {}
+birb2.collision.on_collision = function (self, tag)
+	if tag == "interact" then
+		print("Interacted!")
+		text_window("The hell u want?", Vec2:new(20, 10), Vec2:new(100, 100))
+	end
+end
 
 return {
 	tile_map = "tiles/overworld.tmx";

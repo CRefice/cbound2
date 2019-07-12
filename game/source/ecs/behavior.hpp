@@ -34,4 +34,16 @@ private:
   ska::flat_hash_map<EntityId, sol::coroutine> coros;
   ska::flat_hash_map<EntityId, sol::thread> threads;
 };
+
+// Calls an update function on each submitted entity, every frame
+class UpdateManager {
+public:
+  void submit(EntityId id, sol::function fn);
+  void remove(EntityId id);
+
+  void tick_all(BehaviorManager& behav);
+
+private:
+  ska::flat_hash_map<EntityId, sol::coroutine> updates;
+};
 } // namespace ecs

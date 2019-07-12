@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <sol/sol.hpp>
 #include <ssm/transform.hpp>
 
@@ -14,6 +12,7 @@
 #include "framework/collision.hpp"
 #include "framework/input.hpp"
 #include "framework/sprite.hpp"
+#include "framework/ui.hpp"
 
 #include "world.hpp"
 
@@ -69,42 +68,59 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
   auto pos =
       tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
   auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
+	fmt::print("Created entity #{}.{}\n", id.id, id.version);
   if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
     if (auto maybe_sprite = fw::render::parse_sprite(*spr)) {
       renderer.submit(id, *maybe_sprite);
     }
   }
-  if (auto coll = tbl.get<sol::optional<sol::table>>("collision")) {
-    if (auto maybe_coll = fw::collision::parse_collision(*coll)) {
+  if (auto behavior = tbl.get<sol::optional<sol::function>>("behavior")) {
+    updates.submit(id, *behavior);
+  }
+  if (auto coll = tbl["collision"]) {
+    if (auto maybe_coll = fw::collision::parse_collision(coll)) {
       collision.submit(id, *maybe_coll);
     }
   }
-  if (auto anim = tbl.get<sol::optional<sol::table>>("anim")) {
-    if (auto maybe_anim = fw::anim::parse_sequence(*anim)) {
+  if (auto anim = tbl["anim"]) {
+    if (auto maybe_anim = fw::anim::parse_sequence(anim)) {
       animator.submit(id, ::anim::Sequencer(*maybe_anim));
     }
   }
-  if (auto context = tbl.get<sol::optional<sol::table>>("input")) {
-    if (auto maybe_context = fw::input::parse_context(*context)) {
+  if (auto context = tbl["input"]) {
+    if (auto maybe_context = fw::input::parse_context(context)) {
       input.submit(id, *maybe_context);
     }
   }
-  if (auto widget = tbl.get<::ui::Widget*>("ui")) {
-    renderer.submit(id, widget);
+  if (auto widget = tbl["ui"]) {
+    if (auto maybe_widget = fw::ui::parse_widget(widget)) {
+      renderer.submit(id, std::move(maybe_widget));
+    }
   }
   return id;
 }
 
-void World::remove(ecs::EntityId id) {
-  scene.remove(id);
-  animator.remove(id);
-  input.remove(id);
-  renderer.remove(id);
-}
+void World::remove(ecs::EntityId id) { remove_list.push_back(std::move(id)); }
 
 void World::update(double dt) {
+  while (!remove_list.empty()) {
+    auto id = remove_list.back();
+
+		fmt::print("Removed entity #{}.{}\n", id.id, id.version);
+
+    scene.remove(id);
+    renderer.remove(id);
+    collision.remove(id);
+    updates.remove(id);
+    animator.remove(id);
+    input.remove(id);
+
+    remove_list.pop_back();
+  }
+
   scene.update(dt);
   collision.update(dt, scene, behav);
+  updates.tick_all(behav);
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene);

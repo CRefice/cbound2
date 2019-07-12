@@ -24,6 +24,7 @@ std::optional<Collision> parse_collision(const sol::table& table) {
   }
 
   coll.on_collision = table.get<sol::optional<sol::function>>("on_collision");
+  coll.tag = table.get_or("tag", std::string());
   coll.solid = table.get_or("solid", true);
   return coll;
 }

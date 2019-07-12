@@ -1,15 +1,23 @@
-function text_window(text, position, size)
-	local text_ui = ui.Text.new(text, 0.02, size - Vec2:new(10, 10))
+function text_window(txt, pos, sz)
 	local text = {
-		ui = text_ui,
-		position = position + Vec2:new(9, size.y - 17),
+		ui = {
+			kind = "text",
+			text = txt,
+			speed = 0.02,
+			size = { sz.x - 10, sz.y - 10 }
+		},
+		position = { pos.x + 9, pos.y - 17 + sz.y - 10 },
 	}
 	local text_id = world.instantiate(text)
 	local frame = {
-		ui = ui.Window.new(size),
-		position = position,
+		ui = {
+			kind = "window",
+			size = {sz.x, sz.y},
+		},
+		position = { pos.x, pos.y },
 		input = {
 			["Q+"] = function(self)
+				text_ui = ui.text_widget(text_id)
 				if (text_ui:done()) then
 					world.remove(self)
 					world.remove(text_id)

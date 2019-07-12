@@ -9,6 +9,7 @@ namespace render {
 std::optional<CharMetrics> metrics_of(std::string_view str,
                                       const TextDrawParams& params) {
   const auto& font = params.font;
+	if (!font) return std::nullopt;
   const auto it = font->char_map.find(std::string(str));
   if (it == font->char_map.end()) {
     WARN_LOG("Couldn't find a glyph for character {} in font {}", str,

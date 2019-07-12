@@ -1,14 +1,38 @@
 speed = 60
 require("scripts/ui");
 
+function interact_box(pos)
+	return {
+		sprite = {
+			image = "textures/Cazz.png",
+			size = { 10, 10 },
+			frame = { 0, 0, 10, 10 }
+		},
+		collision = {
+			bounds = {0, 0, 10, 10 },
+			solid = false,
+			on_collision = function(self, other)
+				world.remove(self)
+			end,
+			tag = "interact",
+		},
+		position = pos,
+		behavior = function(self)
+			coro.wait(0.1)
+			world.remove(self)
+		end,
+}
+end
+
 function birb()
+	last_dir = Vec2:new(0, -1)
 	return {
 		sprite = {
 			image = "textures/Birb.png",
 			size = { 32, 32 },
 			frame = { 0, 0, 32, 32 }
 		},
-		collision = { 
+		collision = {
 			bounds = {0, 0, 32, 32 },
 		},
 		anim = {
@@ -26,27 +50,31 @@ function birb()
 		},
 		input = {
 			["Q+"] = function(self)
-				text_window("Holy fuck, I can't believe this works! This is insane! I am so happy I am speaking {color:#ff0000} in red! Can you believe it??", Vec2:new(20, 20), Vec2:new(200,100))
+				world.instantiate(interact_box(self.pos + Vec2:new(16, 16) + last_dir * 30))
 			end,
 			["D+"] = function(self)
+				last_dir = Vec2:new(1, 0)
 				self.vel = self.vel + Vec2:new(speed, 0)
 			end,
 			["D-"] = function(self)
 				self.vel = self.vel + Vec2:new(-speed, 0)
 			end,
 			["A+"] = function(self)
+				last_dir = Vec2:new(-1, 0)
 				self.vel = self.vel + Vec2:new(-speed, 0)
 			end,
 			["A-"] = function(self)
 				self.vel = self.vel + Vec2:new(speed, 0)
 			end,
 			["W+"] = function(self)
+				last_dir = Vec2:new(0, 1)
 				self.vel = self.vel + Vec2:new(0, speed)
 			end,
 			["W-"] = function(self)
 				self.vel = self.vel + Vec2:new(0, -speed)
 			end,
 			["S+"] = function(self)
+				last_dir = Vec2:new(0, -1)
 				self.vel = self.vel + Vec2:new(0, -speed)
 			end,
 			["S-"] = function(self)
