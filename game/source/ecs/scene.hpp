@@ -3,8 +3,8 @@
 #include <ssm/vector.hpp>
 
 #include "common/slot-map.hpp"
-#include "core/render/tiles.hpp"
 #include "core/resource/resource.hpp"
+#include "core/tiles/tiles.hpp"
 
 #include "entity.hpp"
 
@@ -24,8 +24,8 @@ public:
 
   void update(double dt);
 
-  Resource<render::TileMap> tile_map;
-  Resource<render::TileSet> tile_set;
+  Resource<TileMap> tile_map;
+  Resource<TileSet> tile_set;
 
 private:
   SlotMap<Movement> data;

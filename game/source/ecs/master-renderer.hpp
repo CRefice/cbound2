@@ -35,7 +35,7 @@ public:
   void remove(EntityId id);
 
   void update(double dt);
-  void switch_tiles(const render::TileMap& map, const render::TileSet& set);
+  void switch_tiles(const TileMap& map, const TileSet& set);
 
   void draw_all(const Scene& scene);
 

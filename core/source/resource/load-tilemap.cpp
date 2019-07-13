@@ -4,9 +4,9 @@
 
 #include "common/logging.hpp"
 #include "common/string.hpp"
-#include "render/tiles.hpp"
 
 #include "resource/resource.hpp"
+#include "tiles/tiles.hpp"
 
 namespace fs = std::filesystem;
 using namespace render;

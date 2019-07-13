@@ -5,8 +5,6 @@ require("scripts/ui")
 birb1 = birb()
 birb2 = birb()
 
-print(birb1.sprite.size)
-
 birb2.position = Vec2:new(100, 10)
 birb2.input = {}
 birb2.collision.on_collision = function (self, tag)

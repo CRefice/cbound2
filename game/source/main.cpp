@@ -35,7 +35,7 @@ int main() {
                            .get<sol::optional<sol::table>>();
 
     ResourceCache<::render::Texture> textures;
-    ResourceCache<::render::TileSet> tilesets;
+    ResourceCache<TileSet> tilesets;
 
     if (!maybe_scene) {
       FATAL_LOG("Unable to load main scene");

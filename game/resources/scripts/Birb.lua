@@ -50,7 +50,7 @@ function birb()
 		},
 		input = {
 			["Q+"] = function(self)
-				local box_pos = self.pos + Vec2:new(11, 11) + last_dir * 25
+				local box_pos = self.pos + Vec2:new(11, 11) + last_dir * 21
 				world.instantiate(interact_box(box_pos))
 			end,
 			["D+"] = function(self)

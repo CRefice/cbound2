@@ -5,6 +5,8 @@
 
 #include "common/rectangle.hpp"
 
+#include "core/tiles/tiles.hpp"
+
 namespace collision {
 
 template <typename T>
@@ -27,4 +29,7 @@ std::optional<Rectangle<T>> intersection(const Rectangle<T>& a,
 
   return Rectangle<T>(start, end);
 }
+
+bool tile_collision(const Rectangle<float>& rect, const TileMap& map,
+                    const TileSet& set);
 } // namespace collision

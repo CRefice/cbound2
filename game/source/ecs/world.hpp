@@ -40,7 +40,7 @@ private:
 
   std::vector<ecs::EntityId> remove_list;
 
-  ResourceCache<::render::TileMap> tile_maps;
-  ResourceCache<::render::TileSet> tile_sets;
+  ResourceCache<TileMap> tile_maps;
+  ResourceCache<TileSet> tile_sets;
 };
 } // namespace ecs

@@ -116,8 +116,8 @@ static fs::path file_chooser() {
   return ret;
 }
 
-void tileset_editor(ResourceCache<::render::TileSet>& tilesets,
-                    ResourceCache<::render::Texture>& textures) {
+void tileset_editor(ResourceCache<TileSet>& tilesets,
+                    ResourceCache<Texture>& textures) {
   ImGui::Begin("Tileset Editor");
 
   auto path = file_chooser();

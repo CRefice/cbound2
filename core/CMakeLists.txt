@@ -2,6 +2,7 @@ set(SRCS
 	source/anim/text-drawl.cpp
 	source/common/paths.cpp
 	source/common/string.cpp
+	source/collision/tile-collision.cpp
 	source/input/input.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
@@ -10,7 +11,6 @@ set(SRCS
 	source/render/sprite-batch.cpp
 	source/render/text-batch.cpp
 	source/render/texture.cpp
-	source/render/tiles.cpp
 	source/render/tile-batch.cpp
 	source/render/uniform-buffer.cpp
 	source/resource/load-font.cpp
@@ -20,6 +20,7 @@ set(SRCS
 	source/resource/load-texture.cpp
 	source/script/script.cpp
 	source/text/control-codes.cpp
+	source/tiles/tiles.cpp
 )
 
 # Choose OpenGL vendor implementation by default

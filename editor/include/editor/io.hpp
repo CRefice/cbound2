@@ -2,8 +2,8 @@
 
 #include <filesystem>
 
-#include "core/render/tiles.hpp"
+#include "core/tiles/tiles.hpp"
 
 namespace editor::io {
-void save_collision(const std::filesystem::path& path, const ::render::TileSet& set);
+void save_collision(const std::filesystem::path& path, const TileSet& set);
 }

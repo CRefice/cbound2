@@ -1,5 +1,5 @@
-#include <ssm/transform.hpp>
 #include <sol/sol.hpp>
+#include <ssm/transform.hpp>
 
 #include "master-renderer.hpp"
 
@@ -7,7 +7,9 @@ inline int SCREEN_HEIGHT = 180;
 inline int SCREEN_WIDTH = 320;
 
 namespace ecs {
-MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
+using namespace ::render;
+
+MasterRenderer::MasterRenderer(Context context, const Animator& anim)
     : sprite_renderer(anim, textures), ui(textures), post_process(context) {
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
@@ -23,7 +25,7 @@ MasterRenderer::MasterRenderer(render::Context context, const Animator& anim)
   vert = shaders.load("shaders/post.v.glsl");
 
   post_process.emplace_pass(
-      render::Texture(ssm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), nullptr),
+      Texture(ssm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), nullptr),
       shader::Program(*vert, *frag));
 
   camera.view = ssm::identity<float, 4>();
@@ -41,10 +43,9 @@ void MasterRenderer::remove(EntityId id) {
   ui.remove(id);
 }
 
-void MasterRenderer::switch_tiles(const render::TileMap& map,
-                                  const render::TileSet& set) {
-  static_tiles = render::StaticTileBatch(textures, map, set);
-  dynamic_tiles = render::AnimTileBatch(textures, map, set);
+void MasterRenderer::switch_tiles(const TileMap& map, const TileSet& set) {
+  static_tiles = StaticTileBatch(textures, map, set);
+  dynamic_tiles = AnimTileBatch(textures, map, set);
 }
 
 void MasterRenderer::draw_all(const Scene& scene) {

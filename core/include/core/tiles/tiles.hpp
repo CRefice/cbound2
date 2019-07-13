@@ -6,16 +6,17 @@
 #include <hash/flat_hash_map.hpp>
 
 #include "common/matrix.hpp"
-#include "core/anim/sequence.hpp"
-#include "tex-coords.hpp"
+#include "common/rectangle.hpp"
 
-namespace render {
+#include "core/anim/sequence.hpp"
+#include "core/render/tex-coords.hpp"
+
 struct TileSet {
   std::string texture_id;
   // Number of tiles in both directions
   ssm::ivec2 size;
   // Size of a single tile, in pixel coordinates
-  PixelCoord tile_size;
+	render::PixelCoord tile_size;
   // Maps tile-id to their animation sequence
   ska::flat_hash_map<int, anim::Sequence<int>> anim_tiles;
 
@@ -29,7 +30,7 @@ struct TileSet {
 };
 
 MatrixView<bool> collision_set_from_id(const TileSet& set, int id);
-TexFrame frame_from_id(const TileSet& set, int id);
+render::TexFrame frame_from_id(const TileSet& set, int id);
 
 struct TileMap {
   struct Layer {
@@ -46,4 +47,3 @@ struct TileMap {
 };
 
 Rectangle<float> bounds(const TileMap& map);
-} // namespace render
