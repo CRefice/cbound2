@@ -11,15 +11,10 @@ using namespace ecs;
 namespace fw::collision {
 std::optional<Collision> parse_collision(const sol::table& table) {
   Collision coll;
-  auto bounds = table.get<sol::optional<sol::table>>("bounds");
-  if (!bounds) {
-    ERROR_LOG("Collision data does not contain required attributes!");
-    return coll;
-  }
-  if (auto rect = script::parse_rect<float>(*bounds)) {
-    coll.bounds = *rect;
+  if (auto bounds = table.get<sol::optional<Rectangle<float>>>("bounds")) {
+    coll.bounds = *bounds;
   } else {
-    ERROR_LOG("Couldn't parse collision bounds data!");
+    ERROR_LOG("Collision data does not contain collision bounds!");
     return coll;
   }
 

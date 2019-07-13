@@ -5,11 +5,12 @@ require("scripts/ui")
 birb1 = birb()
 birb2 = birb()
 
-birb2.position = { 100, 10 }
+print(birb1.sprite.size)
+
+birb2.position = Vec2:new(100, 10)
 birb2.input = {}
 birb2.collision.on_collision = function (self, tag)
 	if tag == "interact" then
-		print("Interacted!")
 		text_window("The hell u want?", Vec2:new(20, 10), Vec2:new(100, 100))
 	end
 end

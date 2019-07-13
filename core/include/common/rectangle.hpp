@@ -17,8 +17,8 @@ public:
     tr = ssm::vector<T, 2>(right, top);
   }
 
-  Rectangle(T left, T right, T top, T bottom)
-      : bl(left, bottom), tr(right, top) {}
+  Rectangle(T left, T bottom, T right, T top)
+      : Rectangle({left, bottom}, {right, top}) {}
 
   auto pos() const { return bl; }
   auto size() const { return tr - bl; }

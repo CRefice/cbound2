@@ -4,17 +4,17 @@ function text_window(txt, pos, sz)
 			kind = "text",
 			text = txt,
 			speed = 0.02,
-			size = { sz.x - 10, sz.y - 10 }
+			size = sz - Vec2:new(10, 10)
 		},
-		position = { pos.x + 9, pos.y - 17 + sz.y - 10 },
+		position = pos + Vec2:new(9, sz.y - 19)
 	}
 	local text_id = world.instantiate(text)
 	local frame = {
 		ui = {
 			kind = "window",
-			size = {sz.x, sz.y},
+			size = sz
 		},
-		position = { pos.x, pos.y },
+		position = pos,
 		input = {
 			["Q+"] = function(self)
 				text_ui = ui.text_widget(text_id)

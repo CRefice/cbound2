@@ -5,11 +5,11 @@ function interact_box(pos)
 	return {
 		sprite = {
 			image = "textures/Cazz.png",
-			size = { 10, 10 },
-			frame = { 0, 0, 10, 10 }
+			size = Vec2:new(10, 10),
+			frame = IRect:new(0, 0, 10, 10)
 		},
 		collision = {
-			bounds = {0, 0, 10, 10 },
+			bounds = Rect:new(0, 0, 10, 10),
 			solid = false,
 			on_collision = function(self, other)
 				world.remove(self)
@@ -29,28 +29,29 @@ function birb()
 	return {
 		sprite = {
 			image = "textures/Birb.png",
-			size = { 32, 32 },
-			frame = { 0, 0, 32, 32 }
+			size = Vec2:new(32, 32),
+			frame = IRect:new(0, 0, 32, 32)
 		},
 		collision = {
-			bounds = {0, 0, 32, 32 },
+			bounds = Rect:new(0, 0, 32, 32)
 		},
 		anim = {
 			mode = play_mode.loop,
 			frames = {
 				{
 					duration = 0.1,
-					coords = { 0, 0, 32, 32 }
+					coords = IRect:new(0, 0, 32, 32)
 				},
 				{
 					duration = 0.1,
-					coords = { 32, 0, 64, 32 }
+					coords = IRect:new(32, 0, 64, 32)
 				},
 			}
 		},
 		input = {
 			["Q+"] = function(self)
-				world.instantiate(interact_box(self.pos + Vec2:new(16, 16) + last_dir * 30))
+				local box_pos = self.pos + Vec2:new(11, 11) + last_dir * 25
+				world.instantiate(interact_box(box_pos))
 			end,
 			["D+"] = function(self)
 				last_dir = Vec2:new(1, 0)

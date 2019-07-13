@@ -3,6 +3,7 @@
 
 #include "common/logging.hpp"
 #include "common/paths.hpp"
+#include "common/rectangle.hpp"
 
 #include "script/script.hpp"
 
@@ -41,17 +42,38 @@ sol::state new_environment() {
   return lua;
 }
 
-void load_common_libs(sol::state& state) {
-  state.new_usertype<ssm::vec2>(
-      "Vec2", sol::constructors<ssm::vec2(), ssm::vec2(float, float)>(), "x",
-      sol::property([](ssm::vec2& vec) { return static_cast<float>(vec.x); },
-                    [](ssm::vec2& vec, float val) { vec.x = val; }),
+template <typename T>
+static void define_vec2_type(sol::state& state, const char* name) {
+  using Vec = ssm::vector<T, 2>;
+  state.new_usertype<Vec>(
+      name, sol::constructors<Vec(), Vec(T, T)>(), "x",
+      sol::property([](Vec& vec) -> T { return vec.x; },
+                    [](Vec& vec, T val) { vec.x = val; }),
       "y",
-      sol::property([](ssm::vec2& vec) { return static_cast<float>(vec.y); },
-                    [](ssm::vec2& vec, float val) { vec.y = val; }),
-      "__add", [](ssm::vec2& a, ssm::vec2 b) { return a + b; }, "__sub",
-      [](ssm::vec2& a, ssm::vec2 b) { return a - b; }, "__mul",
-      [](ssm::vec2& a, float b) { return a * b; });
+      sol::property([](Vec& vec) -> T { return vec.y; },
+                    [](Vec& vec, T val) { vec.y = val; }),
+      "__add", [](Vec& a, const Vec& b) { return a + b; }, "__sub",
+      [](Vec& a, const Vec& b) { return a - b; }, "__mul",
+      [](Vec& a, T b) { return a * b; });
+}
+
+template <typename T>
+static void define_rect_type(sol::state& state, const char* name) {
+  using Rect = Rectangle<T>;
+  state.new_usertype<Rect>(
+      name,
+      sol::constructors<Rect(), Rect(ssm::vector<T, 2>, ssm::vector<T, 2>),
+                        Rect(T, T, T, T)>(),
+      "left", &Rect::left, "right", &Rect::right, "top", &Rect::top, "bottom",
+      &Rect::bottom, "width", &Rect::width, "height", &Rect::height,
+      "translate", &translate<T>);
+}
+
+void load_common_libs(sol::state& state) {
+  define_vec2_type<float>(state, "Vec2");
+  define_vec2_type<int>(state, "IVec2");
+  define_rect_type<float>(state, "Rect");
+  define_rect_type<int>(state, "IRect");
 }
 
 sol::protected_function_result on_error(lua_State*,

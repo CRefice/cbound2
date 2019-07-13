@@ -1,7 +1,7 @@
 #include <sol/sol.hpp>
 
-#include "core/script/script.hpp"
 #include "common/logging.hpp"
+#include "core/script/script.hpp"
 
 #include "ui/text.hpp"
 #include "ui/window.hpp"
@@ -29,27 +29,20 @@ std::unique_ptr<Widget> parse_text_widget(const sol::table& table,
 }
 
 std::unique_ptr<Widget> parse_widget(const sol::table& table) {
-  ssm::vec2 size;
-  auto sz_tbl = table["size"];
-  if (!sz_tbl) {
-    ERROR_LOG("Ui data does not contain size!");
-    return nullptr;
-  }
-  if (auto sz = script::parse_vec2<float>(sz_tbl)) {
-    size = *sz;
-  } else {
-    ERROR_LOG("Ui data does not contain size!");
+  auto size = table.get<sol::optional<ssm::vec2>>("size");
+  if (!size) {
+    ERROR_LOG("Ui component missing required size attribute!");
     return nullptr;
   }
 
   std::string kind = table.get_or("kind", ""s);
   if (kind == "text"s) {
-    return parse_text_widget(table, size);
+    return parse_text_widget(table, *size);
   } else if (kind == "window"s) {
-    return std::make_unique<Window>(size);
+    return std::make_unique<Window>(*size);
   } else {
     ERROR_LOG("Unknown UI widget kind!");
     return nullptr;
-	}
+  }
 }
 } // namespace fw::ui
