@@ -54,7 +54,11 @@ static void define_vec2_type(sol::state& state, const char* name) {
                     [](Vec& vec, T val) { vec.y = val; }),
       "__add", [](Vec& a, const Vec& b) { return a + b; }, "__sub",
       [](Vec& a, const Vec& b) { return a - b; }, "__mul",
-      [](Vec& a, T b) { return a * b; });
+      sol::overload([](Vec& a, T b) { return a * b; },
+                    [](Vec& a, const Vec& b) { return a * b; }),
+      "__div",
+      sol::overload([](Vec& a, T b) { return a / b; },
+                    [](Vec& a, const Vec& b) { return a / b; }));
 }
 
 template <typename T>
@@ -66,7 +70,8 @@ static void define_rect_type(sol::state& state, const char* name) {
                         Rect(T, T, T, T)>(),
       "left", &Rect::left, "right", &Rect::right, "top", &Rect::top, "bottom",
       &Rect::bottom, "width", &Rect::width, "height", &Rect::height,
-      "translate", &translate<T>);
+      "bottom_left", &Rect::bottom_left, "top_right", &Rect::top_right, "size",
+      &Rect::size, "center", &Rect::center, "translate", &translate<T>);
 }
 
 void load_common_libs(sol::state& state) {

@@ -26,6 +26,7 @@ public:
   auto bottom_right() const { return ssm::vector<T, 2>(tr.x, bl.y); }
   auto top_left() const { return ssm::vector<T, 2>(bl.x, tr.y); }
   auto top_right() const { return tr; }
+  auto center() const { return bl + size() / T(2); }
 
   T width() const { return tr.x - bl.x; }
   T height() const { return tr.y - bl.y; }

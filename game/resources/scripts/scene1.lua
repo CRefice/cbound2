@@ -1,8 +1,9 @@
 require("scripts/Birb")
+require("scripts/character")
 require("scripts/coroutine")
 require("scripts/ui")
 
-birb1 = birb()
+birb1 = character()
 birb2 = birb()
 
 birb2.position = Vec2:new(100, 10)
