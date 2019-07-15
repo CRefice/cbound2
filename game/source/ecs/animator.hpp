@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sol/forward.hpp>
 #include <hash/flat_hash_map.hpp>
 
 #include "core/anim/sequencer.hpp"
@@ -18,11 +19,13 @@ public:
   Sequencer* find(EntityId id);
   const Sequencer* find(EntityId id) const;
 
-	void remove(EntityId id);
+  void remove(EntityId id);
 
   void update(double dt);
 
+  void load_libraries(sol::state& state);
+
 private:
   ska::flat_hash_map<EntityId, Sequencer> anims;
-};
+}; // namespace ecs
 } // namespace ecs

@@ -1,4 +1,80 @@
 box_size = 10
+
+anims = {
+	Back = {
+		mode = anim.play_mode.loop,
+		frames = {
+			{
+				duration = 0.2,
+				coords = IRect:new(0, 0, 17, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(17, 0, 34, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(34, 0, 51, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(51, 0, 68, 29)
+			}
+		}
+	},
+	Front = {
+		mode = anim.play_mode.loop,
+		frames = {
+			{
+				duration = 0.2,
+				coords = IRect:new(68, 0, 85, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(85, 0, 102, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(102, 0, 119, 29)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(0, 29, 17, 58)
+			}
+		}
+	},
+	Left = {
+		mode = anim.play_mode.loop,
+		frames = {
+			{
+				duration = 0.2,
+				coords = IRect:new(17, 29, 34, 58)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(34, 29, 51, 58)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(51, 29, 68, 58)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(68, 29, 85, 58)
+			}
+		}
+	},
+	Right = {
+		mode = anim.play_mode.loop,
+		frames = {
+			{
+				duration = 0.2,
+				coords = IRect:new(85, 29, 102, 58)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(102, 29, 119, 58)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(0, 58, 17, 87)
+			}, {
+				duration = 0.2,
+				coords = IRect:new(17, 58, 34, 87)
+			}
+		}
+	}
+}
+
 function interact_box(pos)
 	return {
 		sprite = {
@@ -24,14 +100,14 @@ end
 
 function character()
 	local last_dir = Vec2:new(0, -1)
-	local mov_speed = 60
+	local mov_speed = 50
 	local coll_bounds = Rect:new(0, 0, 15, 15)
 
 	return {
 		sprite = {
 			image = "textures/human.png",
-			size = Vec2:new(15, 31),
-			frame = IRect:new(2, 0, 17, 31)
+			size = Vec2:new(17, 29),
+			frame = IRect:new(68, 0, 85, 29)
 		},
 		collision = {
 			bounds = coll_bounds
@@ -45,6 +121,7 @@ function character()
 			end,
 			["D+"] = function(self)
 				last_dir = Vec2:new(1, 0)
+				anim.switch_to(self, anims.Right)
 				self.vel = self.vel + Vec2:new(mov_speed, 0)
 			end,
 			["D-"] = function(self)
@@ -52,6 +129,7 @@ function character()
 			end,
 			["A+"] = function(self)
 				last_dir = Vec2:new(-1, 0)
+				anim.switch_to(self, anims.Left)
 				self.vel = self.vel + Vec2:new(-mov_speed, 0)
 			end,
 			["A-"] = function(self)
@@ -59,6 +137,7 @@ function character()
 			end,
 			["W+"] = function(self)
 				last_dir = Vec2:new(0, 1)
+				anim.switch_to(self, anims.Back)
 				self.vel = self.vel + Vec2:new(0, mov_speed)
 			end,
 			["W-"] = function(self)
@@ -66,6 +145,7 @@ function character()
 			end,
 			["S+"] = function(self)
 				last_dir = Vec2:new(0, -1)
+				anim.switch_to(self, anims.Front)
 				self.vel = self.vel + Vec2:new(0, -mov_speed)
 			end,
 			["S-"] = function(self)

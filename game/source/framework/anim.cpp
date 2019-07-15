@@ -12,12 +12,6 @@ namespace fw::anim {
 using namespace ::anim;
 using ::render::TexFrame;
 
-void load_libraries(sol::state &state) {
-  // Sequence types
-  state.new_enum("play_mode", "once", PlayMode::Once, "loop", PlayMode::Loop,
-                 "ping_pong", PlayMode::PingPong);
-}
-
 std::vector<Frame<TexFrame>> parse_frames(const sol::table &table) {
   std::vector<Frame<TexFrame>> frames;
   frames.reserve(table.size());

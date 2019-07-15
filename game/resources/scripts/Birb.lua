@@ -36,7 +36,7 @@ function birb()
 			bounds = Rect:new(0, 0, 32, 32)
 		},
 		anim = {
-			mode = play_mode.loop,
+			mode = anim.play_mode.loop,
 			frames = {
 				{
 					duration = 0.1,

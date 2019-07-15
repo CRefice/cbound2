@@ -41,7 +41,7 @@ void World::register_functions(sol::state& tbl) {
       "remove", [this](const ecs::EntityId& id) { remove(id); }, "game_time",
       [this]() { return time; });
 
-  fw::anim::load_libraries(tbl);
+  animator.load_libraries(tbl);
   renderer.load_libraries(tbl);
 }
 
