@@ -22,13 +22,13 @@ struct Frame
 	double duration;
 };
 
-// An sequence of keyframes.
+// A sequence of keyframes.
 template <typename T>
 struct Sequence
 {
 	// The actual array of frames
 	std::vector<Frame<T>> frames;
 	// What to do on animation end
-	PlayMode mode;
+	PlayMode mode = PlayMode::Loop;
 };
 }
