@@ -95,13 +95,34 @@ function interact_box(pos)
 			coro.wait(0.1)
 			world.remove(self)
 		end,
-}
+	}
 end
 
 function character()
 	local last_dir = Vec2:new(0, -1)
 	local mov_speed = 50
 	local coll_bounds = Rect:new(0, 0, 15, 15)
+
+	function directional_anim(vel)
+		if vel.x == 1 then
+			return anims.Right
+		elseif vel.x == -1 then
+			return anims.Left
+		elseif vel.y == 1 then
+			return anims.Back
+		else
+			return anims.Front
+		end
+	end
+
+	function update_vel(self, vel)
+		self.vel = vel
+		if vel == Vec2:new(0, 0) then
+			return
+		end
+		last_dir = vel:normalize()
+		anim.switch_to(self, directional_anim(last_dir))
+	end
 
 	return {
 		sprite = {
@@ -120,36 +141,28 @@ function character()
 				world.instantiate(interact_box(box_pos))
 			end,
 			["D+"] = function(self)
-				last_dir = Vec2:new(1, 0)
-				anim.switch_to(self, anims.Right)
-				self.vel = self.vel + Vec2:new(mov_speed, 0)
+				update_vel(self, self.vel + Vec2:new(mov_speed, 0))
 			end,
 			["D-"] = function(self)
-				self.vel = self.vel + Vec2:new(-mov_speed, 0)
+				update_vel(self, self.vel + Vec2:new(-mov_speed, 0))
 			end,
 			["A+"] = function(self)
-				last_dir = Vec2:new(-1, 0)
-				anim.switch_to(self, anims.Left)
-				self.vel = self.vel + Vec2:new(-mov_speed, 0)
+				update_vel(self, self.vel + Vec2:new(-mov_speed, 0))
 			end,
 			["A-"] = function(self)
-				self.vel = self.vel + Vec2:new(mov_speed, 0)
+				update_vel(self, self.vel + Vec2:new(mov_speed, 0))
 			end,
 			["W+"] = function(self)
-				last_dir = Vec2:new(0, 1)
-				anim.switch_to(self, anims.Back)
-				self.vel = self.vel + Vec2:new(0, mov_speed)
+				update_vel(self, self.vel + Vec2:new(0, mov_speed))
 			end,
 			["W-"] = function(self)
-				self.vel = self.vel + Vec2:new(0, -mov_speed)
+				update_vel(self, self.vel + Vec2:new(0, -mov_speed))
 			end,
 			["S+"] = function(self)
-				last_dir = Vec2:new(0, -1)
-				anim.switch_to(self, anims.Front)
-				self.vel = self.vel + Vec2:new(0, -mov_speed)
+				update_vel(self, self.vel + Vec2:new(0, -mov_speed))
 			end,
 			["S-"] = function(self)
-				self.vel = self.vel + Vec2:new(0, mov_speed)
+				update_vel(self, self.vel + Vec2:new(0, mov_speed))
 			end,
 		},
 	}

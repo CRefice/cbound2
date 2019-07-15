@@ -52,13 +52,15 @@ static void define_vec2_type(sol::state& state, const char* name) {
       "y",
       sol::property([](Vec& vec) -> T { return vec.y; },
                     [](Vec& vec, T val) { vec.y = val; }),
-      "__add", [](Vec& a, const Vec& b) { return a + b; }, "__sub",
+      "normalize", &ssm::normalize<T, 2>, "__add",
+      [](Vec& a, const Vec& b) { return a + b; }, "__sub",
       [](Vec& a, const Vec& b) { return a - b; }, "__mul",
       sol::overload([](Vec& a, T b) { return a * b; },
                     [](Vec& a, const Vec& b) { return a * b; }),
       "__div",
       sol::overload([](Vec& a, T b) { return a / b; },
-                    [](Vec& a, const Vec& b) { return a / b; }));
+                    [](Vec& a, const Vec& b) { return a / b; }),
+      "__eq", [](const Vec& a, const Vec& b) { return a == b; });
 }
 
 template <typename T>

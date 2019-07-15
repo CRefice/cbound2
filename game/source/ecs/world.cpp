@@ -23,15 +23,15 @@ World::World(::render::Context context)
 }
 
 void World::register_functions(sol::state& tbl) {
-  tbl.new_usertype<ecs::EntityId>(
-      "Entity", "pos",
-      sol::property([&](ecs::EntityId& id) { return scene.find(id)->pos; }),
-      "vel",
+  auto usertype =
+      tbl.new_usertype<ecs::EntityId>("Entity", "new", sol::no_constructor);
+  usertype["pos"] =
+      sol::property([&](ecs::EntityId& id) { return scene.find(id)->pos; });
+  usertype["vel"] =
       sol::property([&](ecs::EntityId& id) { return scene.find(id)->velocity; },
                     [&](ecs::EntityId& id, ssm::vec2 val) {
                       scene.find(id)->velocity = val;
-                    }),
-      "new", sol::no_constructor);
+                    });
 
   tbl.create_named_table(
       "world", "instantiate",
