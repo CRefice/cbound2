@@ -9,8 +9,14 @@ void BehaviorManager::tick_all() {
     if (!coro.runnable()) {
       it = coros.erase(it);
     } else {
-      coro();
-      ++it;
+      auto result = coro();
+      if (!result.valid()) {
+        sol::error err = result;
+        ERROR_LOG("Lua error: {}", err.what());
+        it = coros.erase(it);
+      } else {
+        ++it;
+      }
     }
   }
 }
@@ -19,13 +25,11 @@ void UpdateManager::submit(EntityId id, sol::function fn) {
   updates.emplace(id, fn);
 }
 
-void UpdateManager::remove(EntityId id) {
-  updates.erase(id);
-}
+void UpdateManager::remove(EntityId id) { updates.erase(id); }
 
 void UpdateManager::tick_all(BehaviorManager& behav) {
   for (auto [id, fn] : updates) {
-		behav.run(id, fn);
+    behav.run(id, fn);
   }
 }
 } // namespace ecs

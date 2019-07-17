@@ -3,6 +3,9 @@
 #include <hash/flat_hash_map.hpp>
 #include <sol/sol.hpp>
 
+#include "common/logging.hpp"
+#include "core/script/script.hpp"
+
 #include "entity.hpp"
 
 namespace ecs {
@@ -20,8 +23,11 @@ public:
     }
     sol::state_view runner_state = thread_it->second.state();
     sol::coroutine coro(runner_state, fn);
-    coro(std::move(id), std::forward<Args>(args)...);
-    if (coro.runnable()) {
+    auto result = coro(std::move(id), std::forward<Args>(args)...);
+    if (!result.valid()) {
+      sol::error err = result;
+      ERROR_LOG("Lua error: {}", err.what());
+    } else if (coro.runnable()) {
       coros.emplace(id, coro);
     }
   }
