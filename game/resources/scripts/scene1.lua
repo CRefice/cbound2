@@ -3,7 +3,6 @@ require("scripts/character")
 require("scripts/coroutine")
 require("scripts/ui")
 
-birb1 = character()
 birb2 = birb()
 
 birb2.position = Vec2:new(100, 10)
@@ -18,7 +17,7 @@ return {
 	tile_map = "tiles/overworld.tmx";
 	tile_set = "tiles/overworld.tsx";
 	entities = {
-		birb1,
+		character,
 		birb2,
 	}
 }

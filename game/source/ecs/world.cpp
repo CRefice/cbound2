@@ -68,6 +68,15 @@ EntityId World::load_entity(sol::table& tbl) {
   auto pos =
       tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
   auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
+  tbl["id"] = id;
+  {
+    auto meta = tbl[sol::metatable_key];
+    if (!meta) {
+      meta = tbl.create_named("meta");
+    }
+    meta[sol::meta_function::index] = tbl["id"];
+    meta[sol::meta_function::new_index] = tbl["id"];
+  }
   animator.load_entity(id, tbl);
   if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
     if (auto maybe_sprite = fw::render::parse_sprite(*spr)) {
@@ -75,15 +84,15 @@ EntityId World::load_entity(sol::table& tbl) {
     }
   }
   if (auto behavior = tbl.get<sol::optional<sol::function>>("behavior")) {
-    updates.submit(id, *behavior);
+    updates.submit(id, Closure{tbl, *behavior});
   }
   if (auto coll = tbl["collision"]) {
-    if (auto maybe_coll = fw::collision::parse_collision(coll)) {
+    if (auto maybe_coll = fw::collision::parse_collision(tbl, coll)) {
       collision.submit(id, *maybe_coll);
     }
   }
   if (auto context = tbl["input"]) {
-    if (auto maybe_context = fw::input::parse_context(context)) {
+    if (auto maybe_context = fw::input::parse_context(tbl, context)) {
       input.submit(id, *maybe_context);
     }
   }
@@ -93,7 +102,6 @@ EntityId World::load_entity(sol::table& tbl) {
     }
   }
 
-	tbl[sol::meta_function::index] = id;
   return id;
 }
 

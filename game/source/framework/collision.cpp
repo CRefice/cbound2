@@ -9,7 +9,8 @@
 using namespace ecs;
 
 namespace fw::collision {
-std::optional<Collision> parse_collision(const sol::table& table) {
+std::optional<Collision> parse_collision(const sol::table& tbl,
+                                         const sol::table& table) {
   Collision coll;
   if (auto bounds = table.get<sol::optional<Rectangle<float>>>("bounds")) {
     coll.bounds = *bounds;
@@ -18,7 +19,9 @@ std::optional<Collision> parse_collision(const sol::table& table) {
     return coll;
   }
 
-  coll.on_collision = table.get<sol::optional<sol::function>>("on_collision");
+  if (auto fn = table.get<sol::optional<sol::function>>("on_collision")) {
+    coll.on_collision = Closure{tbl, *fn};
+  }
   coll.tag = table.get_or("tag", std::string());
   coll.solid = table.get_or("solid", true);
   return coll;

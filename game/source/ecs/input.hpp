@@ -11,7 +11,7 @@
 #include "entity.hpp"
 
 namespace ecs {
-using ActionCallback = sol::function;
+using ActionCallback = Closure;
 
 struct InputContext {
   bool handle(EntityId id, ::input::KeyEvent event, BehaviorManager& behav);

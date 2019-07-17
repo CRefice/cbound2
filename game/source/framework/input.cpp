@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 
 #include "core/script/script.hpp"
+#include "ecs/behavior.hpp"
 
 #include "common/logging.hpp"
 
@@ -51,7 +52,8 @@ static KeyEvent::Action action_from_sign(char sign) {
 }
 
 namespace fw::input {
-std::optional<InputContext> parse_context(const sol::table &table) {
+std::optional<InputContext> parse_context(const sol::table &tbl,
+                                          const sol::table &table) {
   InputContext ctx;
   for (const auto &[name, fn] : table) {
     auto key = name.as<std::string>();
@@ -65,7 +67,7 @@ std::optional<InputContext> parse_context(const sol::table &table) {
         continue;
       }
       auto event = ::input::KeyEvent{it->second, action};
-      ctx.actions[event] = fn.as<sol::function>();
+      ctx.actions[event] = ecs::Closure{tbl, fn.as<sol::function>()};
     } /*else if (auto sz = key.find(','); sz != std::string::npos) {
       auto pos = key.substr(0, sz);
       auto neg = key.substr(sz + 1);
@@ -84,8 +86,8 @@ std::optional<InputContext> parse_context(const sol::table &table) {
                key);
       continue;
     }
-		*/
+                */
   }
-	return ctx;
+  return ctx;
 }
 } // namespace fw::input

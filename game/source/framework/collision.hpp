@@ -7,5 +7,6 @@
 #include "ecs/collision.hpp"
 
 namespace fw::collision {
-std::optional<ecs::Collision> parse_collision(const sol::table& table);
+std::optional<ecs::Collision> parse_collision(const sol::table& tbl,
+                                         const sol::table& table);
 } // namespace fw::collision

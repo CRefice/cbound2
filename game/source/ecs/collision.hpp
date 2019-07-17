@@ -13,7 +13,7 @@
 
 namespace ecs {
 struct Collision {
-  sol::optional<sol::function> on_collision;
+  sol::optional<Closure> on_collision;
   bool solid;
   std::string tag;
   // The bounds of the collider, relative

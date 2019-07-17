@@ -9,7 +9,7 @@ bool InputContext::handle(EntityId id, input::KeyEvent event,
                           BehaviorManager &behav) {
   auto it = actions.find(event);
   if (it != actions.end()) {
-    behav.run(id, it->second);
+    behav.run(id, it->second, id);
     return true;
   }
   return false;
