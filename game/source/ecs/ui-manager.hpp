@@ -28,7 +28,7 @@ public:
   void update(double dt);
   void draw_all(const Scene& scene);
 
-  void load_libraries(sol::state& state);
+  void load_libraries(sol::state_view state);
 
 private:
   ska::flat_hash_map<EntityId, std::unique_ptr<ui::Widget>> widgets;

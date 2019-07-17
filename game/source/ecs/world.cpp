@@ -22,30 +22,29 @@ World::World(::render::Context context)
   ::input::set_handler(context, *this);
 }
 
-void World::register_functions(sol::state& tbl) {
-  auto usertype =
-      tbl.new_usertype<ecs::EntityId>("Entity", "new", sol::no_constructor);
-  usertype["pos"] =
-      sol::property([&](ecs::EntityId& id) { return scene.find(id)->pos; });
-  usertype["vel"] =
-      sol::property([&](ecs::EntityId& id) { return scene.find(id)->velocity; },
-                    [&](ecs::EntityId& id, ssm::vec2 val) {
-                      scene.find(id)->velocity = val;
-                    });
+void World::register_functions(sol::state_view state) {
+  auto meta =
+      state.new_usertype<EntityId>("Entity", "new", sol::no_constructor);
+  meta["pos"] =
+      sol::property([this](const EntityId& id) { return scene.find(id)->pos; });
+  meta["vel"] = sol::property(
+      [this](const EntityId& id) { return scene.find(id)->velocity; },
+      [this](const EntityId& id, ssm::vec2 val) {
+        scene.find(id)->velocity = val;
+      });
 
-  tbl.create_named_table(
+  state.create_named_table(
       "world", "instantiate",
-      [this](const sol::table& table, sol::this_state s) {
-        return load_entity((sol::state&)s, table);
-      },
-      "remove", [this](const ecs::EntityId& id) { remove(id); }, "game_time",
+      [this](sol::table table) { return load_entity(table); }, "remove",
+      [this](const ecs::EntityId& id) { remove(id); }, "game_time",
       [this]() { return time; });
 
-  animator.load_libraries(tbl);
-  renderer.load_libraries(tbl);
+  fw::anim::register_libs(state);
+  animator.register_fields(meta);
+  renderer.load_libraries(state);
 }
 
-void World::load_scene(sol::state& lua, const sol::table& tbl) {
+void World::load_scene(sol::table& tbl) {
   auto entities = tbl.get<sol::optional<sol::table>>("entities");
   auto map_path = tbl.get<sol::optional<std::string>>("tile_map");
   auto set_path = tbl.get<sol::optional<std::string>>("tile_set");
@@ -58,16 +57,18 @@ void World::load_scene(sol::state& lua, const sol::table& tbl) {
   scene.tile_map = tile_maps.load(*map_path);
   scene.tile_set = tile_sets.load(*set_path);
   renderer.switch_tiles(*scene.tile_map, *scene.tile_set);
-  for (auto [name, entity] : *entities) {
-    load_entity(lua, entity);
+  for (auto& entry : *entities) {
+    sol::table entity = entry.second;
+    load_entity(entity);
   }
 }
 
-ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
+EntityId World::load_entity(sol::table& tbl) {
   auto default_pos = ssm::vec2{};
   auto pos =
       tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
   auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
+  animator.load_entity(id, tbl);
   if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
     if (auto maybe_sprite = fw::render::parse_sprite(*spr)) {
       renderer.submit(id, *maybe_sprite);
@@ -81,11 +82,6 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
       collision.submit(id, *maybe_coll);
     }
   }
-  if (auto anim = tbl["anim"]) {
-    if (auto maybe_anim = fw::anim::parse_sequence(anim)) {
-      animator.submit(id, ::anim::Sequencer(*maybe_anim));
-    }
-  }
   if (auto context = tbl["input"]) {
     if (auto maybe_context = fw::input::parse_context(context)) {
       input.submit(id, *maybe_context);
@@ -96,10 +92,12 @@ ecs::EntityId World::load_entity(sol::state& lua, const sol::table& tbl) {
       renderer.submit(id, std::move(maybe_widget));
     }
   }
+
+	tbl[sol::meta_function::index] = id;
   return id;
 }
 
-void World::remove(ecs::EntityId id) { remove_list.push_back(std::move(id)); }
+void World::remove(EntityId id) { remove_list.push_back(std::move(id)); }
 
 void World::update(double dt) {
   while (!remove_list.empty()) {

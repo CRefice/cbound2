@@ -13,7 +13,7 @@ std::optional<ssm::vec4> parse_color(std::string_view str);
 sol::state new_environment();
 
 // Define common types and functions in the given state.
-void load_common_libs(sol::state& table);
+void load_common_libs(sol::state_view state);
 
 sol::protected_function_result on_error(lua_State*,
                                         sol::protected_function_result pfr);

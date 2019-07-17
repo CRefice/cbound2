@@ -35,8 +35,8 @@ void UiManager::draw_all(const Scene &scene) {
   batch.flush();
 }
 
-void UiManager::load_libraries(sol::state &state) {
-  auto table = state.create_table("ui");
+void UiManager::load_libraries(sol::state_view state) {
+  auto table = state.create_named_table("ui");
   table.new_usertype<Widget>("Widget", sol::no_constructor);
 
   table.new_usertype<Text>("Text", sol::no_constructor, "done", &Text::done,

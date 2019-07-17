@@ -66,10 +66,10 @@ void MasterRenderer::draw_all(const Scene& scene) {
   post_process.draw_all();
 }
 
-void MasterRenderer::load_libraries(sol::state& state) {
+void MasterRenderer::load_libraries(sol::state_view state) {
   ui.load_libraries(state);
 
-  auto table = state.create_table("render");
+  auto table = state.create_named_table("render");
   table.create_named("camera", "pan_to", [this](ssm::vec2 position) {
     auto vec = ssm::extend(position, 0.0);
     camera.view = ssm::translation(vec);

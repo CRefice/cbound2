@@ -39,7 +39,7 @@ public:
 
   void draw_all(const Scene& scene);
 
-  void load_libraries(sol::state& state);
+  void load_libraries(sol::state_view state);
 
 private:
   render::UniformBuffer camera_buf{sizeof(Camera)};

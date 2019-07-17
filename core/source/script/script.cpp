@@ -43,7 +43,7 @@ sol::state new_environment() {
 }
 
 template <typename T>
-static void define_vec2_type(sol::state& state, const char* name) {
+static void define_vec2_type(sol::state_view state, const char* name) {
   using Vec = ssm::vector<T, 2>;
   state.new_usertype<Vec>(
       name, sol::constructors<Vec(), Vec(T, T)>(), "x",
@@ -64,7 +64,7 @@ static void define_vec2_type(sol::state& state, const char* name) {
 }
 
 template <typename T>
-static void define_rect_type(sol::state& state, const char* name) {
+static void define_rect_type(sol::state_view state, const char* name) {
   using Rect = Rectangle<T>;
   state.new_usertype<Rect>(
       name,
@@ -76,7 +76,7 @@ static void define_rect_type(sol::state& state, const char* name) {
       &Rect::size, "center", &Rect::center, "translate", &translate<T>);
 }
 
-void load_common_libs(sol::state& state) {
+void load_common_libs(sol::state_view state) {
   define_vec2_type<float>(state, "Vec2");
   define_vec2_type<int>(state, "IVec2");
   define_rect_type<float>(state, "Rect");

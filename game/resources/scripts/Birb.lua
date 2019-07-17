@@ -35,16 +35,16 @@ function birb()
 		collision = {
 			bounds = Rect:new(0, 0, 32, 32)
 		},
-		anim = {
+		animation = {
 			mode = anim.play_mode.loop,
 			frames = {
 				{
 					duration = 0.1,
-					coords = IRect:new(0, 0, 32, 32)
+					value = IRect:new(0, 0, 32, 32)
 				},
 				{
 					duration = 0.1,
-					coords = IRect:new(32, 0, 64, 32)
+					value = IRect:new(32, 0, 64, 32)
 				},
 			}
 		},

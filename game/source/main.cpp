@@ -41,7 +41,7 @@ int main() {
       FATAL_LOG("Unable to load main scene");
       std::abort();
     }
-    world.load_scene(lua, *maybe_scene);
+    world.load_scene(*maybe_scene);
 
     debug::interface::init(window);
 

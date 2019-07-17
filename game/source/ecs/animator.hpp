@@ -1,7 +1,7 @@
 #pragma once
 
-#include <sol/forward.hpp>
 #include <hash/flat_hash_map.hpp>
+#include <sol/forward.hpp>
 
 #include "core/anim/sequencer.hpp"
 #include "core/render/tex-coords.hpp"
@@ -23,7 +23,8 @@ public:
 
   void update(double dt);
 
-  void load_libraries(sol::state& state);
+  void register_fields(sol::usertype<EntityId>& meta);
+  void load_entity(const EntityId& id, sol::table& entity);
 
 private:
   ska::flat_hash_map<EntityId, Sequencer> anims;

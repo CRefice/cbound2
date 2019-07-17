@@ -14,12 +14,12 @@ void Animator::submit(EntityId id, Sequencer anim) {
   anims.insert_or_assign(id, std::move(anim));
 }
 
-Sequencer *Animator::find(EntityId id) {
+Sequencer* Animator::find(EntityId id) {
   auto it = anims.find(id);
   return it == anims.end() ? nullptr : &(it->second);
 }
 
-const Sequencer *Animator::find(EntityId id) const {
+const Sequencer* Animator::find(EntityId id) const {
   auto it = anims.find(id);
   return it == anims.end() ? nullptr : &(it->second);
 }
@@ -27,27 +27,31 @@ const Sequencer *Animator::find(EntityId id) const {
 void Animator::remove(EntityId id) { anims.erase(id); }
 
 void Animator::update(double dt) {
-  for (auto &[id, anim] : anims) {
-    anim.progress(dt);
+  for (auto& elem : anims) {
+    elem.second.progress(dt);
   }
 }
 
-void Animator::load_libraries(sol::state &state) {
-  auto table = state.create_table_with(
-      "switch_to", [this](const EntityId &id, const sol::table &tbl) {
-        if (auto sequence = fw::anim::parse_sequence(tbl)) {
-          auto [old_it, inserted] = anims.emplace(id, *sequence);
-          if (!inserted) {
-            old_it->second.switch_to(std::move(*sequence));
-          }
+void Animator::register_fields(sol::usertype<EntityId>& meta) {
+  meta["animation"] = sol::property(
+      [this](const EntityId& id) { return find(id); },
+      [this](const EntityId& id, sol::table tbl) {
+        if (auto sequence = fw::anim::parse_sequence<render::TexFrame>(tbl)) {
+          submit(id, Sequencer(*sequence));
         } else {
           WARN_LOG("Tried switching to something other than an animation!");
         }
       });
-	state["anim"] = table;
+}
 
-  // Sequence types
-  table.new_enum("play_mode", "once", PlayMode::Once, "loop", PlayMode::Loop,
-                 "ping_pong", PlayMode::PingPong);
+void Animator::load_entity(const EntityId& id, sol::table& entity) {
+  if (auto anim = entity["animation"]) {
+    if (auto sequence = fw::anim::parse_sequence<render::TexFrame>(anim)) {
+      submit(id, Sequencer(*sequence));
+      anim = sol::nil;
+    } else {
+      WARN_LOG("Unable to parse animation component!");
+    }
+  }
 }
-}
+} // namespace ecs

@@ -6,16 +6,16 @@ anims = {
 		frames = {
 			{
 				duration = 0.2,
-				coords = IRect:new(0, 0, 17, 29)
+				value = IRect:new(0, 0, 17, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(17, 0, 34, 29)
+				value = IRect:new(17, 0, 34, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(34, 0, 51, 29)
+				value = IRect:new(34, 0, 51, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(51, 0, 68, 29)
+				value = IRect:new(51, 0, 68, 29)
 			}
 		}
 	},
@@ -24,16 +24,16 @@ anims = {
 		frames = {
 			{
 				duration = 0.2,
-				coords = IRect:new(68, 0, 85, 29)
+				value = IRect:new(68, 0, 85, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(85, 0, 102, 29)
+				value = IRect:new(85, 0, 102, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(102, 0, 119, 29)
+				value = IRect:new(102, 0, 119, 29)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(0, 29, 17, 58)
+				value = IRect:new(0, 29, 17, 58)
 			}
 		}
 	},
@@ -42,16 +42,16 @@ anims = {
 		frames = {
 			{
 				duration = 0.2,
-				coords = IRect:new(17, 29, 34, 58)
+				value = IRect:new(17, 29, 34, 58)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(34, 29, 51, 58)
+				value = IRect:new(34, 29, 51, 58)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(51, 29, 68, 58)
+				value = IRect:new(51, 29, 68, 58)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(68, 29, 85, 58)
+				value = IRect:new(68, 29, 85, 58)
 			}
 		}
 	},
@@ -60,16 +60,16 @@ anims = {
 		frames = {
 			{
 				duration = 0.2,
-				coords = IRect:new(85, 29, 102, 58)
+				value = IRect:new(85, 29, 102, 58)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(102, 29, 119, 58)
+				value = IRect:new(102, 29, 119, 58)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(0, 58, 17, 87)
+				value = IRect:new(0, 58, 17, 87)
 			}, {
 				duration = 0.2,
-				coords = IRect:new(17, 58, 34, 87)
+				value = IRect:new(17, 58, 34, 87)
 			}
 		}
 	}
@@ -98,22 +98,22 @@ function interact_box(pos)
 	}
 end
 
+function directional_anim(vel)
+	if vel.x > 0 then
+		return anims.Right
+	elseif vel.x < 0 then
+		return anims.Left
+	elseif vel.y > 0 then
+		return anims.Back
+	else
+		return anims.Front
+	end
+end
+
 function character()
 	local last_dir = Vec2:new(0, -1)
 	local mov_speed = 50
 	local coll_bounds = Rect:new(0, 0, 15, 15)
-
-	function directional_anim(vel)
-		if vel.x == 1 then
-			return anims.Right
-		elseif vel.x == -1 then
-			return anims.Left
-		elseif vel.y == 1 then
-			return anims.Back
-		else
-			return anims.Front
-		end
-	end
 
 	function update_vel(self, vel)
 		self.vel = vel
@@ -121,7 +121,7 @@ function character()
 			return
 		end
 		last_dir = vel:normalize()
-		anim.switch_to(self, directional_anim(last_dir))
+		self.animation = directional_anim(last_dir)
 	end
 
 	return {

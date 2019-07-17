@@ -16,10 +16,10 @@ class World : public ::input::KeyHandler {
 public:
   explicit World(::render::Context context);
 
-  void register_functions(sol::state& tbl);
+  void register_functions(sol::state_view state);
 
-  void load_scene(sol::state& lua, const sol::table& tbl);
-  ecs::EntityId load_entity(sol::state& lua, const sol::table& tbl);
+  void load_scene(sol::table& tbl);
+  ecs::EntityId load_entity(sol::table& tbl);
 
   void remove(ecs::EntityId id);
 
