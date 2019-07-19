@@ -3,9 +3,8 @@
 #include <vector>
 
 #include <hash/flat_hash_map.hpp>
-#include <sol/sol.hpp>
 
-#include "core/input/key.hpp"
+#include "core/input/action.hpp"
 
 #include "behavior.hpp"
 #include "entity.hpp"
@@ -14,28 +13,23 @@ namespace ecs {
 using ActionCallback = Closure;
 
 struct InputContext {
-  bool handle(EntityId id, ::input::KeyEvent event, BehaviorManager& behav);
+  bool handle(const EntityId& id, const input::Action& action,
+              BehaviorManager& behav);
 
-  ska::flat_hash_map<::input::KeyEvent, ActionCallback> actions;
+  ska::flat_hash_map<std::string, ActionCallback> actions;
 };
 
-class InputManager : public input::KeyHandler {
+class InputManager {
 public:
-  InputManager(BehaviorManager& behave) : behave(behave) {}
+  InputManager(input::ActionQueue& queue) : queue(queue) {}
 
-  void submit(EntityId id, InputContext ctx) {
-    contexts.emplace_back(id, std::move(ctx));
-  }
+  void submit(const EntityId& id, InputContext ctx);
+  void remove(const EntityId& id);
 
-  void remove(EntityId id);
-
-  void delete_dead();
-
-  void handle(::input::KeyEvent event) final;
+  void dispatch(BehaviorManager& behav);
 
 private:
-  BehaviorManager& behave;
+  input::ActionQueue& queue;
   std::vector<std::pair<EntityId, InputContext>> contexts;
-  std::size_t to_delete = 0;
 };
 } // namespace ecs

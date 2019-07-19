@@ -4,9 +4,6 @@
 
 #include <sol/forward.hpp>
 
-#include "core/render/font.hpp"
-#include "core/resource/resource-cache.hpp"
-
 #include "ui/widget.hpp"
 
 namespace fw::ui {

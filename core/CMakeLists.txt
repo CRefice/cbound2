@@ -3,7 +3,8 @@ set(SRCS
 	source/common/paths.cpp
 	source/common/string.cpp
 	source/collision/tile-collision.cpp
-	source/input/input.cpp
+	source/input/keyboard.cpp
+	source/input/gamepad.cpp
 	source/render/framebuffer.cpp
 	source/render/post-process.cpp
 	source/render/render.cpp

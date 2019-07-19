@@ -3,10 +3,8 @@
 
 #include "common/logging.hpp"
 #include "core/anim/sequencer.hpp"
-#include "core/input/input.hpp"
+#include "core/input/action.hpp"
 #include "core/script/script.hpp"
-
-#include "ui/text.hpp"
 
 #include "framework/anim.hpp"
 #include "framework/collision.hpp"
@@ -17,10 +15,8 @@
 #include "world.hpp"
 
 namespace ecs {
-World::World(::render::Context context)
-    : renderer(context, animator), input(behav) {
-  ::input::set_handler(context, *this);
-}
+World::World(::render::Context context, input::ActionQueue& queue)
+    : renderer(context, animator), input(queue) {}
 
 void World::register_functions(sol::state_view state) {
   auto meta =
@@ -121,13 +117,14 @@ void World::update(double dt) {
     remove_list.pop_back();
   }
 
+  input.dispatch(behav);
+
   scene.update(dt);
   collision.update(dt, scene, behav);
   updates.tick_all(behav);
   animator.update(dt);
   renderer.update(dt);
   renderer.draw_all(scene);
-  input.delete_dead();
   behav.tick_all();
   time += dt;
 }

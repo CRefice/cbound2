@@ -2,7 +2,7 @@
 
 #include <sol/forward.hpp>
 
-#include "core/input/key.hpp"
+#include "core/input/action.hpp"
 
 #include "animator.hpp"
 #include "behavior.hpp"
@@ -12,9 +12,9 @@
 #include "scene.hpp"
 
 namespace ecs {
-class World : public ::input::KeyHandler {
+class World {
 public:
-  explicit World(::render::Context context);
+  explicit World(::render::Context context, input::ActionQueue& queue);
 
   void register_functions(sol::state_view state);
 
@@ -24,8 +24,6 @@ public:
   void remove(ecs::EntityId id);
 
   void update(double dt);
-
-  void handle(::input::KeyEvent e) final { input.handle(e); }
 
 private:
   double time = 0.0;

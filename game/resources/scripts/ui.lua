@@ -16,10 +16,10 @@ function text_window(txt, pos, sz)
 		},
 		position = pos,
 		input = {
-			["Q+"] = function(self)
+			["Action+"] = function(self)
 				text_ui = ui.text_widget(text_id)
 				if (text_ui:done()) then
-					world.remove(self)
+					world.remove(self.id)
 					world.remove(text_id)
 				else
 					text_ui:skip()

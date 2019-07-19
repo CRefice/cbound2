@@ -6,7 +6,8 @@
 
 #include "common/logging.hpp"
 
-#include "core/input/input.hpp"
+#include "core/input/action.hpp"
+#include "core/input/keyboard.hpp"
 #include "core/script/script.hpp"
 
 #include "editor/tiles.hpp"
@@ -19,14 +20,38 @@ bool show_debug = true;
 int main() {
   auto window = render::create_context();
   render::init(window);
-  input::init(window);
+  input::ActionQueue queue;
+
+  input::ButtonMap keyboard_map = {
+      {GLFW_KEY_W,
+       [](double pressed) {
+         return ::input::Action{"YAxis", pressed};
+       }},
+      {GLFW_KEY_S,
+       [](double pressed) {
+         return ::input::Action{"YAxis", -pressed};
+       }},
+      {GLFW_KEY_D,
+       [](double pressed) {
+         return ::input::Action{"XAxis", pressed};
+       }},
+      {GLFW_KEY_A,
+       [](double pressed) {
+         return ::input::Action{"XAxis", -pressed};
+       }},
+      {GLFW_KEY_K,
+       [](double pressed) {
+         return ::input::Action{"Action", pressed};
+       }},
+  };
+  input::KeyboardHandler handler(window, queue, std::move(keyboard_map));
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
   auto lua = script::new_environment();
 
   {
-    ecs::World world(window);
+    ecs::World world(window, queue);
     world.register_functions(lua);
 
     auto maybe_scene = lua.safe_script_file(path::install_dir() /
@@ -71,7 +96,6 @@ int main() {
       glfwSwapBuffers(window);
     }
   }
-  input::shutdown(window);
   glfwDestroyWindow(window);
   debug::interface::shutdown();
   render::shutdown();

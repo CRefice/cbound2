@@ -47,46 +47,23 @@ static const std::unordered_map<std::string, int> key_names = {
 using namespace ecs;
 using namespace ::input;
 
-static KeyEvent::Action action_from_sign(char sign) {
-  return sign == '+' ? KeyEvent::Action::Press : KeyEvent::Action::Release;
-}
-
 namespace fw::input {
-std::optional<InputContext> parse_context(const sol::table &tbl,
-                                          const sol::table &table) {
+std::optional<InputContext> parse_context(const sol::table& tbl,
+                                          sol::table table) {
   InputContext ctx;
-  for (const auto &[name, fn] : table) {
-    auto key = name.as<std::string>();
+  for (auto iter : table) {
+    auto key = iter.first.as<std::string>();
+    auto fn = iter.second.as<sol::function>();
     if (char sign = key.back(); sign == '+' || sign == '-') {
-      auto action = action_from_sign(sign);
-      auto key_name = key.substr(0, key.size() - 1);
-      auto it = key_names.find(key_name);
-      if (it == key_names.end()) {
-        WARN_LOG("Couldn't map key to action: {} does not name a valid key!",
-                 key_name);
-        continue;
-      }
-      auto event = ::input::KeyEvent{it->second, action};
-      ctx.actions[event] = ecs::Closure{tbl, fn.as<sol::function>()};
-    } /*else if (auto sz = key.find(','); sz != std::string::npos) {
-      auto pos = key.substr(0, sz);
-      auto neg = key.substr(sz + 1);
-      auto it_pos = key_names.find(pos);
-      auto it_neg = key_names.find(neg);
-      if (it_pos == key_names.end() || it_neg == key_names.end()) {
-        WARN_LOG(
-            "Couldn't map key to action: {} or {} does not name a valid key!",
-            pos, neg);
-        continue;
-      }
-      auto range = KeyRange{it_pos->second, it_neg->second};
-      ctx.ranges[range] = fn.as<sol::function>();
-    } else {
-      WARN_LOG("Couldn't map key to action: {} does not name a valid key!",
-               key);
-      continue;
+      key = key.substr(0, key.size() - 1);
+      auto function = std::function([sign, fn](sol::table tbl, double state) {
+        if ((sign == '+' && state > 0.0) || (sign == '-' && state <= 0.0)) {
+          fn(tbl);
+        }
+      });
+      table[key] = function;
     }
-                */
+    ctx.actions.emplace(key, Closure{tbl, table[key]});
   }
   return ctx;
 }

@@ -18,13 +18,6 @@ void init(render::Context context) {
   glfwSetKeyCallback(context, key_callback);
 }
 
-void set_handler(render::Context context, KeyHandler& handler) {
-  glfwSetWindowUserPointer(context, &handler);
-}
-
-KeyHandler& get_handler(render::Context context) {
-  return *reinterpret_cast<KeyHandler*>(glfwGetWindowUserPointer(context));
-}
 
 void shutdown(render::Context context) {}
 } // namespace input
