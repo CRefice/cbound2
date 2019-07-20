@@ -17,9 +17,11 @@ void register_sequencer(sol::table table, const char* name) {
   auto meta = table.new_usertype<Seq>(name, sol::no_constructor);
 
   meta["restart"] = &Seq::restart;
+  meta["skip_to"] = &Seq::skip_to;
   meta["fast_forward"] = &Seq::fast_forward;
   meta["pause"] = &Seq::pause;
   meta["resume"] = &Seq::resume;
+  meta["current_time"] = &Seq::current_time;
 }
 
 template <typename T>
