@@ -115,6 +115,7 @@ local coll_bounds = Rect:new(0, 0, 15, 15)
 
 character = {
 	last_dir = Vec2:new(0, -1),
+	anim_time = 0.0,
 
 	sprite = {
 		image = "textures/human.png",
@@ -142,11 +143,15 @@ character = {
 
 function character:update_vel(vel)
 	self.vel = vel
-	if vel == Vec2:new(0, 0) then
-		self.animation:restart()
-		self.animation:pause()
-		return
+	if self.animation then
+		self.anim_time = self.animation:current_time()
+		if vel == Vec2:new(0, 0) then
+			self.animation:restart()
+			self.animation:pause()
+			return
+		end
 	end
 	self.last_dir = vel:normalize()
 	self.animation = directional_anim(self.last_dir)
+	self.animation:skip_to(self.anim_time)
 end

@@ -7,6 +7,7 @@
 #include "common/logging.hpp"
 
 #include "core/input/action.hpp"
+#include "core/input/gamepad.hpp"
 #include "core/input/keyboard.hpp"
 #include "core/script/script.hpp"
 
@@ -44,7 +45,41 @@ int main() {
          return ::input::Action{"Action", pressed};
        }},
   };
+  input::ButtonMap gamepad_btn_map = {
+      {GLFW_GAMEPAD_BUTTON_DPAD_UP,
+       [](double pressed) {
+         return ::input::Action{"YAxis", pressed};
+       }},
+      {GLFW_GAMEPAD_BUTTON_DPAD_DOWN,
+       [](double pressed) {
+         return ::input::Action{"YAxis", -pressed};
+       }},
+      {GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,
+       [](double pressed) {
+         return ::input::Action{"XAxis", pressed};
+       }},
+      {GLFW_GAMEPAD_BUTTON_DPAD_LEFT,
+       [](double pressed) {
+         return ::input::Action{"XAxis", -pressed};
+       }},
+      {GLFW_GAMEPAD_BUTTON_A,
+       [](double pressed) {
+         return ::input::Action{"Action", pressed};
+       }},
+  };
+  input::AxisMap gamepad_axis_map = {
+      {GLFW_GAMEPAD_AXIS_LEFT_X,
+       [](double val) {
+         return ::input::Action{"XAxis", val};
+       }},
+      {GLFW_GAMEPAD_AXIS_LEFT_Y,
+       [](double val) {
+         return ::input::Action{"YAxis", -val};
+       }},
+  };
   input::KeyboardHandler handler(window, queue, std::move(keyboard_map));
+	input::GamepadConfig config{std::move(gamepad_btn_map), std::move(gamepad_axis_map), 0.3};
+  input::Gamepad gamepad(GLFW_JOYSTICK_1, queue, std::move(config));
 
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
@@ -83,6 +118,8 @@ int main() {
       double new_time = glfwGetTime();
       double dt = new_time - old_time;
       old_time = new_time;
+
+      gamepad.poll();
 
       world.update(dt);
 
