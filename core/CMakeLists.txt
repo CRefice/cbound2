@@ -18,6 +18,7 @@ set(SRCS
 	source/resource/load-shader.cpp
 	source/resource/load-tileset.cpp
 	source/resource/load-tilemap.cpp
+	source/resource/load-input-conf.cpp
 	source/resource/load-texture.cpp
 	source/script/script.cpp
 	source/text/control-codes.cpp

@@ -4,7 +4,6 @@
 #include <GLFW/glfw3.h>
 
 #include "action.hpp"
-#include "input.hpp"
 
 namespace input {
 struct GamepadConfig {

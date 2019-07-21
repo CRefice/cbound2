@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<input>
+	<keyboard>
+		<button name="K" action="Action"/>
+		<button_axis positive="D" negative="A" action="XAxis"/>
+		<button_axis positive="W" negative="S" action="YAxis"/>
+	</keyboard>
+	<gamepad>
+		<button name="A" action="Action"/>
+		<button_axis positive="DpadU" negative="DpadD" action="YAxis"/>
+		<button_axis positive="DpadR" negative="DpadL" action="XAxis"/>
+		<axis name="LX" action="XAxis"/>
+		<axis name="LY" action="YAxis" invert="true"/>
+		<dead_zone value="0.4"/>
+	</gamepad>
+</input>
