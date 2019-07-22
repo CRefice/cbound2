@@ -23,8 +23,8 @@ public:
 
   void update(double dt);
 
-  void register_fields(sol::usertype<EntityId>& meta);
   void load_entity(const EntityId& id, sol::table& entity);
+  void bind_entity_fields(sol::usertype<EntityId>& meta);
 
 private:
   ska::flat_hash_map<EntityId, Sequencer> anims;

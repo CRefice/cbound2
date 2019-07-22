@@ -2,25 +2,21 @@
 #include <ssm/transform.hpp>
 
 #include "common/logging.hpp"
-#include "core/anim/sequencer.hpp"
-#include "core/input/action.hpp"
-#include "core/script/script.hpp"
 
 #include "framework/anim.hpp"
 #include "framework/collision.hpp"
-#include "framework/input.hpp"
-#include "framework/sprite.hpp"
+#include "framework/render.hpp"
 #include "framework/ui.hpp"
 
 #include "world.hpp"
 
 namespace ecs {
-World::World(::render::Context context, input::ActionQueue& queue)
-    : renderer(context, animator), input(queue) {}
+World::World(::render::Context context, BehaviorScheduler& sched,
+             input::ActionQueue& queue)
+    : renderer(context), runner(sched), input(queue) {}
 
-void World::register_functions(sol::state_view state) {
-  auto meta =
-      state.new_usertype<EntityId>("Entity", "new", sol::no_constructor);
+void World::bind_entity_table(sol::table& tbl) {
+  auto meta = tbl.new_usertype<EntityId>("Entity", sol::no_constructor);
   meta["pos"] =
       sol::property([this](const EntityId& id) { return scene.find(id)->pos; });
   meta["vel"] = sol::property(
@@ -28,16 +24,21 @@ void World::register_functions(sol::state_view state) {
       [this](const EntityId& id, ssm::vec2 val) {
         scene.find(id)->velocity = val;
       });
+  renderer.bind_entity_fields(meta);
+}
 
-  state.create_named_table(
-      "world", "instantiate",
-      [this](sol::table table) { return load_entity(table); }, "remove",
-      [this](const ecs::EntityId& id) { remove(id); }, "game_time",
-      [this]() { return time; });
+void World::bind_libs(sol::state_view state) {
+  fw::bind_anim_libs(state);
+  fw::bind_render_libs(state);
+  fw::bind_collision_libs(state);
+  fw::bind_ui_libs(state);
+  renderer.bind_libs(state);
 
-  fw::anim::register_libs(state);
-  animator.register_fields(meta);
-  renderer.load_libraries(state);
+  auto table = state.create_table("world");
+  table["instantiate"] = [this](sol::table table) { load_entity(table); };
+  table["remove"] = [this](sol::table table) { remove(table["id"]); };
+  table["game_time"] = [this] { return time; };
+  bind_entity_table(table);
 }
 
 void World::load_scene(sol::table& tbl) {
@@ -60,10 +61,8 @@ void World::load_scene(sol::table& tbl) {
 }
 
 EntityId World::load_entity(sol::table& tbl) {
-  auto default_pos = ssm::vec2{};
-  auto pos =
-      tbl.get<sol::optional<ssm::vec2>>("position").value_or(default_pos);
-  auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0, 0)});
+  auto pos = tbl.get_or("position", ssm::vec2(0.0f));
+  auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0.0f)});
   tbl["id"] = id;
   {
     auto meta = tbl[sol::metatable_key];
@@ -73,30 +72,11 @@ EntityId World::load_entity(sol::table& tbl) {
     meta[sol::meta_function::index] = tbl["id"];
     meta[sol::meta_function::new_index] = tbl["id"];
   }
-  animator.load_entity(id, tbl);
-  if (auto spr = tbl.get<sol::optional<sol::table>>("sprite")) {
-    if (auto maybe_sprite = fw::render::parse_sprite(*spr)) {
-      renderer.submit(id, *maybe_sprite);
-    }
-  }
-  if (auto behavior = tbl.get<sol::optional<sol::function>>("behavior")) {
-    updates.submit(id, Closure{tbl, *behavior});
-  }
-  if (auto coll = tbl["collision"]) {
-    if (auto maybe_coll = fw::collision::parse_collision(tbl, coll)) {
-      collision.submit(id, *maybe_coll);
-    }
-  }
-  if (auto context = tbl["input"]) {
-    if (auto maybe_context = fw::input::parse_context(tbl, context)) {
-      input.submit(id, *maybe_context);
-    }
-  }
-  if (auto widget = tbl["ui"]) {
-    if (auto maybe_widget = fw::ui::parse_widget(widget)) {
-      renderer.submit(id, std::move(maybe_widget));
-    }
-  }
+  renderer.load_entity(id, tbl);
+  behavior.load_entity(id, tbl);
+  collision.load_entity(id, tbl);
+  input.load_entity(id, tbl);
+  runner.submit(id, tbl);
 
   return id;
 }
@@ -110,22 +90,21 @@ void World::update(double dt) {
     scene.remove(id);
     renderer.remove(id);
     collision.remove(id);
-    updates.remove(id);
-    animator.remove(id);
+    behavior.remove(id);
+    runner.remove(id);
     input.remove(id);
 
     remove_list.pop_back();
   }
 
-  input.dispatch(behav);
+  input.dispatch(runner);
 
   scene.update(dt);
-  collision.update(dt, scene, behav);
-  updates.tick_all(behav);
-  animator.update(dt);
+  collision.update(dt, scene, runner);
   renderer.update(dt);
+  behavior.update(dt, runner);
+
   renderer.draw_all(scene);
-  behav.tick_all();
   time += dt;
 }
 } // namespace ecs

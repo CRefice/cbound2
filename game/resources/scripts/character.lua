@@ -1,3 +1,5 @@
+require("scripts/functional")
+
 box_size = 10
 
 anims = {
@@ -86,14 +88,14 @@ function interact_box(pos)
 			bounds = Rect:new(0, 0, box_size, box_size),
 			solid = false,
 			on_collision = function(self, other)
-				world.remove(self.id)
+				world.remove(self)
 			end,
 			tag = "interact",
 		},
 		position = pos,
-		behavior = function(self)
+		update = function(self, dt)
 			coro.wait(0.1)
-			world.remove(self.id)
+			world.remove(self)
 		end,
 	}
 end
@@ -107,6 +109,22 @@ function directional_anim(vel)
 		return anims.Back
 	else
 		return anims.Front
+	end
+end
+
+function rising(fn)
+	return function(self, val)
+		if val > 0.0 then
+			fn(self)
+		end
+	end
+end
+
+function falling(fn)
+	return function(self, val)
+		if val < 0.0 then
+			fn(self)
+		end
 	end
 end
 
@@ -126,12 +144,12 @@ character = {
 		bounds = coll_bounds
 	},
 	input = {
-		["Action+"] = function(self)
+		["Action"] = rising(function(self)
 			local pos = self.pos + coll_bounds:bottom_left()
 			local dist = coll_bounds:size()
 			local box_pos = pos + self.last_dir * dist
 			world.instantiate(interact_box(box_pos))
-		end,
+		end),
 		["XAxis"] = function(self, val)
 			self:update_vel(Vec2:new(val * mov_speed, self.vel.y))
 		end,

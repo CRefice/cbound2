@@ -16,7 +16,7 @@
 namespace ecs {
 class MasterRenderer {
 public:
-  MasterRenderer(render::Context context, const Animator& anim);
+  MasterRenderer(render::Context context);
 
   render::Sprite* find(EntityId id) { return sprite_renderer.find(id); }
 
@@ -39,13 +39,16 @@ public:
 
   void draw_all(const Scene& scene);
 
-  void load_libraries(sol::state_view state);
+  void load_entity(const EntityId& id, sol::table& tbl);
+  void bind_libs(sol::state_view state);
+  void bind_entity_fields(sol::usertype<EntityId>& meta);
 
 private:
   render::UniformBuffer camera_buf{sizeof(Camera)};
   ResourceCache<shader::Stage> shaders;
   ResourceCache<render::Texture> textures;
 
+  Animator anim;
   SpriteRenderer sprite_renderer;
   UiManager ui;
 

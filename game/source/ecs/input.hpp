@@ -10,26 +10,21 @@
 #include "entity.hpp"
 
 namespace ecs {
-using ActionCallback = Closure;
-
-struct InputContext {
-  bool handle(const EntityId& id, const input::Action& action,
-              BehaviorManager& behav);
-
-  ska::flat_hash_map<std::string, ActionCallback> actions;
-};
+using ActionMap = ska::flat_hash_map<std::string, sol::function>;
 
 class InputManager {
 public:
   InputManager(input::ActionQueue& queue) : queue(queue) {}
 
-  void submit(const EntityId& id, InputContext ctx);
+  void submit(const EntityId& id, ActionMap actions);
   void remove(const EntityId& id);
 
-  void dispatch(BehaviorManager& behav);
+  void dispatch(BehaviorRunner& runner);
+
+	void load_entity(const EntityId& id, sol::table& entity);
 
 private:
   input::ActionQueue& queue;
-  std::vector<std::pair<EntityId, InputContext>> contexts;
+  std::vector<std::pair<EntityId, ActionMap>> entity_actions;
 };
 } // namespace ecs

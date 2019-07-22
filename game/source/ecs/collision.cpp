@@ -1,20 +1,18 @@
 #include <algorithm>
 #include <cmath>
 
+#include "common/logging.hpp"
+
 #include "core/collision/collision.hpp"
+
+#include "framework/collision.hpp"
 
 #include "collision.hpp"
 
 namespace ecs {
 static const double fixed_update_dt = 0.016666666666667;
 
-void CollisionManager::submit(EntityId id, Collision coll) {
-  collisions.emplace(id, coll);
-}
-
-void CollisionManager::remove(EntityId id) { collisions.erase(id); }
-
-void CollisionManager::update(double dt, Scene &scene, BehaviorManager &behav) {
+void CollisionManager::update(double dt, Scene &scene, BehaviorRunner &runner) {
   carry_dt += dt;
   collision_set.clear();
   while (carry_dt >= fixed_update_dt) {
@@ -34,7 +32,7 @@ void CollisionManager::update(double dt, Scene &scene, BehaviorManager &behav) {
     auto &coll1 = collisions[id1];
     auto &coll2 = collisions[id2];
     if (coll1.on_collision) {
-      behav.run(id1, *coll1.on_collision, coll2.tag);
+      runner.run(id1, *coll1.on_collision, coll2.tag);
     }
   }
 }
@@ -79,6 +77,17 @@ void CollisionManager::apply_velocity(const EntityId &id, Collision &coll,
     }
     collision_set.emplace(id, id2);
     collision_set.emplace(id2, id);
+  }
+}
+
+void CollisionManager::load_entity(const EntityId &id, sol::table &entity) {
+  if (auto table = entity["collision"]) {
+    if (auto coll = fw::LuaTraits<Collision>::parse(table)) {
+      submit(id, *coll);
+      table = sol::nil;
+    } else {
+      WARN_LOG("Unable to parse collision component!");
+    }
   }
 }
 } // namespace ecs

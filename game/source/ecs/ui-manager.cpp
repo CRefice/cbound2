@@ -1,4 +1,8 @@
+#include <memory>
+
 #include <sol/sol.hpp>
+
+#include "common/logging.hpp"
 
 #include "ui/text.hpp"
 #include "ui/ui.hpp"
@@ -12,7 +16,7 @@ using namespace render;
 using namespace ui;
 
 namespace ecs {
-void UiManager::submit(EntityId id, std::unique_ptr<ui::Widget> widget) {
+void UiManager::submit(EntityId id, std::shared_ptr<ui::Widget> widget) {
   widgets.insert_or_assign(id, std::move(widget));
 }
 
@@ -35,20 +39,10 @@ void UiManager::draw_all(const Scene &scene) {
   batch.flush();
 }
 
-void UiManager::load_libraries(sol::state_view state) {
-  auto table = state.create_named_table("ui");
-  table.new_usertype<Widget>("Widget", sol::no_constructor);
-
-  table.new_usertype<Text>("Text", sol::no_constructor, "done", &Text::done,
-                           "skip", &Text::skip, sol::base_classes,
-                           sol::bases<Widget>());
-
-  table.new_usertype<Window>("Window", sol::no_constructor, sol::base_classes,
-                             sol::bases<Widget>());
-
-  table["widget"] = [this](EntityId id) { return widgets[id].get(); };
-  table["text_widget"] = [this](EntityId id) {
-    return (Text *)widgets[id].get();
-  };
+void UiManager::load_entity(const EntityId &id, sol::table &entity) {
+  if (entity["ui"] != sol::nil) {
+    std::shared_ptr<Widget> widget = entity["ui"];
+    submit(id, std::move(widget));
+  }
 }
 } // namespace ecs

@@ -13,7 +13,7 @@
 
 namespace ecs {
 struct Collision {
-  sol::optional<Closure> on_collision;
+  sol::optional<sol::function> on_collision;
   bool solid;
   std::string tag;
   // The bounds of the collider, relative
@@ -23,10 +23,14 @@ struct Collision {
 
 class CollisionManager {
 public:
-  void submit(EntityId id, Collision coll);
-  void remove(EntityId id);
+  void submit(const EntityId& id, Collision coll) {
+    collisions.insert_or_assign(id, std::move(coll));
+  }
+  void remove(const EntityId& id) { collisions.erase(id); }
 
-  void update(double dt, Scene& scene, BehaviorManager& behav);
+  void update(double dt, Scene& scene, BehaviorRunner& runner);
+
+  void load_entity(const EntityId& id, sol::table& entity);
 
 private:
   using iterator = typename ska::flat_hash_map<EntityId, Collision>::iterator;

@@ -8,26 +8,14 @@
 
 #include "core/anim/sequence.hpp"
 #include "core/anim/sequencer.hpp"
-#include "core/render/tex-coords.hpp"
 
-namespace fw::anim {
+#include "framework.hpp"
+
+namespace fw {
 template <typename T>
-void register_sequencer(sol::table table, const char* name) {
-  using Seq = ::anim::Sequencer<T>;
-  auto meta = table.new_usertype<Seq>(name, sol::no_constructor);
-
-  meta["restart"] = &Seq::restart;
-  meta["skip_to"] = &Seq::skip_to;
-  meta["fast_forward"] = &Seq::fast_forward;
-  meta["pause"] = &Seq::pause;
-  meta["resume"] = &Seq::resume;
-  meta["current_time"] = &Seq::current_time;
-}
-
-template <typename T>
-std::vector<::anim::Frame<T>> parse_frames(const sol::table& table) {
+std::vector<anim::Frame<T>> parse_frames(const sol::table& table) {
   constexpr auto frame_dur = 1.0 / 60.0;
-  std::vector<::anim::Frame<T>> frames;
+  std::vector<anim::Frame<T>> frames;
   frames.reserve(table.size());
   for (const auto& elem : table) {
     const sol::table& tbl = elem.second;
@@ -41,23 +29,36 @@ std::vector<::anim::Frame<T>> parse_frames(const sol::table& table) {
   return frames;
 }
 
-// Parse an animation sequence from the given table
-// Sequence format:
-// [ mode = Loop ]
-// { frames: TexFrame }...
 template <typename T>
-std::optional<::anim::Sequence<T>> parse_sequence(const sol::table& table) {
-  auto frames = parse_frames<T>(table["frames"]);
-  auto mode = table.get_or("mode", ::anim::PlayMode::Loop);
-  return ::anim::Sequence<T>{std::move(frames), mode};
-}
+struct LuaTraits<anim::Sequencer<T>> {
+  using Seq = anim::Sequencer<T>;
 
-inline void register_libs(sol::state_view state) {
-  // Sequence types
-  auto table = state.create_named_table("anim");
-  table.new_enum("play_mode", "once", ::anim::PlayMode::Once, "loop",
-                 ::anim::PlayMode::Loop, "ping_pong",
-                 ::anim::PlayMode::PingPong);
-  register_sequencer<render::TexFrame>(table, "Sequencer");
-}
-} // namespace fw::anim
+  static std::optional<Seq> parse(const sol::table& table) {
+    auto frames = parse_frames<T>(table["frames"]);
+    auto mode = table.get_or("mode", anim::PlayMode::Loop);
+    auto seq = anim::Sequence<T>{frames, mode};
+    auto speed = table.get_or("speed", 1.0);
+    return Seq(seq, speed);
+  }
+
+  static void bind(sol::table& table, const char* name) {
+    auto meta = table.new_usertype<Seq>(name, sol::no_constructor);
+    meta["restart"] = &Seq::restart;
+    meta["skip_to"] = &Seq::skip_to;
+    meta["fast_forward"] = &Seq::fast_forward;
+    meta["pause"] = &Seq::pause;
+    meta["resume"] = &Seq::resume;
+    meta["current_time"] = &Seq::current_time;
+  }
+};
+
+template <>
+struct LuaTraits<anim::PlayMode> {
+  static void bind(sol::table& table, const char* name) {
+    table.new_enum(name, "once", anim::PlayMode::Once, "loop",
+                   anim::PlayMode::Loop, "ping_pong", anim::PlayMode::PingPong);
+  }
+};
+
+void bind_anim_libs(sol::state_view state);
+} // namespace fw

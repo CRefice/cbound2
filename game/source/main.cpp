@@ -8,6 +8,7 @@
 
 #include "core/input/input.hpp"
 #include "core/script/script.hpp"
+#include "core/script/scheduler.hpp"
 
 #include "editor/tiles.hpp"
 
@@ -27,10 +28,11 @@ int main() {
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
   auto lua = script::new_environment();
+	script::CoroutineScheduler<ecs::EntityId> sched(lua);
 
   {
-    ecs::World world(window, queue);
-    world.register_functions(lua);
+    ecs::World world(window, sched, queue);
+    world.bind_libs(lua);
 
     auto maybe_scene = lua.safe_script_file(path::install_dir() /
                                                 "resources/scripts/scene1.lua",
@@ -65,6 +67,7 @@ int main() {
       input.poll();
 
       world.update(dt);
+			sched.tick_all();
 
       if (show_debug) {
         debug::interface::new_frame();

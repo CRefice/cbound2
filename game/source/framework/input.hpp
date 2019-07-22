@@ -5,7 +5,11 @@
 #include <sol/forward.hpp>
 
 #include "ecs/input.hpp"
+#include "framework.hpp"
 
-namespace fw::input {
-std::optional<ecs::InputContext> parse_context(const sol::table& tbl, sol::table table);
-} // namespace fw::render
+namespace fw {
+template <>
+struct LuaTraits<ecs::ActionMap> {
+  static std::optional<ecs::ActionMap> parse(const sol::table& tbl);
+};
+} // namespace fw

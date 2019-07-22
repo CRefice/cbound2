@@ -1,3 +1,6 @@
+#include <memory>
+#include <string_view>
+
 #include <sol/sol.hpp>
 
 #include "common/logging.hpp"
@@ -8,41 +11,48 @@
 
 #include "ui.hpp"
 
-using namespace std::literals;
-
-using namespace render;
+namespace fw {
 using namespace ui;
 
-namespace fw::ui {
-std::unique_ptr<Widget> parse_text_widget(const sol::table& table,
-                                          ssm::vec2 size) {
-  auto text = table.get_or("text", ""s);
-  auto font = table.get_or("font", "fonts/font.fnt"s);
-
-  if (auto speed = table.get<sol::optional<double>>("speed")) {
-    return std::make_unique<Text>(text, *speed, size, font);
-  } else {
-    auto widget = std::make_unique<Text>(text, 0.02, size, font);
-    widget->skip();
-    return widget;
-  }
+void LuaTraits<Widget>::bind(sol::table& tbl, const char* name) {
+  auto meta = tbl.new_usertype<Widget>(name, sol::no_constructor);
+  meta["size"] = &Widget::size;
 }
 
-std::unique_ptr<Widget> parse_widget(const sol::table& table) {
-  auto size = table.get<sol::optional<ssm::vec2>>("size");
-  if (!size) {
-    ERROR_LOG("Ui component missing required size attribute!");
-    return nullptr;
-  }
+void LuaTraits<Text>::bind(sol::table& tbl, const char* name) {
+  auto meta = tbl.new_usertype<Text>(
+      name,
+      sol::factories(
+          [](std::string_view text, ssm::vec2 size) {
+            return std::make_shared<Text>(text, size);
+          },
+          [](std::string_view text, double speed, ssm::vec2 size) {
+            return std::make_shared<Text>(text, speed, size);
+					},
+          [](std::string_view text, ssm::vec2 size, std::string font) {
+            return std::make_shared<Text>(text, size, std::move(font));
+          },
+          [](std::string_view text, double speed, ssm::vec2 size,
+             std::string font) {
+            return std::make_shared<Text>(text, speed, size, std::move(font));
+          }),
+      sol::base_classes, sol::bases<Widget>());
 
-  std::string kind = table.get_or("kind", ""s);
-  if (kind == "text"s) {
-    return parse_text_widget(table, *size);
-  } else if (kind == "window"s) {
-    return std::make_unique<Window>(*size);
-  } else {
-    ERROR_LOG("Unknown UI widget kind!");
-    return nullptr;
-  }
+  meta["skip"] = &Text::skip;
+  meta["done"] = &Text::done;
 }
-} // namespace fw::ui
+
+void LuaTraits<Window>::bind(sol::table& tbl, const char* name) {
+  tbl.new_usertype<Window>(name, sol::factories([](ssm::vec2 size) {
+                             return std::make_shared<Window>(size);
+                           }),
+                           sol::base_classes, sol::bases<Widget>());
+}
+
+void bind_ui_libs(sol::state_view state) {
+  auto table = state.create_named_table("ui");
+  LuaTraits<Widget>::bind(table, "Widget");
+  LuaTraits<Text>::bind(table, "Text");
+  LuaTraits<Window>::bind(table, "Window");
+}
+} // namespace fw

@@ -22,16 +22,16 @@ public:
   UiManager(ResourceCache<render::Texture>& textures)
       : batch(10000, textures) {}
 
-  void submit(EntityId id, std::unique_ptr<ui::Widget> widget);
+  void submit(EntityId id, std::shared_ptr<ui::Widget> widget);
   void remove(EntityId id);
 
   void update(double dt);
   void draw_all(const Scene& scene);
 
-  void load_libraries(sol::state_view state);
+  void load_entity(const EntityId& id, sol::table& tbl);
 
 private:
-  ska::flat_hash_map<EntityId, std::unique_ptr<ui::Widget>> widgets;
+  ska::flat_hash_map<EntityId, std::shared_ptr<ui::Widget>> widgets;
 
   render::SpriteBatch batch;
   ResourceCache<render::Font> fonts;

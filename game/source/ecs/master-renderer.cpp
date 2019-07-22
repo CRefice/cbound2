@@ -1,6 +1,8 @@
 #include <sol/sol.hpp>
 #include <ssm/transform.hpp>
 
+#include "framework/anim.hpp"
+
 #include "master-renderer.hpp"
 
 inline int SCREEN_HEIGHT = 180;
@@ -9,8 +11,8 @@ inline int SCREEN_WIDTH = 320;
 namespace ecs {
 using namespace ::render;
 
-MasterRenderer::MasterRenderer(Context context, const Animator& anim)
-    : sprite_renderer(anim, textures), ui(textures), post_process(context) {
+MasterRenderer::MasterRenderer(Context context)
+    : sprite_renderer(textures), ui(textures), post_process(context) {
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");
   sprite_shader = shader::Program(*frag, *vert);
@@ -35,6 +37,7 @@ MasterRenderer::MasterRenderer(Context context, const Animator& anim)
 
 void MasterRenderer::update(double dt) {
   dynamic_tiles.progress(dt);
+  anim.update(dt);
   ui.update(dt);
 }
 
@@ -58,7 +61,7 @@ void MasterRenderer::draw_all(const Scene& scene) {
   static_tiles.issue_draw_call();
 
   glUseProgram(sprite_shader.handle());
-  sprite_renderer.draw_all(scene);
+  sprite_renderer.draw_all(scene, anim);
 
   glUseProgram(ui_shader.handle());
   ui.draw_all(scene);
@@ -66,13 +69,29 @@ void MasterRenderer::draw_all(const Scene& scene) {
   post_process.draw_all();
 }
 
-void MasterRenderer::load_libraries(sol::state_view state) {
-  ui.load_libraries(state);
+void MasterRenderer::load_entity(const EntityId& id, sol::table& tbl) {
+  anim.load_entity(id, tbl);
+  sprite_renderer.load_entity(id, tbl);
+  ui.load_entity(id, tbl);
+}
 
-  auto table = state.create_named_table("render");
-  table.create_named("camera", "pan_to", [this](ssm::vec2 position) {
-    auto vec = ssm::extend(position, 0.0);
-    camera.view = ssm::translation(vec);
-  });
+void MasterRenderer::bind_libs(sol::state_view state) {
+  auto table = state.get<sol::table>("render");
+  auto meta = table.new_usertype<Camera>("Camera", sol::no_constructor);
+  meta["pos"] = sol::property(
+      [](Camera& c) {
+        auto pos = c.view[3];
+        return ssm::vec2(pos.x, pos.y);
+      },
+      [](Camera& c, ssm::vec2 pos) {
+        auto vec = ssm::extend(pos, 0.0);
+        c.view = ssm::translation(vec);
+      });
+  table["camera"] = camera;
+}
+
+void MasterRenderer::bind_entity_fields(sol::usertype<EntityId>& meta) {
+  anim.bind_entity_fields(meta);
+  sprite_renderer.bind_entity_fields(meta);
 }
 } // namespace ecs

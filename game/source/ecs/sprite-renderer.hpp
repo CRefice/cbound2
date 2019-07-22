@@ -15,8 +15,8 @@
 namespace ecs {
 class SpriteRenderer {
 public:
-  SpriteRenderer(const Animator& anim, ResourceCache<render::Texture>& textures)
-      : anim(anim), batch(10000, textures) {}
+  SpriteRenderer(ResourceCache<render::Texture>& textures)
+      : batch(10000, textures) {}
 
   render::Sprite* find(EntityId id);
   const render::Sprite* find(EntityId id) const;
@@ -24,10 +24,12 @@ public:
   void submit(EntityId id, render::Sprite spr);
   void remove(EntityId id);
 
-  void draw_all(const Scene& scene);
+  void draw_all(const Scene& scene, const Animator& anim);
+
+	void load_entity(const EntityId& id, sol::table& entity);
+  void bind_entity_fields(sol::usertype<EntityId>& meta);
 
 private:
-  const Animator& anim;
   ska::flat_hash_map<EntityId, render::Sprite> sprites;
   render::SpriteBatch batch;
 };

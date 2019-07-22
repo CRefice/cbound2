@@ -3,21 +3,14 @@ require("scripts/character")
 require("scripts/coroutine")
 require("scripts/ui")
 
-birb2 = birb()
-
-birb2.position = Vec2:new(100, 10)
-birb2.input = {}
-birb2.collision.on_collision = function (self, tag)
-	if tag == "interact" then
-		text_window("The hell u want?", Vec2:new(20, 10), Vec2:new(100, 100))
-	end
-end
+birb = birb()
+birb.position = Vec2:new(100, 10)
 
 return {
 	tile_map = "tiles/overworld.tmx";
 	tile_set = "tiles/overworld.tsx";
 	entities = {
 		character,
-		birb2,
+		birb,
 	}
 }
