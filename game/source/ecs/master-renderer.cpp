@@ -77,17 +77,12 @@ void MasterRenderer::load_entity(const EntityId& id, sol::table& tbl) {
 
 void MasterRenderer::bind_libs(sol::state_view state) {
   auto table = state.get<sol::table>("render");
-  auto meta = table.new_usertype<Camera>("Camera", sol::no_constructor);
-  meta["pos"] = sol::property(
-      [](Camera& c) {
-        auto pos = c.view[3];
-        return ssm::vec2(pos.x, pos.y);
-      },
-      [](Camera& c, ssm::vec2 pos) {
-        auto vec = ssm::extend(pos, 0.0);
-        c.view = ssm::translation(vec);
-      });
-  table["camera"] = camera;
+  auto cam = table.create_named("camera");
+  cam["move_to"] = [this](ssm::vec2 vec) {
+    auto transl = ssm::extend(vec, 0.0f);
+    camera.view = ssm::translation(-transl);
+  };
+  cam["resolution"] = ssm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 void MasterRenderer::bind_entity_fields(sol::usertype<EntityId>& meta) {

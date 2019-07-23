@@ -17,8 +17,9 @@ World::World(::render::Context context, BehaviorScheduler& sched,
 
 void World::bind_entity_table(sol::table& tbl) {
   auto meta = tbl.new_usertype<EntityId>("Entity", sol::no_constructor);
-  meta["pos"] =
-      sol::property([this](const EntityId& id) { return scene.find(id)->pos; });
+  meta["pos"] = sol::property(
+      [this](const EntityId& id) { return scene.find(id)->pos; },
+      [this](const EntityId& id, ssm::vec2 val) { scene.find(id)->pos = val; });
   meta["vel"] = sol::property(
       [this](const EntityId& id) { return scene.find(id)->velocity; },
       [this](const EntityId& id, ssm::vec2 val) {
