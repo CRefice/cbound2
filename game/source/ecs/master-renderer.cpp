@@ -79,6 +79,8 @@ void MasterRenderer::bind_libs(sol::state_view state) {
   auto table = state.get<sol::table>("render");
   auto cam = table.create_named("camera");
   cam["move_to"] = [this](ssm::vec2 vec) {
+		vec.x = std::round(vec.x);
+		vec.y = std::round(vec.y);
     auto transl = ssm::extend(vec, 0.0f);
     camera.view = ssm::translation(-transl);
   };

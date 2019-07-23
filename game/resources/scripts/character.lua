@@ -1,4 +1,5 @@
 require("scripts/functional")
+require("scripts/coroutine")
 
 box_size = 10
 
@@ -128,7 +129,8 @@ function falling(fn)
 	end
 end
 
-local mov_speed = 50
+local mov_speed = 40
+
 local coll_bounds = Rect:new(0, 0, 15, 15)
 
 character = {
