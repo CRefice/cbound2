@@ -14,7 +14,6 @@ set(SRCS
 	source/framework/collision.cpp
 	source/framework/input.cpp
 	source/framework/render.cpp
-	source/framework/ui.cpp
 	source/main.cpp
 	source/ui/text.cpp
 	source/ui/window.cpp

@@ -7,6 +7,5 @@
 namespace ui {
 struct UiContext {
   render::SpriteBatch& sprite_batch;
-  ResourceCache<render::Font>& fonts;
 };
 } // namespace ui

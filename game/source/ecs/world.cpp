@@ -6,7 +6,6 @@
 #include "framework/anim.hpp"
 #include "framework/collision.hpp"
 #include "framework/render.hpp"
-#include "framework/ui.hpp"
 
 #include "world.hpp"
 
@@ -32,7 +31,6 @@ void World::bind_libs(sol::state_view state) {
   fw::bind_anim_libs(state);
   fw::bind_render_libs(state);
   fw::bind_collision_libs(state);
-  fw::bind_ui_libs(state);
   renderer.bind_libs(state);
 
   auto table = state.create_table("world");

@@ -2,7 +2,7 @@ require("scripts/functional")
 
 function text_window(txt, pos, sz)
 	local text = {
-		ui = ui.Text.new(txt, 0.02, sz - Vec2:new(10, 10)),
+		ui = ui.Text.new(txt, 0.02, sz - Vec2:new(32, 32)),
 		position = pos + Vec2:new(9, sz.y - 19),
 	}
 	local frame = {

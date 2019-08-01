@@ -12,9 +12,9 @@ namespace ui {
 class Text : public Widget {
 public:
   Text(std::string_view text, ssm::vec2 size,
-       std::string font = "fonts/font.fnt");
+       Resource<render::Font> font);
   Text(std::string_view text, double speed, ssm::vec2 size,
-       std::string font = "fonts/font.fnt");
+       Resource<render::Font> font);
 
   void update(double dt) override;
   void draw(ssm::vec2 pos, UiContext& context) const override;
@@ -23,7 +23,7 @@ public:
   bool done() const { return drawl.done(); }
 
 private:
-  std::string font;
+	Resource<render::Font> font;
   render::TextDrawParams params;
   anim::TextDrawl drawl;
 };

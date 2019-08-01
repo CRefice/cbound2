@@ -29,6 +29,7 @@ public:
   void draw_all(const Scene& scene);
 
   void load_entity(const EntityId& id, sol::table& tbl);
+  void bind_libs(sol::state_view state);
 
 private:
   ska::flat_hash_map<EntityId, std::shared_ptr<ui::Widget>> widgets;

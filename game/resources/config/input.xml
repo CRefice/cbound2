@@ -11,6 +11,6 @@
 		<button_axis positive="DpadR" negative="DpadL" action="XAxis"/>
 		<axis name="LX" action="XAxis"/>
 		<axis name="LY" action="YAxis" invert="true"/>
-		<dead_zone value="0.4"/>
+		<dead_zone value="0.3"/>
 	</gamepad>
 </input>

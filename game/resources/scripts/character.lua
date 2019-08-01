@@ -129,7 +129,7 @@ function falling(fn)
 	end
 end
 
-local mov_speed = 40
+local mov_speed = 60
 
 local coll_bounds = Rect:new(0, 0, 15, 15)
 
