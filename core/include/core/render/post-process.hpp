@@ -30,7 +30,7 @@ struct PostProcess {
 // piled on top of each other to draw images.
 class PostProcessStack {
 public:
-  PostProcessStack(render::Context context);
+  PostProcessStack(render::GLContext context);
 
   // Bind the first framebuffer on the stack
   // as the one to be drawn on, and clear it.
@@ -56,7 +56,7 @@ public:
 private:
   ssm::ivec2 screen_size() const;
 
-  render::Context context;
+	render::GLContext context;
   gl::VertexArrayObject screen_vao;
   gl::BufferObject screen_vbo;
   std::vector<PostProcess> stack;

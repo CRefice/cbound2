@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include <ssm/transform.hpp>
 
 #include "ecs/world.hpp"
@@ -7,8 +5,8 @@
 #include "common/logging.hpp"
 
 #include "core/input/input.hpp"
-#include "core/script/script.hpp"
 #include "core/script/scheduler.hpp"
+#include "core/script/script.hpp"
 
 #include "editor/tiles.hpp"
 
@@ -18,8 +16,8 @@
 bool show_debug = true;
 
 int main() {
-  auto window = render::create_context();
-  render::init(window);
+  auto instance = render::create_instance();
+  auto window = instance.get();
   input::ActionQueue queue;
 
   auto config = load_resource<input::InputConfig>(to_path("config/input.xml"));
@@ -28,7 +26,7 @@ int main() {
   glClearColor(0.1f, 0.2f, 0.5f, 1.0f);
 
   auto lua = script::new_environment();
-	script::CoroutineScheduler<ecs::EntityId> sched(lua);
+  script::CoroutineScheduler<ecs::EntityId> sched(lua);
 
   {
     ecs::World world(window, sched, queue);
@@ -67,7 +65,7 @@ int main() {
       input.poll();
 
       world.update(dt);
-			sched.tick_all();
+      sched.tick_all();
 
       if (show_debug) {
         debug::interface::new_frame();
@@ -79,8 +77,6 @@ int main() {
       glfwSwapBuffers(window);
     }
   }
-  glfwDestroyWindow(window);
   debug::interface::shutdown();
-  render::shutdown();
   return 0;
 }

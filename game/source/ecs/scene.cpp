@@ -1,10 +1,9 @@
 #include "scene.hpp"
-#include <iostream>
 
 namespace ecs {
 EntityId Scene::submit(Movement m) {
-  auto id =  data.add(std::move(m));
-	return id;
+  auto id = data.add(std::move(m));
+  return id;
 }
 
 const Movement* Scene::find(EntityId id) const {
@@ -23,7 +22,5 @@ void Scene::update(double dt) {
   }
 }
 
-void Scene::remove(EntityId id) {
-  data.remove(id);
-}
+void Scene::remove(EntityId id) { data.remove(id); }
 } // namespace ecs

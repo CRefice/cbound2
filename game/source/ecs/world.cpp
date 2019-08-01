@@ -10,7 +10,7 @@
 #include "world.hpp"
 
 namespace ecs {
-World::World(::render::Context context, BehaviorScheduler& sched,
+World::World(::render::GLContext context, BehaviorScheduler& sched,
              input::ActionQueue& queue)
     : renderer(context), runner(sched), input(queue) {}
 

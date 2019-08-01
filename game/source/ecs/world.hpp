@@ -15,7 +15,7 @@
 namespace ecs {
 class World {
 public:
-  World(render::Context context, BehaviorScheduler& sched,
+  World(render::GLContext context, BehaviorScheduler& sched,
         input::ActionQueue& queue);
 
   void load_scene(sol::table& tbl);

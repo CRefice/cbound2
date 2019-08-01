@@ -101,7 +101,7 @@ ButtonMap parse_button_map(const pugi::xml_node& node, const NameMap& names) {
       auto key = it->second;
       map.emplace(key, [action](double val) { return Action{action, val}; });
     } else {
-      WARN_LOG("'{}' does not corrispond to a device button!", name);
+      WARN_LOG("'{}' does not correspond to a device button!", name);
     }
   }
   for (auto axis : node.children("button_axis")) {

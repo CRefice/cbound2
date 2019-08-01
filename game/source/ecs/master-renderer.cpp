@@ -11,7 +11,7 @@ inline int SCREEN_WIDTH = 320;
 namespace ecs {
 using namespace ::render;
 
-MasterRenderer::MasterRenderer(Context context)
+MasterRenderer::MasterRenderer(GLContext context)
     : sprite_renderer(textures), ui(textures), post_process(context) {
   auto frag = shaders.load("shaders/sprite.f.glsl");
   auto vert = shaders.load("shaders/sprite.v.glsl");

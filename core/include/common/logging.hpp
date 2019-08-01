@@ -1,5 +1,4 @@
 #pragma once
-#include <fmt/chrono.h>
 #include <fmt/core.h>
 // Since fmt defines the "fmt" macro, which fucks up other stuff,
 // we undefine it. YAGNI, anyways.
@@ -51,9 +50,7 @@ public:
   void log(LogLevel level, Args&&... args) {
     if (level < min_level)
       return;
-    auto t = std::time(nullptr);
-    out.write(fmt::format("{:%H:%M:%S} ~ [{}]: ", *std::localtime(&t),
-                          to_string(level)));
+    out.write(fmt::format("[{}]: ", to_string(level)));
     out.writeln(fmt::format(std::forward<Args>(args)...));
   }
 

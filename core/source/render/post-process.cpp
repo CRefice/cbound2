@@ -6,7 +6,7 @@
 
 namespace render {
 // Initialize the screen vao and vbo.
-PostProcessStack::PostProcessStack(render::Context context) : context(context) {
+PostProcessStack::PostProcessStack(render::GLContext context) : context(context) {
   glBindVertexArray(screen_vao);
   glBindBuffer(GL_ARRAY_BUFFER, screen_vbo);
 

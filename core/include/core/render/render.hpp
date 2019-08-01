@@ -1,20 +1,12 @@
 #pragma once
 
+#include <memory>
+
 // Forward declarations
 struct GLFWwindow;
 
-namespace render
-{
-using Context = GLFWwindow*;
-
-// Create and initialize an opengl context.
-// Since a context is tied to a window,
-// it will also create an unspecified, hidden window.
-// Make sure to show it later.
-Context create_context();
-
-// Initialize all required openGL apis.
-// Requires a created context.
-void init(Context context);
-void shutdown();
-}
+namespace render {
+using GLContext = GLFWwindow*;
+using Instance = std::unique_ptr<GLFWwindow, void (*)(GLContext)>;
+Instance create_instance();
+} // namespace render

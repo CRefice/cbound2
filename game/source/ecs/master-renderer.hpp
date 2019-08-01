@@ -16,7 +16,7 @@
 namespace ecs {
 class MasterRenderer {
 public:
-  MasterRenderer(render::Context context);
+  MasterRenderer(render::GLContext context);
 
   render::Sprite* find(EntityId id) { return sprite_renderer.find(id); }
 
