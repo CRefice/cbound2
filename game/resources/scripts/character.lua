@@ -147,10 +147,15 @@ character = {
 	},
 	input = {
 		["Action"] = rising(function(self)
+			--[[
 			local pos = self.pos + coll_bounds:bottom_left()
 			local dist = coll_bounds:size()
 			local box_pos = pos + self.last_dir * dist
 			world.instantiate(interact_box(box_pos))
+			--]]
+			local opts = option_window({"Option1", "Option2", "Option3"}, Vec2:new(20, 10),
+				 Vec2:new(140, 100))
+			world.instantiate(opts)
 		end),
 		["XAxis"] = function(self, val)
 			self:update_vel(Vec2:new(val * mov_speed, self.vel.y))

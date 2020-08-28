@@ -1,7 +1,7 @@
 require("scripts/npc");
 
 birb = npc{
-	dialog = "I'm a bird! Chirp chirp! THis is a long as text",
+	dialog = "I'm a bird! Chirp chirp!",
 	sprite = {
 		image = "textures/Birb.png",
 		size = Vec2:new(32, 32),
@@ -21,3 +21,4 @@ birb = npc{
 		}
 	}
 }
+birb.collision.bounds = Rect:new(5, 5, 16, 16)

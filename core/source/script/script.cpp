@@ -33,8 +33,8 @@ std::optional<ssm::vec4> parse_color(std::string_view str) {
 
 sol::state new_environment() {
   sol::state lua;
-  lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
-                     sol::lib::string, sol::lib::coroutine);
+  lua.open_libraries(sol::lib::base, sol::lib::table, sol::lib::package,
+                     sol::lib::math, sol::lib::string, sol::lib::coroutine);
 
   std::string package_path = lua["package"]["path"];
   lua["package"]["path"] = package_path + (package_path.empty() ? "" : ";") +

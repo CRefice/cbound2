@@ -4,7 +4,7 @@ dyn_camera = {
 	update = function(self, dt)
 		if self.target then
 			local viewport = Rect:new(Vec2:new(0, 0), render.camera.resolution)
-			viewport = viewport:translate(self.target.pos - render.camera.resolution / 2)
+			viewport = viewport:translate(self.target.position - render.camera.resolution / 2)
 			if viewport:left() < self.bounds:left() then
 				viewport = viewport:translate(Vec2:new(self.bounds:left() - viewport:left(), 0))
 			end
@@ -17,8 +17,8 @@ dyn_camera = {
 			if viewport:top() > self.bounds:top() then
 				viewport = viewport:translate(Vec2:new(0, self.bounds:top() - viewport:top()))
 			end
-			self.pos = viewport:bottom_left()
-			render.camera.move_to(self.pos)
+			self.position = viewport:bottom_left()
+			render.camera.move_to(self.position)
 		end
 	end
 }

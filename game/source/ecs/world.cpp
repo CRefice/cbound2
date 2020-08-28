@@ -16,14 +16,13 @@ World::World(::render::GLContext context, BehaviorScheduler& sched,
 
 void World::bind_entity_table(sol::table& tbl) {
   auto meta = tbl.new_usertype<EntityId>("Entity", sol::no_constructor);
-  meta["pos"] = sol::property(
-      [this](const EntityId& id) { return scene.find(id)->pos; },
-      [this](const EntityId& id, ssm::vec2 val) { scene.find(id)->pos = val; });
+  meta["number"] = &EntityId::id;
+  meta["position"] = sol::property(
+      [this](EntityId& id) { return scene.find(id)->pos; },
+      [this](EntityId& id, ssm::vec2 val) { scene.find(id)->pos = val; });
   meta["vel"] = sol::property(
-      [this](const EntityId& id) { return scene.find(id)->velocity; },
-      [this](const EntityId& id, ssm::vec2 val) {
-        scene.find(id)->velocity = val;
-      });
+      [this](EntityId& id) { return scene.find(id)->velocity; },
+      [this](EntityId& id, ssm::vec2 val) { scene.find(id)->velocity = val; });
   renderer.bind_entity_fields(meta);
 }
 
@@ -61,6 +60,7 @@ void World::load_scene(sol::table& tbl) {
 
 EntityId World::load_entity(sol::table& tbl) {
   auto pos = tbl.get_or("position", ssm::vec2(0.0f));
+  tbl["position"] = sol::nil;
   auto id = scene.submit(ecs::Movement{pos, ssm::vec2(0.0f)});
   tbl["id"] = id;
   {
